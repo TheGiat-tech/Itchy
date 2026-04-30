@@ -2,40 +2,40 @@ import Link from "next/link";
 
 const categories = [
   {
-    id: "insects",
-    label: "חרקים",
-    emoji: "🪲",
-    description: "תיקנים, נמלים, קרציות ועוד",
+    id: "cockroaches",
+    label: "תיקנים",
+    emoji: "🪳",
+    description: "תיקן אמריקאי, גרמני, מזרחי, פסי-חום ועוד",
+  },
+  {
+    id: "flying-insects",
+    label: "חרקים מעופפים",
+    emoji: "🦟",
+    description: "יתושים, זבובים, עש המקלחת ועוד",
+  },
+  {
+    id: "parasites",
+    label: "טפילים",
+    emoji: "🦠",
+    description: "פשפש המיטה, פרעושים, קרציות",
+  },
+  {
+    id: "ants",
+    label: "נמלים",
+    emoji: "🐜",
+    description: "כל סוגי הנמלים",
   },
   {
     id: "rodents",
     label: "מכרסמים",
     emoji: "🐀",
-    description: "עכברים, חולדות ועוד",
+    description: "עכברים וחולדות",
   },
   {
-    id: "birds",
-    label: "ציפורים",
-    emoji: "🐦",
-    description: "יונים, צרעות ועוד",
-  },
-  {
-    id: "arachnids",
-    label: "עכבישאים",
-    emoji: "🕷️",
-    description: "עכבישים, עקרבים, קרדיות",
-  },
-  {
-    id: "flies",
-    label: "זבובים ויתושים",
-    emoji: "🦟",
-    description: "זבובי בית, יתושים, זבובי פירות",
-  },
-  {
-    id: "other",
-    label: "אחרים",
-    emoji: "🐌",
-    description: "שבלולים, שרצים ועוד",
+    id: "pantry-pests",
+    label: "מזיקי מזווה ורכוש",
+    emoji: "🦗",
+    description: "עש בגדים, חיפושיות מזווה וחרקי רכוש",
   },
 ];
 
