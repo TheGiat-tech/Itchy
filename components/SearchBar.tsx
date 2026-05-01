@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function SearchBar() {
+interface SearchBarProps {
+  placeholder?: string;
+}
+
+export default function SearchBar({
+  placeholder = "איזה מזיק מופיע אצלך?",
+}: SearchBarProps) {
   const [query, setQuery] = useState("");
   const router = useRouter();
 
@@ -21,7 +27,7 @@ export default function SearchBar() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="איזה מזיק מופיע אצלך?"
+          placeholder={placeholder}
           className="flex-1 px-5 py-4 text-lg rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none shadow-sm text-right"
           dir="rtl"
         />
