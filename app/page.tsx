@@ -23,7 +23,7 @@ export default function HomePage() {
           <p className="text-lg text-gray-500 mb-8 max-w-xl mx-auto">
             זהה כל מזיק, הבן את מחזור החיים שלו, ומצא את הפתרון הנכון.
           </p>
-          <SearchBar placeholder="מי עוקץ אותך? חפש כאן..." />
+          <SearchBar placeholder="איזה מזיק מטריד אותך? חפש כאן..." />
         </section>
 
         <section className="max-w-6xl mx-auto px-4 py-12">

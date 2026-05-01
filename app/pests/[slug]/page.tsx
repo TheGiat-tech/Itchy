@@ -6,6 +6,9 @@ import Footer from "@/components/Footer";
 import GalleryPlaceholder from "@/components/GalleryPlaceholder";
 import FeedbackButton from "@/components/FeedbackButton";
 import ArticleLeadForm from "@/components/ArticleLeadForm";
+import PestImage from "@/components/PestImage";
+import RelatedPests from "@/components/RelatedPests";
+import NextArticleLink from "@/components/NextArticleLink";
 import { getPestBySlug, getAllPestSlugs } from "@/lib/mdx";
 import { generatePestJsonLd } from "@/lib/jsonld";
 
@@ -62,6 +65,13 @@ export default async function PestPage({ params }: Props) {
           )}
         </div>
 
+        {frontmatter.titleLatin && (
+          <PestImage
+            titleLatin={frontmatter.titleLatin}
+            pestName={frontmatter.title}
+          />
+        )}
+
         <div className="bg-green-50 border border-green-100 rounded-2xl p-5 mb-8 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
           {frontmatter.lifecycle && (
             <div>
@@ -90,6 +100,13 @@ export default async function PestPage({ params }: Props) {
         <GalleryPlaceholder pestName={frontmatter.title} />
 
         <ArticleLeadForm pestName={frontmatter.title} />
+
+        <RelatedPests
+          currentSlug={slug}
+          category={frontmatter.category}
+        />
+
+        <NextArticleLink currentSlug={slug} />
 
         <div className="mt-8 pt-6 border-t border-gray-100">
           <FeedbackButton pestTitle={frontmatter.title} />
