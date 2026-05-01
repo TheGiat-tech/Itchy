@@ -48,6 +48,8 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // TODO: replace with your backend/CRM endpoint (e.g. POST /api/leads)
+    // e.g.: fetch("/api/leads", { method: "POST", body: JSON.stringify({ pestType, city, phone }) })
     setSubmitted(true);
   };
 
@@ -160,6 +162,8 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="05X-XXXXXXX"
+                  pattern="^0(5[0-9]|[23489])[0-9\-]{7,8}$"
+                  title="מספר טלפון ישראלי תקני (נייד או קווי)"
                   required
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-right"
                   dir="ltr"

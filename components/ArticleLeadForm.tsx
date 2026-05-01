@@ -14,6 +14,8 @@ export default function ArticleLeadForm({ pestName }: ArticleLeadFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // TODO: replace with your backend/CRM endpoint (e.g. POST /api/leads)
+    // e.g.: fetch("/api/leads", { method: "POST", body: JSON.stringify({ name, phone, city, pestName }) })
     setSubmitted(true);
   };
 

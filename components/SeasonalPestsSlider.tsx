@@ -49,14 +49,15 @@ const SEASONAL_PESTS: SeasonalPest[] = [
   },
 ];
 
+const SCROLL_AMOUNT = 240; // approximate card width (176px) + gap (16px) + buffer
+
 export default function SeasonalPestsSlider() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const scroll = (dir: "right" | "left") => {
     if (!scrollRef.current) return;
-    const amount = 240;
     scrollRef.current.scrollBy({
-      left: dir === "left" ? -amount : amount,
+      left: dir === "left" ? -SCROLL_AMOUNT : SCROLL_AMOUNT,
       behavior: "smooth",
     });
   };
