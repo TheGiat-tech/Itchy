@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface LeadModalProps {
   isOpen: boolean;
@@ -27,22 +27,21 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
   const [phone, setPhone] = useState("");
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!isOpen) {
-      setSubmitted(false);
-      setPestType("");
-      setCity("");
-      setPhone("");
-    }
-  }, [isOpen]);
+  const handleClose = useCallback(() => {
+    setSubmitted(false);
+    setPestType("");
+    setCity("");
+    setPhone("");
+    onClose();
+  }, [onClose]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") handleClose();
     };
     if (isOpen) document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
-  }, [isOpen, onClose]);
+  }, [isOpen, handleClose]);
 
   if (!isOpen) return null;
 
@@ -55,7 +54,7 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (dialogRef.current && !dialogRef.current.contains(e.target as Node)) {
-      onClose();
+      handleClose();
     }
   };
 
@@ -73,7 +72,7 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
         dir="rtl"
       >
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute top-4 left-4 text-gray-400 hover:text-gray-600 text-2xl leading-none"
           aria-label="סגור"
         >
@@ -90,7 +89,7 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
               מדביר מוסמך מהאזור שלך ייצור איתך קשר בהקדם.
             </p>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="mt-6 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-colors"
             >
               סגור

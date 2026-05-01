@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import GalleryPlaceholder from "@/components/GalleryPlaceholder";
 import FeedbackButton from "@/components/FeedbackButton";
@@ -48,7 +47,6 @@ export default async function PestPage({ params }: Props) {
 
   return (
     <>
-      <Navbar />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

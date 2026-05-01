@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SearchBar from "@/components/SearchBar";
 import CategoryGrid from "@/components/CategoryGrid";
@@ -14,7 +13,6 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <Navbar />
       <main className="flex-1">
         <section className="bg-gradient-to-b from-green-50 to-white py-20 px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">

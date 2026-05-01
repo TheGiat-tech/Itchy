@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 
@@ -11,7 +10,6 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
-      <Navbar />
       <main className="flex-1 max-w-3xl mx-auto px-4 py-12 w-full">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-6">
           אודות Itchy
