@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import GalleryPlaceholder from "@/components/GalleryPlaceholder";
 import FeedbackButton from "@/components/FeedbackButton";
+import ArticleLeadForm from "@/components/ArticleLeadForm";
 import { getPestBySlug, getAllPestSlugs } from "@/lib/mdx";
 import { generatePestJsonLd } from "@/lib/jsonld";
 
@@ -87,6 +88,8 @@ export default async function PestPage({ params }: Props) {
         </article>
 
         <GalleryPlaceholder pestName={frontmatter.title} />
+
+        <ArticleLeadForm pestName={frontmatter.title} />
 
         <div className="mt-8 pt-6 border-t border-gray-100">
           <FeedbackButton pestTitle={frontmatter.title} />

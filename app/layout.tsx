@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import StickyLeadBar from "@/components/StickyLeadBar";
 
 export const metadata: Metadata = {
   title: {
@@ -23,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="he" dir="rtl">
       <body className="min-h-full flex flex-col bg-white text-gray-900 antialiased font-heebo">
+        <StickyLeadBar />
         {children}
       </body>
     </html>

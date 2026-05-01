@@ -14,10 +14,10 @@ const categories = [
     description: "יתושים, זבובים, עש המקלחת ועוד",
   },
   {
-    id: "parasites",
-    label: "טפילים",
-    emoji: "🦠",
-    description: "פשפש המיטה, פרעושים, קרציות",
+    id: "biting-bloodsucking",
+    label: "עוקצים ומוצצי דם",
+    emoji: "🩸",
+    description: "פשפש מיטה, פרעושים, קרציות, קרדיות ועוד",
   },
   {
     id: "ants",
