@@ -38,7 +38,7 @@ export default function PestsList({ pests }: Props) {
             <Link
               key={pest.slug}
               href={`/pests/${pest.slug}`}
-              className="block bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-green-200 transition-all"
+              className="block bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-lg hover:border-green-200 transition-all duration-300 hover:-translate-y-1"
             >
               <h2 className="font-bold text-gray-800 text-lg">
                 {pest.frontmatter.title}

@@ -81,7 +81,7 @@ export default function SeasonalPestsSlider() {
           <Link
             key={pest.slug}
             href={`/pests/${pest.slug}`}
-            className="flex-shrink-0 w-44 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md hover:border-amber-200 transition-all p-4 text-center"
+            className="flex-shrink-0 w-44 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-lg hover:border-amber-200 transition-all duration-300 hover:-translate-y-1 p-4 text-center"
           >
             <div className="text-4xl mb-2">{pest.emoji}</div>
             <span className="inline-block text-xs bg-amber-100 text-amber-700 font-semibold px-2 py-0.5 rounded-full mb-2">
