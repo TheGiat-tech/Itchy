@@ -65,8 +65,8 @@ export default async function PestPage({ params }: Props) {
 
         {frontmatter.titleLatin && (
           <PestImage
-            titleLatin={frontmatter.titleLatin}
-            pestName={frontmatter.title}
+            scientificName={frontmatter.titleLatin}
+            altText={frontmatter.title}
           />
         )}
 
