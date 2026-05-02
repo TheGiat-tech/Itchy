@@ -48,7 +48,7 @@ function today() {
  */
 async function callAI(systemPrompt, userPrompt) {
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("Missing OPENAI_API_KEY environment variable");
+  if (!apiKey) throw new Error("Missing OPENAI_API_KEY environment variable. Please set it before running this script.");
 
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",

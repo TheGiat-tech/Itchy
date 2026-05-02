@@ -47,7 +47,7 @@ export default async function ArticlePage({ params }: Props) {
   if (!article) notFound();
 
   // TypeScript narrowing: article is guaranteed non-null after notFound()
-  const { frontmatter, content } = article!;
+  const { frontmatter, content } = article;
 
   return (
     <>
