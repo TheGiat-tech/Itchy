@@ -10,36 +10,51 @@ interface PestData {
 }
 
 /**
- * פונקציה לשליפת תמונה מוויקיפדיה לפי שם מדעי
+ * פונקציה שמנקה את השם הלטיני מסלאשים, סימני דולר והערות
+ * כדי שויקיפדיה תצליח למצוא את הערך המדויק.
+ */
+function cleanScientificName(name: string): string {
+  if (!name) return "";
+  // מוריד סימני דולר, לוקח רק את מה שלפני הסלאש או הסוגריים, ומנקה רווחים
+  return name.replace(/\$/g, '').split('/')[0].split('(')[0].trim();
+}
+
+/**
+ * ויקיפדיה בעדיפות עליונה (באמצעות ה-REST API המדויק לתמונות ראשיות)
  */
 async function getWikipediaImage(scientificName: string): Promise<string | null> {
+  const cleanName = cleanScientificName(scientificName);
+  if (!cleanName) return null;
+
   try {
-    const endpoint = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(
-      scientificName
-    )}&prop=pageimages&format=json&pithumbsize=1000&redirects=1&origin=*`;
-    
+    // ה-REST API מביא אך ורק את התמונה הראשית של הערך (ללא מפות ואייקונים)
+    const endpoint = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(cleanName)}`;
     const res = await fetch(endpoint, { next: { revalidate: 3600 } });
-    if (!res.ok) return null;
-    const data = await res.json();
-    const pages = data.query.pages;
-    const pageId = Object.keys(pages)[0];
     
-    return pages[pageId]?.thumbnail?.source || null;
+    if (!res.ok) return null;
+    
+    const data = await res.json();
+    // עדיפות לתמונה המקורית הגדולה, ואם אין - לתמונה המוקטנת
+    return data.originalimage?.source || data.thumbnail?.source || null;
   } catch {
     return null;
   }
 }
 
 /**
- * פונקציה לשליפת תמונה מ-iNaturalist (גיבוי)
+ * iNaturalist - גיבוי בלבד! מופעל רק אם ויקיפדיה נכשלה.
  */
 async function getINaturalistImage(scientificName: string): Promise<string | null> {
+  const cleanName = cleanScientificName(scientificName);
+  if (!cleanName) return null;
+
   try {
-    const endpoint = `https://api.inaturalist.org/v1/taxa?q=${encodeURIComponent(scientificName)}&is_active=true`;
+    const endpoint = `https://api.inaturalist.org/v1/taxa?q=${encodeURIComponent(cleanName)}&is_active=true&rank=species,genus`;
     const res = await fetch(endpoint, { next: { revalidate: 3600 } });
-    if (!res.ok) return null;
-    const data = await res.json();
     
+    if (!res.ok) return null;
+
+    const data = await res.json();
     return data.results[0]?.default_photo?.medium_url || null;
   } catch {
     return null;
@@ -50,20 +65,25 @@ const containerClassName =
   "mt-6 mb-8 overflow-hidden rounded-2xl border border-gray-100 shadow-sm";
 
 /**
- * קומפוננטת הראש של המזיק - מטפלת בתמונה ובכותרות
+ * קומפוננטת הראש של המזיק
  */
 export default async function PestHeader({ pest }: { pest: PestData }) {
-  // לוגיקת בחירת תמונה: 1. ידני, 2. ויקיפדיה, 3. iNaturalist
+  // 1. קודם כל בודק אם שמת לינק ידני
   let imageUrl = pest.imageOverride || null;
-  let source = pest.imageOverride ? "ידני" : "Wikipedia";
+  let source = pest.imageOverride ? "תמונה מותאמת אישית" : "Wikipedia";
 
+  // 2. אם אין ידני, מחפש בויקיפדיה (עדיפות עליונה)
   if (!imageUrl) {
     imageUrl = await getWikipediaImage(pest.titleLatin);
   }
 
+  // 3. רק אם ויקיפדיה לא מצאה כלום (או החזירה שגיאה), עובר לגיבוי
   if (!imageUrl) {
-    imageUrl = await getINaturalistImage(pest.titleLatin);
-    source = "iNaturalist";
+    const inatImage = await getINaturalistImage(pest.titleLatin);
+    if (inatImage) {
+      imageUrl = inatImage;
+      source = "iNaturalist";
+    }
   }
 
   const captionSource =
