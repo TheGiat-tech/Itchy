@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getAllPests } from "@/lib/mdx";
 import PestsList from "./PestsList";
@@ -16,7 +15,6 @@ export default function PestsIndexPage() {
 
   return (
     <>
-      <Navbar />
       <main className="flex-1 max-w-6xl mx-auto px-4 py-12 w-full">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-2">כל המזיקים</h1>
         <Suspense fallback={<p className="text-gray-500 mb-8">טוען...</p>}>
