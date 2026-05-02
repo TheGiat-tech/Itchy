@@ -1,0 +1,38 @@
+name: 🤖 Daily Article Bot
+
+on:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  generate-article:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install @google/generative-ai
+        run: npm install @google/generative-ai
+
+      - name: Generate daily article
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node scripts/daily-bot.mjs
+
+      - name: Commit and push generated article
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add content/articles/
+          git diff --cached --quiet || git commit -m "🤖 Auto-generated daily article"
+          git push origin ${{ github.event.repository.default_branch }}
