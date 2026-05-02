@@ -5,6 +5,8 @@ interface LogoProps {
 }
 
 export default function Logo({ theme = "light" }: LogoProps) {
+  const iconClass =
+    theme === "dark" ? "w-7 h-7 text-emerald-400" : "w-7 h-7 text-emerald-600";
   const textClass =
     theme === "dark"
       ? "font-extrabold tracking-tight text-emerald-400 text-xl md:text-2xl leading-none"
@@ -20,7 +22,7 @@ export default function Logo({ theme = "light" }: LogoProps) {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="w-7 h-7 text-emerald-600"
+        className={iconClass}
         aria-hidden="true"
       >
         <circle cx="11" cy="11" r="7" />
