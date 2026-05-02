@@ -11,6 +11,9 @@ export default function Navbar() {
           <Link href="/pests" className="hover:text-green-700 transition-colors">
             מזיקים
           </Link>
+          <Link href="/articles" className="hover:text-green-700 transition-colors">
+            מאמרים
+          </Link>
           <Link href="/contact" className="hover:text-green-700 transition-colors">
             צור קשר
           </Link>
