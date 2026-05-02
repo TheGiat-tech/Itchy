@@ -36,12 +36,12 @@ export default function ArticlesPage() {
             <p>עוד אין מאמרים – בקרוב!</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {articles.map((article) => (
               <Link
                 key={article.slug}
                 href={`/articles/${article.slug}`}
-                className="group flex flex-col sm:flex-row gap-5 bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:border-green-200 transition-all"
+                className="group flex flex-col bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:border-green-200 transition-all duration-300 hover:-translate-y-1"
               >
                 {/* Thumbnail */}
                 {article.frontmatter.image ? (
@@ -49,17 +49,17 @@ export default function ArticlesPage() {
                   <img
                     src={article.frontmatter.image}
                     alt={article.frontmatter.title}
-                    className="w-full sm:w-56 h-44 sm:h-auto object-cover flex-shrink-0"
+                    className="w-full h-48 sm:h-56 object-cover rounded-t-xl"
                     loading="lazy"
                   />
                 ) : (
-                  <div className="w-full sm:w-56 h-44 sm:h-auto flex-shrink-0 bg-green-50 flex items-center justify-center text-5xl">
+                  <div className="w-full h-48 sm:h-56 rounded-t-xl bg-green-50 flex items-center justify-center text-5xl">
                     📰
                   </div>
                 )}
 
                 {/* Text */}
-                <div className="flex flex-col justify-center p-5 gap-2">
+                <div className="flex flex-col justify-center p-5 gap-2 flex-1">
                   {article.frontmatter.category && (
                     <span className="text-xs font-semibold text-green-700 uppercase tracking-wide">
                       {article.frontmatter.category}

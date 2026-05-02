@@ -29,7 +29,9 @@ export default function RootLayout({
           <StickyLeadBar />
           <Navbar />
         </header>
-        {children}
+        <div className="animate-[fade-in-up_0.5s_ease_both]">
+          {children}
+        </div>
       </body>
     </html>
   );
