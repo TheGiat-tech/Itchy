@@ -49,11 +49,11 @@ export default function ArticlesPage() {
                   <img
                     src={article.frontmatter.image}
                     alt={article.frontmatter.title}
-                    className="w-full h-48 sm:h-56 object-cover rounded-t-xl"
+                    className="w-full h-48 sm:h-56 object-cover"
                     loading="lazy"
                   />
                 ) : (
-                  <div className="w-full h-48 sm:h-56 rounded-t-xl bg-green-50 flex items-center justify-center text-5xl">
+                  <div className="w-full h-48 sm:h-56 bg-green-50 flex items-center justify-center text-5xl">
                     📰
                   </div>
                 )}

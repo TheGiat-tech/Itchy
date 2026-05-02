@@ -20,7 +20,7 @@ export default function Logo() {
         <line x1="11" y1="9" x2="11" y2="13" />
       </svg>
       <span className="font-extrabold tracking-tight text-emerald-600 text-xl md:text-2xl leading-none">
-        איצ&#39;י
+        איצ'י
       </span>
     </Link>
   );
