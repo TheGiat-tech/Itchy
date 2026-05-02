@@ -58,6 +58,9 @@ async function generateArticle() {
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
+  // יצירת מספר רנדומלי כדי לנעול תמונה ספציפית לכל מאמר מתוך מאגר התמונות
+  const randomImgNum = Math.floor(Math.random() * 10000);
+
   const prompt = `
 אתה כותב תוכן מקצועי לאתר "Itchy" – אנציקלופדיית המזיקים וההדברה הישראלית.
 
@@ -69,6 +72,7 @@ async function generateArticle() {
 titleHebrew: "<כותרת המאמר בעברית>"
 description: "<תיאור קצר של 1-2 משפטים>"
 date: "${today()}"
+imageOverride: "https://loremflickr.com/800/450/insect,pest,nature?lock=${randomImgNum}"
 ---
 
 <גוף המאמר בעברית, בפורמט Markdown, עם כותרות ## ו-### ורשימות>
@@ -97,6 +101,10 @@ async function main() {
   let mdxContent;
   try {
     mdxContent = await generateArticle();
+    
+    // ניקוי תגיות Markdown במידה וה-AI התעקש להוסיף אותן למרות ההוראות
+    mdxContent = mdxContent.replace(/^```mdx\n/, '').replace(/^```markdown\n/, '').replace(/```$/, '').trim();
+
   } catch (err) {
     console.error("❌ Gemini API call failed:", err.message);
     process.exit(1);
