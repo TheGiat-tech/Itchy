@@ -1,6 +1,15 @@
 import Link from "next/link";
 
-export default function Logo() {
+interface LogoProps {
+  theme?: "light" | "dark";
+}
+
+export default function Logo({ theme = "light" }: LogoProps) {
+  const textClass =
+    theme === "dark"
+      ? "font-extrabold tracking-tight text-emerald-400 text-xl md:text-2xl leading-none"
+      : "font-extrabold tracking-tight text-emerald-600 text-xl md:text-2xl leading-none";
+
   return (
     <Link href="/" className="flex items-center gap-2 shrink-0">
       <svg
@@ -19,9 +28,7 @@ export default function Logo() {
         <line x1="9" y1="11" x2="13" y2="11" />
         <line x1="11" y1="9" x2="11" y2="13" />
       </svg>
-      <span className="font-extrabold tracking-tight text-emerald-600 text-xl md:text-2xl leading-none">
-        איצ'י
-      </span>
+      <span className={textClass}>איצ&#39;י</span>
     </Link>
   );
 }

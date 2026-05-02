@@ -5,7 +5,7 @@ export default function Navbar() {
   return (
     <nav className="bg-white shadow-sm border-b border-gray-100">
       <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between gap-2">
-        <Logo />
+        <Logo theme="light" />
         <div className="flex flex-nowrap items-center gap-2 sm:gap-5 text-xs sm:text-sm font-medium text-gray-600 whitespace-nowrap">
           <Link href="/pests" className="hover:text-green-700 transition-colors">
             מזיקים

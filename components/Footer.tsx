@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Logo from "@/components/Logo";
 
 export default function Footer() {
   return (
@@ -6,8 +7,8 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 py-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-white font-bold text-lg mb-3">🐛 Itchy</h3>
-            <p className="text-sm text-gray-400">
+            <Logo theme="dark" />
+            <p className="text-sm text-gray-400 mt-3">
               אנציקלופדיית המזיקים המובילה בישראל. מידע מקצועי, מדויק ונגיש.
             </p>
           </div>
@@ -17,6 +18,11 @@ export default function Footer() {
               <li>
                 <Link href="/pests" className="hover:text-white transition-colors">
                   כל המזיקים
+                </Link>
+              </li>
+              <li>
+                <Link href="/articles" className="hover:text-white transition-colors">
+                  מאמרים
                 </Link>
               </li>
               <li>
@@ -54,7 +60,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-gray-700 mt-8 pt-6 text-center text-xs text-gray-500">
-          © {new Date().getFullYear()} Itchy – כל הזכויות שמורות
+          © איצ&#39;י 2026 – כל הזכויות שמורות
         </div>
       </div>
     </footer>
