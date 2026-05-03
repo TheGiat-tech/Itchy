@@ -25,7 +25,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${frontmatter.title} | Itchy`,
       description: frontmatter.excerpt,
       locale: "he_IL",
-      images: frontmatter.image ? [{ url: frontmatter.image }] : undefined,
+      images: (frontmatter.imageOverride || frontmatter.image)
+          ? [{ url: (frontmatter.imageOverride || frontmatter.image)! }]
+          : undefined,
     },
   };
 }
@@ -82,11 +84,11 @@ export default async function ArticlePage({ params }: Props) {
         </div>
 
         {/* Hero image */}
-        {frontmatter.image && (
+        {(frontmatter.imageOverride || frontmatter.image) && (
           <div className="mb-8 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={frontmatter.image}
+              src={frontmatter.imageOverride || frontmatter.image}
               alt={frontmatter.title}
               className="w-full h-auto object-cover"
               loading="lazy"

@@ -176,9 +176,9 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="05X-XXXXXXX"
-                  pattern="^0(5[0-9]|[23489])[0-9\-]{7,8}$"
-                  title="מספר טלפון ישראלי תקני (נייד או קווי)"
+                  placeholder="05XXXXXXXX"
+                  minLength={9}
+                  maxLength={10}
                   required
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-right"
                   dir="ltr"

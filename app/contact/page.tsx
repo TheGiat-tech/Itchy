@@ -42,8 +42,8 @@ export default function ContactPage() {
     <>
       <main className="flex-1 max-w-2xl mx-auto px-4 py-12 w-full">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-2">צור קשר</h1>
-        <p className="text-gray-500 mb-8">
-          שאלה? שגיאה? רוצה לשלוח תמונה לזיהוי? אנחנו כאן.
+        <p className="text-gray-500 mb-8" dir="rtl">
+          זיהיתם מזיק? יש לכם שאלה? צרו איתנו קשר ונחזור אליכם בהקדם.
         </p>
 
         {submitted ? (
@@ -84,39 +84,26 @@ export default function ContactPage() {
               <input
                 type="tel"
                 name="phone"
-                placeholder="05X-XXXXXXX"
+                required
+                minLength={9}
+                maxLength={10}
+                placeholder="05XXXXXXXX"
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:border-green-500 focus:outline-none text-right"
-                dir="rtl"
+                dir="ltr"
               />
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                הודעה
+                הודעה (אופציונלי)
               </label>
               <textarea
                 name="message"
-                required
-                rows={5}
+                rows={4}
                 placeholder="תאר את הבעיה שלך, את המזיק שראית, או שאל שאלה..."
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:border-green-500 focus:outline-none resize-none text-right"
                 dir="rtl"
               />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                📸 תמונה לזיהוי (אופציונלי)
-              </label>
-              <input
-                type="file"
-                name="photo"
-                accept="image/*"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-600 file:ml-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
-              />
-              <p className="text-xs text-gray-400 mt-1">
-                תמונה ברורה תעזור לנו לזהות את המזיק בצורה מדויקת יותר.
-              </p>
             </div>
 
             <button

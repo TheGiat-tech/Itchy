@@ -57,6 +57,7 @@ export interface ArticleFrontmatter {
   date?: string;
   category?: string;
   image?: string;
+  imageOverride?: string;
   titleLatin?: string;
 }
 
