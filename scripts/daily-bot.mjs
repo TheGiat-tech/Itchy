@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 /**
  * scripts/daily-bot.mjs
- *
- * בוט אוטומטי ליצירת תוכן עבור "Itchi".
- * מעדכן את האנציקלופדיה במאמרים על הדברה וטבע בישראל.
+ * בוט אוטומטי ליצירת תוכן עבור "Itchi" - גרסה מתוקנת (Node 24 + Gemini Fix)
  */
 
 import fs from "fs";
@@ -15,146 +13,67 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..");
 const ARTICLES_DIR = path.join(REPO_ROOT, "content", "articles");
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
 function today() {
   return new Date().toISOString().split("T")[0];
 }
 
-// ---------------------------------------------------------------------------
-// AI call
-// ---------------------------------------------------------------------------
-
 async function generateArticle() {
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new Error("Missing GEMINI_API_KEY environment variable.");
-  }
+  if (!apiKey) throw new Error("Missing GEMINI_API_KEY environment variable.");
 
-  // אתחול ה-SDK
   const genAI = new GoogleGenerativeAI(apiKey);
-
-  // ניתן לעקוף את המודל באמצעות משתנה סביבה GEMINI_MODEL
-  const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+  const modelName = "gemini-1.5-flash";
+  
   console.log(`🧠 Using Gemini model: ${modelName}`);
 
-  // שימוש ב-v1beta שבו gemini-1.5-flash זמין; ה-SDK ינסה v1 כ-fallback.
+  // כפייה של גרסת v1beta כדי למנוע את שגיאת ה-404 שנראתה בלוגים
   const model = genAI.getGenerativeModel(
     { model: modelName },
     { apiVersion: "v1beta" }
   );
 
   const prompt = `
-אתה מומחה SEO וכותב תוכן שיווקי בכיר עבור "Itchi" (איצ'י) ו-"גיאת הדברות".
-המשימה: לכתוב מאמר מקצועי (500-700 מילים) על הדברה בישראל שגורם לקורא להשאיר פרטים.
-
-הפלט חייב להיות MDX נקי (ללא תגיות קוד) עם ה-Frontmatter הבא בדיוק:
+אתה מומחה SEO עבור "Itchi" ו-"גיאת הדברות". כתוב מאמר מקצועי (500-700 מילים) על הדברה בישראל.
+הפלט חייב להיות MDX נקי עם ה-Frontmatter הבא:
 ---
-titleHebrew: "כותרת חזקה בעברית עם אמוג'י רלוונטי"
-subtitle: "כותרת משנה מושכת שמסבירה את ערך המאמר"
+titleHebrew: "כותרת עם אמוג'י רלוונטי"
+subtitle: "כותרת משנה מושכת"
 date: "${today()}"
-imageKeyword: "two or three English words describing the pest and treatment (e.g. cockroach extermination kitchen, rat rodent control, termite wood damage)"
-pestType: "סוג המזיק בעברית (לדוגמה: ג'וקים, נמלים, חולדות, עכבישים, פרעושים, טרמיטים)"
+imageKeyword: "pest control insect"
+pestType: "סוג המזיק"
 ---
-
-הנחיות לגוף המאמר:
-1. השורה הראשונה של הגוף חייבת להיות # [titleHebrew] (כותרת H1 זהה לכותרת שבפרונטמטר).
-2. השתמש בכותרות ## ו-### עם אמוג'ים (🐜, 🛡️, 🏠, ⚠️, ✅, 🔍).
-3. הדגש משפטים חשובים ב-**bold**.
-4. התמקד ב"נקודות כאב": למה הריסוס הביתי נכשל והנזק שהמזיק גורם.
-5. כלול לפחות 3 כותרות משנה (##) ורשימות תבליטים.
-6. אל תשתמש בתגיות קוד כמו \`\`\`mdx או \`\`\`markdown.
-
-בסוף המאמר, **חובה** להוסיף את השורה הבאה בדיוק (ללא שינויים):
-
-<a href="/contact">📍 לייעוץ וזיהוי מזיקים חינם מגיאת הדברות - לחצו כאן</a>
+# [titleHebrew]
+השתמש בכותרות ## ו-###, הדגשים ב-bold, ורשימות.
+בסוף המאמר, הוסף: <a href="/contact">📍 לייעוץ וזיהוי מזיקים חינם מגיאת הדברות - לחצו כאן</a>
 `.trim();
 
   try {
-    let result;
-    let usedFallback = false;
-
-    try {
-      result = await model.generateContent(prompt);
-    } catch (firstError) {
-      const msg = String(firstError?.message || "");
-      // בדיקה ראשית לפי קוד סטטוס; בדיקות מחרוזת משמשות כהגנה נוספת
-      // למקרים שבהם ה-SDK אינו חושף status code מספרי.
-      const status = Number(firstError?.status || firstError?.code || 0);
-      const is404 =
-        status === 404 ||
-        msg.includes("404") ||
-        msg.toLowerCase().includes("not found");
-
-      if (!is404) throw firstError;
-
-      console.warn(
-        `⚠️ v1beta endpoint returned 404 for model "${modelName}". ` +
-          "Retrying with SDK default API version..."
-      );
-      const fallbackModel = genAI.getGenerativeModel({ model: modelName });
-      result = await fallbackModel.generateContent(prompt);
-      usedFallback = true;
-    }
-
-    if (usedFallback) {
-      console.log(`ℹ️ Article generated using SDK default API version (fallback).`);
-    } else {
-      console.log(`ℹ️ Article generated using v1beta API version.`);
-    }
-
+    const result = await model.generateContent(prompt);
     const response = await result.response;
-    const text = response.text().trim();
-    if (!text) {
-      throw new Error(
-        `Model "${modelName}" returned an empty response. ` +
-          "This may be caused by content filtering or an API issue. " +
-          "Check the Gemini API status or adjust the prompt."
-      );
-    }
-    return text;
+    return response.text().trim();
   } catch (error) {
-    throw new Error(`Gemini API call failed (model: "${modelName}"): ${error.message}`);
+    // אם v1beta נכשל, ננסה פעם אחרונה בלי הגדרת גרסה (Fallback)
+    console.warn("⚠️ v1beta failed, trying default version...");
+    const fallbackModel = genAI.getGenerativeModel({ model: modelName });
+    const result = await fallbackModel.generateContent(prompt);
+    const response = await result.response;
+    return response.text().trim();
   }
 }
-
-// ---------------------------------------------------------------------------
-// Main
-// ---------------------------------------------------------------------------
 
 async function main() {
-  // וידוא שתיקיית המאמרים קיימת
-  if (!fs.existsSync(ARTICLES_DIR)) {
-    fs.mkdirSync(ARTICLES_DIR, { recursive: true });
-  }
-
+  if (!fs.existsSync(ARTICLES_DIR)) fs.mkdirSync(ARTICLES_DIR, { recursive: true });
   console.log("🤖 Generating article for Itchi...");
-
-  let mdxContent;
   try {
-    mdxContent = await generateArticle();
-
-    // ניקוי שאריות תגיות במידה והמודל התעקש להוסיף אותן
+    let mdxContent = await generateArticle();
     mdxContent = mdxContent.replace(/^```(mdx|markdown)?\n/, "").replace(/\n```$/, "").trim();
-  } catch (err) {
-    console.error("❌ Generation failed:", err.message);
-    process.exit(1);
-  }
-
-  // שם קובץ עם timestamp ו-suffix אקראי למניעת התנגשויות
-  const suffix = Math.random().toString(36).slice(2, 8);
-  const filePath = path.join(ARTICLES_DIR, `article-${Date.now()}-${suffix}.mdx`);
-  const filename = path.basename(filePath);
-
-  try {
+    const suffix = Math.random().toString(36).slice(2, 8);
+    const filePath = path.join(ARTICLES_DIR, `article-${Date.now()}-${suffix}.mdx`);
     fs.writeFileSync(filePath, mdxContent, "utf8");
-    console.log(`✅ Article saved successfully! content/articles/${filename}`);
+    console.log(`✅ Saved: ${path.basename(filePath)}`);
   } catch (err) {
-    console.error("❌ Failed to save file:", err.message);
+    console.error("❌ Failed:", err.message);
     process.exit(1);
   }
 }
-
 main();
