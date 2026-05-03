@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const RECIPIENT = "giat.hadbarot@gmail.com";
+const FALLBACK_RECIPIENT = "giat.hadbarot@gmail.com";
+const MAX_IMAGE_BASE64_LENGTH = 7_000_000;
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.RESEND_API_KEY;
@@ -12,12 +13,25 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const fromAddress = process.env.RESEND_FROM_EMAIL;
+  if (!fromAddress) {
+    return NextResponse.json(
+      { error: "Missing RESEND_FROM_EMAIL" },
+      { status: 500 }
+    );
+  }
+
+  const recipient = process.env.RESEND_TO_EMAIL || FALLBACK_RECIPIENT;
+
   let body: {
     name?: string;
     phone?: string;
     message?: string;
     pestType?: string;
     imageUrl?: string;
+    imageName?: string;
+    imageType?: string;
+    imageBase64?: string;
   };
 
   try {
@@ -26,7 +40,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { name = "", phone = "", message = "", pestType = "", imageUrl = "" } = body;
+  const {
+    name = "",
+    phone = "",
+    message = "",
+    pestType = "",
+    imageUrl = "",
+    imageName = "",
+    imageType = "",
+    imageBase64 = "",
+  } = body;
+
+  if (imageBase64 && imageBase64.length > MAX_IMAGE_BASE64_LENGTH) {
+    return NextResponse.json(
+      { error: "Image payload too large" },
+      { status: 413 }
+    );
+  }
 
   const pestLabel = pestType || "לא צוין";
   const subject = `🛑 ליד חדש מאיצ'י: ${pestLabel} - ${name || "לקוח"}`;
@@ -38,7 +68,13 @@ export async function POST(req: NextRequest) {
           <img src="${imageUrl}" alt="תמונת מזיק" style="max-width:400px;border-radius:8px;border:1px solid #e5e7eb;" />
         </td>
       </tr>`
-    : "";
+    : imageBase64
+      ? `<tr>
+          <td style="padding:0 0 16px 0;">
+            <p style="margin:0 0 8px 0;font-weight:600;color:#374151;">צורפה תמונה כקובץ מצורף למייל.</p>
+          </td>
+        </tr>`
+      : "";
 
   const html = `<!DOCTYPE html>
 <html lang="he" dir="rtl">
@@ -105,17 +141,22 @@ export async function POST(req: NextRequest) {
 </html>`;
 
   const resend = new Resend(apiKey);
-  // Use a verified custom sender domain via RESEND_FROM_EMAIL env var.
-  // The fallback onboarding@resend.dev is Resend's test address and can
-  // only deliver to the verified account owner – set the env var in production.
-  const fromAddress = process.env.RESEND_FROM_EMAIL || "Itchi <onboarding@resend.dev>";
 
   try {
     await resend.emails.send({
       from: fromAddress,
-      to: [RECIPIENT],
+      to: [recipient],
       subject,
       html,
+      attachments: imageBase64
+        ? [
+            {
+              filename: imageName || "uploaded-image",
+              content: imageBase64,
+              contentType: imageType || "application/octet-stream",
+            },
+          ]
+        : undefined,
     });
 
     return NextResponse.json({ success: true });
