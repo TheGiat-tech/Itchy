@@ -105,10 +105,14 @@ export async function POST(req: NextRequest) {
 </html>`;
 
   const resend = new Resend(apiKey);
+  // Use a verified custom sender domain via RESEND_FROM_EMAIL env var.
+  // The fallback onboarding@resend.dev is Resend's test address and can
+  // only deliver to the verified account owner – set the env var in production.
+  const fromAddress = process.env.RESEND_FROM_EMAIL || "Itchi <onboarding@resend.dev>";
 
   try {
     await resend.emails.send({
-      from: "Itchi <onboarding@resend.dev>",
+      from: fromAddress,
       to: [RECIPIENT],
       subject,
       html,
