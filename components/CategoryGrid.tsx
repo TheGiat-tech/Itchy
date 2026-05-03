@@ -37,6 +37,12 @@ const categories = [
     emoji: "🦗",
     description: "עש בגדים, חיפושיות מזווה וחרקי רכוש",
   },
+  {
+    id: "spiders",
+    label: "עכבישים ועקרבים",
+    emoji: "🕷️",
+    description: "ששן חום, אלמנה שחורה, עקרב צהוב ועוד",
+  },
 ];
 
 export default function CategoryGrid() {
