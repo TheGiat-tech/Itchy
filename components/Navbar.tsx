@@ -13,6 +13,9 @@ export default function Navbar() {
           <Link href="/articles" className="hover:text-green-700 transition-colors">
             מאמרים
           </Link>
+          <Link href="/scanner" className="hover:text-green-700 transition-colors">
+            🔍 סורק מזיקים
+          </Link>
           <Link href="/contact" className="hover:text-green-700 transition-colors">
             צור קשר
           </Link>

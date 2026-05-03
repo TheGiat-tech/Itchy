@@ -8,15 +8,32 @@ interface ArticleLeadFormProps {
 
 export default function ArticleLeadForm({ pestName }: ArticleLeadFormProps) {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [city, setCity] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: replace with your backend/CRM endpoint (e.g. POST /api/leads)
-    // e.g.: fetch("/api/leads", { method: "POST", body: JSON.stringify({ name, phone, city, pestName }) })
-    setSubmitted(true);
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone, message: `עיר: ${city}`, pestType: pestName }),
+      });
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || "שגיאה בשליחה");
+      }
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "שגיאה בשליחה, נסה שנית");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -27,11 +44,8 @@ export default function ArticleLeadForm({ pestName }: ArticleLeadFormProps) {
       >
         <div className="text-4xl mb-3">✅</div>
         <h3 className="text-xl font-bold text-gray-900 mb-1">
-          תודה! קיבלנו את פנייתך.
+          הפרטים נשלחו בהצלחה לצוות המדבירים! נחזור אליך בהקדם.
         </h3>
-        <p className="text-gray-600 text-sm">
-          מדביר מוסמך מהאזור שלך ייצור איתך קשר בהקדם.
-        </p>
       </div>
     );
   }
@@ -80,11 +94,16 @@ export default function ArticleLeadForm({ pestName }: ArticleLeadFormProps) {
           />
         </div>
 
+        {error && (
+          <p className="text-red-600 text-sm mt-1">{error}</p>
+        )}
+
         <button
           type="submit"
-          className="w-full sm:w-auto sm:self-start px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition-colors shadow-sm text-base"
+          disabled={loading}
+          className="w-full sm:w-auto sm:self-start px-8 py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white font-bold rounded-xl transition-colors shadow-sm text-base"
         >
-          שלח בקשת ייעוץ חינם
+          {loading ? "שולח..." : "שלח בקשת ייעוץ חינם"}
         </button>
       </form>
     </div>
