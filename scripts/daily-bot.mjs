@@ -46,15 +46,21 @@ async function generateArticle() {
     { apiVersion: "v1" }
   );
 
-  // מגוון תמונות Unsplash לגיוון ויזואלי בין מאמרים שונים
-  const unsplashImages = [
-    "https://images.unsplash.com/photo-1584033325140-d655f46b1429?auto=format&fit=crop&q=80&w=800",
-    "https://images.unsplash.com/photo-1591210058564-b7b21513f9c0?auto=format&fit=crop&q=80&w=800",
-    "https://images.unsplash.com/photo-1632820779249-8f7b7e4bd5ee?auto=format&fit=crop&q=80&w=800",
-    "https://images.unsplash.com/photo-1599778150914-88e98e0c3a3e?auto=format&fit=crop&q=80&w=800",
-    "https://images.unsplash.com/photo-1566140967404-b8b3932483f5?auto=format&fit=crop&q=80&w=800",
+  // מגוון תמונות Unsplash לגיוון ויזואלי בין מאמרים שונים – מילות מפתח להדברה בלבד
+  const pestKeywords = [
+    "pest,insect,exterminator",
+    "cockroach,pest,control",
+    "ant,infestation,pest",
+    "termite,wood,damage",
+    "rodent,rat,exterminator",
+    "spider,pest,danger",
+    "flea,tick,pest",
+    "mosquito,insect,spray",
+    "pest,control,professional",
+    "insect,trap,exterminator",
   ];
-  const imageUrl = unsplashImages[Math.floor(Math.random() * unsplashImages.length)];
+  const keywords = pestKeywords[Math.floor(Math.random() * pestKeywords.length)];
+  const imageUrl = `https://source.unsplash.com/featured/800x450/?${keywords}`;
 
   const prompt = `
 אתה מומחה SEO וכותב תוכן שיווקי בכיר עבור "Itchi" (איצ'י) ו-"גיאת הדברות".
@@ -62,11 +68,11 @@ async function generateArticle() {
 
 הפלט חייב להיות MDX נקי (ללא תגיות קוד) עם ה-Frontmatter הבא:
 ---
-title: "כותרת חזקה עם אמוג'י רלוונטי"
+titleHebrew: "כותרת חזקה עם אמוג'י רלוונטי"
 excerpt: "תיאור קצר ומניע לפעולה שמדגיש את הסכנה או המטרד"
 date: "${today()}"
 category: "הדברה"
-image: "${imageUrl}"
+imageOverride: "${imageUrl}"
 ---
 
 הנחיות לגוף המאמר:
