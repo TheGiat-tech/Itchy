@@ -39,8 +39,11 @@ export default function ArticlesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {articles.map((article) => {
               const cardTitle = article.frontmatter.titleHebrew || article.frontmatter.title || "";
-              const cardExcerpt = article.frontmatter.excerpt || article.frontmatter.description;
-              const cardImage = article.frontmatter.imageOverride || article.frontmatter.image;
+              const cardExcerpt = article.frontmatter.excerpt || article.frontmatter.subtitle || article.frontmatter.description;
+              const { imageOverride, imageKeyword, image } = article.frontmatter;
+              const cardImage = imageOverride
+                || (imageKeyword ? `https://loremflickr.com/800/600/${encodeURIComponent(imageKeyword)}` : undefined)
+                || image;
               return (
               <Link
                 key={article.slug}

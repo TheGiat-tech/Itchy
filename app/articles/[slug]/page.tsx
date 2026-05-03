@@ -19,7 +19,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!article) return {};
   const { frontmatter } = article;
   const metaTitle = frontmatter.titleHebrew || frontmatter.title || "";
-  const metaImage = frontmatter.imageOverride || frontmatter.image;
+  const { imageOverride, imageKeyword, image } = frontmatter;
+  const metaImage = imageOverride
+    || (imageKeyword ? `https://loremflickr.com/800/600/${encodeURIComponent(imageKeyword)}` : undefined)
+    || image;
   return {
     title: metaTitle,
     description: frontmatter.excerpt || frontmatter.description,
@@ -51,8 +54,11 @@ export default async function ArticlePage({ params }: Props) {
   // TypeScript narrowing: article is guaranteed non-null after notFound()
   const { frontmatter, content } = article;
   const displayTitle = frontmatter.titleHebrew || frontmatter.title || "";
-  const displayExcerpt = frontmatter.excerpt || frontmatter.description;
-  const displayImage = frontmatter.imageOverride || frontmatter.image;
+  const displayExcerpt = frontmatter.excerpt || frontmatter.subtitle || frontmatter.description;
+  const { imageOverride, imageKeyword, image } = frontmatter;
+  const displayImage = imageOverride
+    || (imageKeyword ? `https://loremflickr.com/800/600/${encodeURIComponent(imageKeyword)}` : undefined)
+    || image;
 
   return (
     <>
