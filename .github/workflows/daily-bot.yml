@@ -21,7 +21,7 @@ jobs:
           node-version: '24'
 
       - name: Install Dependencies
-        run: npm install @google/generative-ai
+        run: npm install @google/generative-ai@latest
 
       - name: Generate daily article
         env:

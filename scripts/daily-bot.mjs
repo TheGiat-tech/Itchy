@@ -49,7 +49,7 @@ async function generateArticle() {
   const genAI = new GoogleGenerativeAI(apiKey);
   
   // שימוש במודל gemini-1.5-flash בגרסה היציבה (Stable)
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", apiVersion: "v1" });
 
   const randomImgNum = Math.floor(Math.random() * 10000);
 
