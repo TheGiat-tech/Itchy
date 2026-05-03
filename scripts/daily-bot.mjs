@@ -46,7 +46,7 @@ async function generateArticle() {
     { apiVersion: "v1" }
   );
 
-  // מגוון תמונות Unsplash לגיוון ויזואלי בין מאמרים שונים – מילות מפתח להדברה בלבד
+  // מגוון מילות מפתח להדברה לגיוון ויזואלי בין מאמרים שונים – loremflickr תומך בחיפוש מילות מפתח
   const pestKeywords = [
     "pest,insect,exterminator",
     "cockroach,pest,control",
@@ -60,7 +60,8 @@ async function generateArticle() {
     "insect,trap,exterminator",
   ];
   const keywords = pestKeywords[Math.floor(Math.random() * pestKeywords.length)];
-  const imageUrl = `https://source.unsplash.com/featured/800x450/?${keywords}`;
+  const lockId = Math.floor(Math.random() * 9000) + 1000;
+  const imageUrl = `https://loremflickr.com/800/450/${keywords}?lock=${lockId}`;
 
   const prompt = `
 אתה מומחה SEO וכותב תוכן שיווקי בכיר עבור "Itchi" (איצ'י) ו-"גיאת הדברות".
