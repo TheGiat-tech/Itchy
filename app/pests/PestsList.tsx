@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import type { Pest } from "@/lib/mdx";
@@ -10,8 +11,10 @@ interface Props {
 
 export default function PestsList({ pests }: Props) {
   const searchParams = useSearchParams();
-  const q = searchParams.get("q")?.toLowerCase() ?? "";
   const category = searchParams.get("category") ?? "";
+  const [query, setQuery] = useState(searchParams.get("q") ?? "");
+
+  const q = query.toLowerCase();
 
   const filtered = pests.filter((pest) => {
     const matchesQuery =
@@ -25,6 +28,19 @@ export default function PestsList({ pests }: Props) {
 
   return (
     <>
+      <div className="relative w-full max-w-xl mx-auto mb-8">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="חפש מזיק (למשל: עקרב, תיקן, Camponotus...)"
+          dir="rtl"
+          className="w-full rounded-full border border-gray-200 bg-white py-3 pr-5 pl-12 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+        />
+        <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+          🔍
+        </span>
+      </div>
       <p className="text-gray-500 mb-8">{filtered.length} מזיקים נמצאו</p>
 
       {filtered.length === 0 ? (
