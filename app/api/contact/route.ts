@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
-if (!process.env.RESEND_API_KEY) {
-  throw new Error("Missing required environment variable: RESEND_API_KEY");
-}
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(request: NextRequest) {
+  if (!process.env.RESEND_API_KEY) {
+    console.error("Missing required environment variable: RESEND_API_KEY");
+    return NextResponse.json(
+      { error: "שגיאה בשליחת ההודעה, נסה שוב מאוחר יותר" },
+      { status: 500 }
+    );
+  }
+
+  const resend = new Resend(process.env.RESEND_API_KEY);
   try {
     const formData = await request.formData();
 
