@@ -41,7 +41,7 @@ const categories = [
     id: "spiders",
     label: "עכבישים ועקרבים",
     emoji: "🕷️",
-    description: "ששן חום, אלמנה שחורה, עקרב צהוב ועוד.",
+    description: "ששן חום, אלמנה שחורה, עקרב צהוב ועוד",
   },
 ];
 
