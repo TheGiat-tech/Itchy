@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Footer from "@/components/Footer";
-import { getArticleBySlug, getAllArticleSlugs } from "@/lib/mdx";
+import { getArticleBySlug, getAllArticleSlugs, buildImageUrl } from "@/lib/mdx";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!article) return {};
   const { frontmatter } = article;
   const metaTitle = frontmatter.titleHebrew || frontmatter.title || "";
-  const metaImage = frontmatter.imageOverride || frontmatter.image;
+  const metaImage = buildImageUrl(frontmatter);
   return {
     title: metaTitle,
     description: frontmatter.excerpt || frontmatter.description,
@@ -51,8 +51,8 @@ export default async function ArticlePage({ params }: Props) {
   // TypeScript narrowing: article is guaranteed non-null after notFound()
   const { frontmatter, content } = article;
   const displayTitle = frontmatter.titleHebrew || frontmatter.title || "";
-  const displayExcerpt = frontmatter.excerpt || frontmatter.description;
-  const displayImage = frontmatter.imageOverride || frontmatter.image;
+  const displayExcerpt = frontmatter.excerpt || frontmatter.subtitle || frontmatter.description;
+  const displayImage = buildImageUrl(frontmatter);
 
   return (
     <>

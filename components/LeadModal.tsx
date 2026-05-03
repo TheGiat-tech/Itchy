@@ -22,6 +22,8 @@ const PEST_OPTIONS = [
 
 export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [pestType, setPestType] = useState("");
   const [city, setCity] = useState("");
   const [phone, setPhone] = useState("");
@@ -29,6 +31,8 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
 
   const handleClose = useCallback(() => {
     setSubmitted(false);
+    setLoading(false);
+    setError("");
     setPestType("");
     setCity("");
     setPhone("");
@@ -45,11 +49,33 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: replace with your backend/CRM endpoint (e.g. POST /api/leads)
-    // e.g.: fetch("/api/leads", { method: "POST", body: JSON.stringify({ pestType, city, phone }) })
-    setSubmitted(true);
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, message: `עיר: ${city}`, pestType }),
+      });
+      if (!res.ok) {
+        console.error("contact API error, status:", res.status);
+        let errorMsg = "שגיאה בשליחה";
+        try {
+          const json = await res.json();
+          errorMsg = json.error || errorMsg;
+        } catch {
+          // response was not JSON (e.g. HTML error page)
+        }
+        throw new Error(errorMsg);
+      }
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "שגיאה בשליחה, נסה שנית");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -83,11 +109,8 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
           <div className="text-center py-6">
             <div className="text-5xl mb-4">✅</div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              תודה! קיבלנו את פנייתך.
+              הפרטים נשלחו בהצלחה לצוות המדבירים! נחזור אליך בהקדם.
             </h2>
-            <p className="text-gray-600">
-              מדביר מוסמך מהאזור שלך ייצור איתך קשר בהקדם.
-            </p>
             <button
               onClick={handleClose}
               className="mt-6 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-colors"
@@ -160,20 +183,25 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="05X-XXXXXXX"
-                  pattern="^0(5[0-9]|[23489])[0-9\-]{7,8}$"
-                  title="מספר טלפון ישראלי תקני (נייד או קווי)"
+                  placeholder="05XXXXXXXX"
+                  minLength={9}
+                  maxLength={10}
                   required
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-right"
                   dir="ltr"
                 />
               </div>
 
+              {error && (
+                <p className="text-red-600 text-sm">{error}</p>
+              )}
+
               <button
                 type="submit"
-                className="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-colors shadow-sm text-lg"
+                disabled={loading}
+                className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white font-bold rounded-xl transition-colors shadow-sm text-lg"
               >
-                שלח בקשה
+                {loading ? "שולח..." : "שלח בקשה"}
               </button>
             </form>
           </>

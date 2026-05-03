@@ -51,15 +51,35 @@ export function getAllPests(): Pest[] {
 // Articles
 // ---------------------------------------------------------------------------
 
+/**
+ * Builds a loremflickr image URL from an imageKeyword string.
+ * Spaces in the keyword are converted to commas because loremflickr
+ * uses comma-separated tag search (spaces encoded as %20 return no results).
+ * e.g. "ants kitchen pest" → "https://loremflickr.com/800/600/ants,kitchen,pest"
+ */
+export function buildImageUrl(
+  frontmatter: Pick<ArticleFrontmatter, "imageOverride" | "imageKeyword" | "image">
+): string | undefined {
+  if (frontmatter.imageOverride) return frontmatter.imageOverride;
+  if (frontmatter.imageKeyword) {
+    const tags = frontmatter.imageKeyword.trim().replace(/\s+/g, ",");
+    return `https://loremflickr.com/800/600/${tags}`;
+  }
+  return frontmatter.image;
+}
+
 export interface ArticleFrontmatter {
   title?: string;
   titleHebrew?: string;
+  subtitle?: string;
   excerpt?: string;
   description?: string;
   date?: string;
   category?: string;
+  pestType?: string;
   image?: string;
   imageOverride?: string;
+  imageKeyword?: string;
   titleLatin?: string;
 }
 

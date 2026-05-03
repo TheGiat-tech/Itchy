@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/components/Footer";
-import { getAllArticles } from "@/lib/mdx";
+import { getAllArticles, buildImageUrl } from "@/lib/mdx";
 
 export const metadata: Metadata = {
   title: "מאמרים",
@@ -39,8 +39,8 @@ export default function ArticlesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {articles.map((article) => {
               const cardTitle = article.frontmatter.titleHebrew || article.frontmatter.title || "";
-              const cardExcerpt = article.frontmatter.excerpt || article.frontmatter.description;
-              const cardImage = article.frontmatter.imageOverride || article.frontmatter.image;
+              const cardExcerpt = article.frontmatter.excerpt || article.frontmatter.subtitle || article.frontmatter.description;
+              const cardImage = buildImageUrl(article.frontmatter);
               return (
               <Link
                 key={article.slug}

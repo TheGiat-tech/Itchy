@@ -46,53 +46,30 @@ async function generateArticle() {
     { apiVersion: "v1beta" }
   );
 
-  // מגוון מילות מפתח להדברה לגיוון ויזואלי בין מאמרים שונים – loremflickr תומך בחיפוש מילות מפתח
-  const pestKeywords = [
-    "pest,insect,exterminator",
-    "cockroach,pest,control",
-    "ant,infestation,pest",
-    "termite,wood,damage",
-    "rodent,rat,exterminator",
-    "spider,pest,danger",
-    "flea,tick,pest",
-    "mosquito,insect,spray",
-    "pest,control,professional",
-    "insect,trap,exterminator",
-  ];
-  const keywords = pestKeywords[Math.floor(Math.random() * pestKeywords.length)];
-  const lockId = Math.floor(Math.random() * 9000) + 1000;
-  const imageUrl = `https://loremflickr.com/800/450/${keywords}?lock=${lockId}`;
-
   const prompt = `
 אתה מומחה SEO וכותב תוכן שיווקי בכיר עבור "Itchi" (איצ'י) ו-"גיאת הדברות".
 המשימה: לכתוב מאמר מקצועי (500-700 מילים) על הדברה בישראל שגורם לקורא להשאיר פרטים.
 
-הפלט חייב להיות MDX נקי (ללא תגיות קוד) עם ה-Frontmatter הבא:
+הפלט חייב להיות MDX נקי (ללא תגיות קוד) עם ה-Frontmatter הבא בדיוק:
 ---
-titleHebrew: "כותרת חזקה עם אמוג'י רלוונטי"
-excerpt: "תיאור קצר ומניע לפעולה שמדגיש את הסכנה או המטרד"
+titleHebrew: "כותרת חזקה בעברית עם אמוג'י רלוונטי"
+subtitle: "כותרת משנה מושכת שמסבירה את ערך המאמר"
 date: "${today()}"
-category: "הדברה"
-imageOverride: "${imageUrl}"
+imageKeyword: "two or three English words describing the pest and treatment (e.g. cockroach extermination kitchen, rat rodent control, termite wood damage)"
+pestType: "סוג המזיק בעברית (לדוגמה: ג'וקים, נמלים, חולדות, עכבישים, פרעושים, טרמיטים)"
 ---
 
 הנחיות לגוף המאמר:
-1. השתמש בכותרות ## ו-### עם אמוג'ים (🐜, 🛡️, 🏠, ⚠️, ✅, 🔍).
-2. הדגש משפטים חשובים ב-**bold**.
-3. התמקד ב"נקודות כאב": למה הריסוס הביתי נכשל והנזק שהמזיק גורם.
-4. כלול לפחות 3 כותרות משנה (##) ורשימות תבליטים.
-5. אל תשתמש בתגיות קוד כמו \`\`\`mdx או \`\`\`markdown.
+1. השורה הראשונה של הגוף חייבת להיות # [titleHebrew] (כותרת H1 זהה לכותרת שבפרונטמטר).
+2. השתמש בכותרות ## ו-### עם אמוג'ים (🐜, 🛡️, 🏠, ⚠️, ✅, 🔍).
+3. הדגש משפטים חשובים ב-**bold**.
+4. התמקד ב"נקודות כאב": למה הריסוס הביתי נכשל והנזק שהמזיק גורם.
+5. כלול לפחות 3 כותרות משנה (##) ורשימות תבליטים.
+6. אל תשתמש בתגיות קוד כמו \`\`\`mdx או \`\`\`markdown.
 
-בסוף המאמר, **חובה** להוסיף את הבלוק הבא בדיוק (ללא שינויים):
+בסוף המאמר, **חובה** להוסיף את השורה הבאה בדיוק (ללא שינויים):
 
----
-
-## 🆘 זיהיתם מזיק בבית? אל תחכו שהבעיה תגדל!
-> הצוות המקצועי של **"איצ'י"** ו-**"גיאת הדברות"** זמין עבורכם עכשיו. אל תבזבזו זמן וכסף על פתרונות שלא עובדים – תנו למומחים לטפל בזה עם אחריות מלאה.
->
-> [📍 לחצו כאן להשארת פרטים ונחזור אליכם עם הצעת מחיר משתלמת](/contact)
-
----
+<a href="/contact">📍 לייעוץ וזיהוי מזיקים חינם מגיאת הדברות - לחצו כאן</a>
 `.trim();
 
   try {
