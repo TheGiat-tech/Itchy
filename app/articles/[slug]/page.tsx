@@ -18,16 +18,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = getArticleBySlug(slug);
   if (!article) return {};
   const { frontmatter } = article;
+  const metaTitle = frontmatter.titleHebrew || frontmatter.title || "";
+  const metaImage = frontmatter.imageOverride || frontmatter.image;
   return {
-    title: frontmatter.title,
-    description: frontmatter.excerpt,
+    title: metaTitle,
+    description: frontmatter.excerpt || frontmatter.description,
     openGraph: {
-      title: `${frontmatter.title} | Itchy`,
-      description: frontmatter.excerpt,
+      title: `${metaTitle} | Itchy`,
+      description: frontmatter.excerpt || frontmatter.description,
       locale: "he_IL",
-      images: (frontmatter.imageOverride || frontmatter.image)
-          ? [{ url: (frontmatter.imageOverride || frontmatter.image)! }]
-          : undefined,
+      images: metaImage ? [{ url: metaImage }] : undefined,
     },
   };
 }
@@ -50,6 +50,9 @@ export default async function ArticlePage({ params }: Props) {
 
   // TypeScript narrowing: article is guaranteed non-null after notFound()
   const { frontmatter, content } = article;
+  const displayTitle = frontmatter.titleHebrew || frontmatter.title || "";
+  const displayExcerpt = frontmatter.excerpt || frontmatter.description;
+  const displayImage = frontmatter.imageOverride || frontmatter.image;
 
   return (
     <>
@@ -60,7 +63,7 @@ export default async function ArticlePage({ params }: Props) {
             מאמרים
           </Link>
           <span>/</span>
-          <span className="text-gray-600 truncate">{frontmatter.title}</span>
+          <span className="text-gray-600 truncate">{displayTitle}</span>
         </nav>
 
         {/* Header */}
@@ -71,11 +74,11 @@ export default async function ArticlePage({ params }: Props) {
             </span>
           )}
           <h1 className="text-4xl font-extrabold text-gray-900 leading-tight mb-3">
-            {frontmatter.title}
+            {displayTitle}
           </h1>
-          {frontmatter.excerpt && (
+          {displayExcerpt && (
             <p className="text-lg text-gray-500 leading-relaxed">
-              {frontmatter.excerpt}
+              {displayExcerpt}
             </p>
           )}
           {frontmatter.date && (
@@ -84,12 +87,12 @@ export default async function ArticlePage({ params }: Props) {
         </div>
 
         {/* Hero image */}
-        {(frontmatter.imageOverride || frontmatter.image) && (
+        {displayImage && (
           <div className="mb-8 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={frontmatter.imageOverride || frontmatter.image}
-              alt={frontmatter.title}
+              src={displayImage}
+              alt={displayTitle}
               className="w-full h-auto object-cover"
               loading="lazy"
             />

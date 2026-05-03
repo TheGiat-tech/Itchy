@@ -37,18 +37,22 @@ export default function ArticlesPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {articles.map((article) => (
+            {articles.map((article) => {
+              const cardTitle = article.frontmatter.titleHebrew || article.frontmatter.title || "";
+              const cardExcerpt = article.frontmatter.excerpt || article.frontmatter.description;
+              const cardImage = article.frontmatter.imageOverride || article.frontmatter.image;
+              return (
               <Link
                 key={article.slug}
                 href={`/articles/${article.slug}`}
                 className="group flex flex-col bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:border-green-200 transition-all duration-300 hover:-translate-y-1"
               >
                 {/* Thumbnail */}
-                {article.frontmatter.image ? (
+                {cardImage ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
-                    src={article.frontmatter.image}
-                    alt={article.frontmatter.title}
+                    src={cardImage}
+                    alt={cardTitle}
                     className="w-full h-48 sm:h-56 object-cover"
                     loading="lazy"
                   />
@@ -66,11 +70,11 @@ export default function ArticlesPage() {
                     </span>
                   )}
                   <h2 className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors leading-snug">
-                    {article.frontmatter.title}
+                    {cardTitle}
                   </h2>
-                  {article.frontmatter.excerpt && (
+                  {cardExcerpt && (
                     <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
-                      {article.frontmatter.excerpt}
+                      {cardExcerpt}
                     </p>
                   )}
                   {article.frontmatter.date && (
@@ -80,7 +84,8 @@ export default function ArticlesPage() {
                   )}
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>
