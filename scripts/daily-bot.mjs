@@ -36,16 +36,14 @@ async function generateArticle() {
   // אתחול ה-SDK
   const genAI = new GoogleGenerativeAI(apiKey);
 
-  // שימוש במודל gemini-1.5-flash בלבד
-  const modelName = "gemini-1.5-flash";
+  // ניתן לעקוף את המודל באמצעות משתנה סביבה GEMINI_MODEL
+  // ברירת מחדל יציבה יותר מ-"gemini-1.5-flash" כדי להימנע מ-404 "model not found".
+  const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash-latest";
   console.log(`🧠 Using Gemini model: ${modelName}`);
-  
-  // נסיון ראשון עם v1beta; במקרה של 404 נבצע fallback ללא apiVersion
-  // (כלומר לגרסת ה-API שה-SDK בוחר כברירת מחדל).
-  const model = genAI.getGenerativeModel(
-    { model: modelName },
-    { apiVersion: "v1beta" }
-  );
+
+  // אל תכריח apiVersion (v1/v1beta) – ה-SDK בוחר את הגרסה המתאימה.
+  // כפייה עלולה לגרום ל-404 גם כשהמודל תקין.
+  const model = genAI.getGenerativeModel({ model: modelName });
 
   const prompt = `
 אתה מומחה SEO וכותב תוכן שיווקי בכיר עבור "Itchi" (איצ'י) ו-"גיאת הדברות".
@@ -74,33 +72,14 @@ pestType: "סוג המזיק בעברית (לדוגמה: ג'וקים, נמלים
 `.trim();
 
   try {
-    let result;
-    try {
-      result = await model.generateContent(prompt);
-    } catch (error) {
-      const errMsg = String(error?.message || "");
-      const statusCode = Number(error?.status || error?.code || 0);
-      const isNotFound =
-        statusCode === 404 ||
-        errMsg.includes("404") || errMsg.includes("Not Found") || errMsg.includes("not found");
-      if (!isNotFound) {
-        throw error;
-      }
-
-      console.warn(
-        "⚠️ Gemini v1beta endpoint returned 404. Retrying with SDK default API version..."
-      );
-      const fallbackModel = genAI.getGenerativeModel({ model: modelName });
-      result = await fallbackModel.generateContent(prompt);
-    }
-
+    const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text().trim();
     if (!text) {
       throw new Error(
         `Model "${modelName}" returned an empty response. ` +
-        "This may be caused by content filtering or an API issue. " +
-        "Check the Gemini API status or adjust the prompt."
+          "This may be caused by content filtering or an API issue. " +
+          "Check the Gemini API status or adjust the prompt."
       );
     }
     return text;
@@ -124,13 +103,9 @@ async function main() {
   let mdxContent;
   try {
     mdxContent = await generateArticle();
-    
-    // ניקוי שאריות תגיות במידה והמודל התעקש להוסיף אותן
-    mdxContent = mdxContent
-      .replace(/^```(mdx|markdown)?\n/, "")
-      .replace(/\n```$/, "")
-      .trim();
 
+    // ניקוי שאריות תגיות במידה והמודל התעקש להוסיף אותן
+    mdxContent = mdxContent.replace(/^```(mdx|markdown)?\n/, "").replace(/\n```$/, "").trim();
   } catch (err) {
     console.error("❌ Generation failed:", err.message);
     process.exit(1);
