@@ -7,6 +7,7 @@ import { useState } from "react";
 const NAV_LINKS = [
   { href: "/pests", label: "מזיקים" },
   { href: "/articles", label: "מאמרים" },
+  { href: "/prices", label: "מחירון" },
   { href: "/contact", label: "צור קשר" },
   { href: "/about", label: "אודות" },
 ];
