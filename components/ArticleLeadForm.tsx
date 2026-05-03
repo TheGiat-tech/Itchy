@@ -25,8 +25,15 @@ export default function ArticleLeadForm({ pestName }: ArticleLeadFormProps) {
         body: JSON.stringify({ name, phone, message: `עיר: ${city}`, pestType: pestName }),
       });
       if (!res.ok) {
-        const json = await res.json();
-        throw new Error(json.error || "שגיאה בשליחה");
+        console.error("contact API error, status:", res.status);
+        let errorMsg = "שגיאה בשליחה";
+        try {
+          const json = await res.json();
+          errorMsg = json.error || errorMsg;
+        } catch {
+          // response was not JSON (e.g. HTML error page)
+        }
+        throw new Error(errorMsg);
       }
       setSubmitted(true);
     } catch (err) {
