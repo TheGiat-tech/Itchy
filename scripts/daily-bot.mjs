@@ -39,6 +39,7 @@ async function generateArticle() {
   // שימוש במודל gemini-1.5-flash בלבד
   const modelName = "gemini-1.5-flash";
   console.log(`🧠 Using Gemini model: ${modelName}`);
+  
   // נסיון ראשון עם v1beta; במקרה של 404 נבצע fallback ללא apiVersion
   // (כלומר לגרסת ה-API שה-SDK בוחר כברירת מחדל).
   const model = genAI.getGenerativeModel(
