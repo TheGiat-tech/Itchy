@@ -23,18 +23,6 @@ function today() {
   return new Date().toISOString().split("T")[0];
 }
 
-function randomSuffix() {
-  return Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, "0");
-}
-
-function uniqueFilePath(dir, date) {
-  let filePath;
-  do {
-    filePath = path.join(dir, `article-${date}-${randomSuffix()}.mdx`);
-  } while (fs.existsSync(filePath));
-  return filePath;
-}
-
 // ---------------------------------------------------------------------------
 // AI call
 // ---------------------------------------------------------------------------
@@ -49,32 +37,55 @@ async function generateArticle() {
   const genAI = new GoogleGenerativeAI(apiKey);
 
   // ניתן לעקוף את המודל באמצעות משתנה סביבה GEMINI_MODEL
-  const modelName = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+  // שימוש ב-gemini-1.5-flash כברירת מחדל – יציב וחסכוני במכסה
+  const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
   console.log(`🧠 Using Gemini model: ${modelName}`);
-  const model = genAI.getGenerativeModel({ model: modelName });
+  // apiVersion כארגומנט שני (RequestOptions) – הדרך הנכונה לפי ה-SDK
+  const model = genAI.getGenerativeModel(
+    { model: modelName },
+    { apiVersion: "v1" }
+  );
 
-  const randomImgNum = Math.floor(Math.random() * 10000);
+  // מגוון תמונות Unsplash לגיוון ויזואלי בין מאמרים שונים
+  const unsplashImages = [
+    "https://images.unsplash.com/photo-1584033325140-d655f46b1429?auto=format&fit=crop&q=80&w=800",
+    "https://images.unsplash.com/photo-1591210058564-b7b21513f9c0?auto=format&fit=crop&q=80&w=800",
+    "https://images.unsplash.com/photo-1632820779249-8f7b7e4bd5ee?auto=format&fit=crop&q=80&w=800",
+    "https://images.unsplash.com/photo-1599778150914-88e98e0c3a3e?auto=format&fit=crop&q=80&w=800",
+    "https://images.unsplash.com/photo-1566140967404-b8b3932483f5?auto=format&fit=crop&q=80&w=800",
+  ];
+  const imageUrl = unsplashImages[Math.floor(Math.random() * unsplashImages.length)];
 
   const prompt = `
-אתה כותב תוכן מקצועי עבור "Itchi" (איצ'י) – מיזם ישראלי לזיהוי והדברת מזיקים.
+אתה מומחה SEO וכותב תוכן שיווקי בכיר עבור "Itchi" (איצ'י) ו-"גיאת הדברות".
+המשימה: לכתוב מאמר מקצועי (500-700 מילים) על הדברה בישראל שגורם לקורא להשאיר פרטים.
 
-המשימה: כתוב מאמר בלוג מקצועי ומעמיק בעברית (400-700 מילים) על חרק, מזיק או נושא טבע רלוונטי לישראל.
-
-הפלט חייב להיות קובץ MDX בלבד עם Frontmatter במבנה הבא:
-
+הפלט חייב להיות MDX נקי (ללא תגיות קוד) עם ה-Frontmatter הבא:
 ---
-titleHebrew: "<כותרת המאמר בעברית>"
-description: "<תיאור קצר ומסקרן>"
+title: "כותרת חזקה עם אמוג'י רלוונטי"
+excerpt: "תיאור קצר ומניע לפעולה שמדגיש את הסכנה או המטרד"
 date: "${today()}"
-imageOverride: "https://loremflickr.com/800/450/insect,pest,nature?lock=${randomImgNum}"
+category: "הדברה"
+image: "${imageUrl}"
 ---
 
-<גוף המאמר בפורמט Markdown הכולל כותרות ## ו-###, רשימות והסברים מקצועיים>
+הנחיות לגוף המאמר:
+1. השתמש בכותרות ## ו-### עם אמוג'ים (🐜, 🛡️, 🏠, ⚠️, ✅, 🔍).
+2. הדגש משפטים חשובים ב-**bold**.
+3. התמקד ב"נקודות כאב": למה הריסוס הביתי נכשל והנזק שהמזיק גורם.
+4. כלול לפחות 3 כותרות משנה (##) ורשימות תבליטים.
+5. אל תשתמש בתגיות קוד כמו \`\`\`mdx או \`\`\`markdown.
 
-דגשים:
-- אל תשתמש בתגיות קוד כמו \`\`\`mdx או \`\`\`markdown.
-- כלול לפחות 3 כותרות משנה (##).
-- סגנון הכתיבה צריך להיות מקצועי, מבוסס עובדות אך נגיש לקהל הרחב.
+בסוף המאמר, **חובה** להוסיף את הבלוק הבא בדיוק (ללא שינויים):
+
+---
+
+## 🆘 זיהיתם מזיק בבית? אל תחכו שהבעיה תגדל!
+> הצוות המקצועי של **"איצ'י"** ו-**"גיאת הדברות"** זמין עבורכם עכשיו. אל תבזבזו זמן וכסף על פתרונות שלא עובדים – תנו למומחים לטפל בזה עם אחריות מלאה.
+>
+> [📍 לחצו כאן להשארת פרטים ונחזור אליכם עם הצעת מחיר משתלמת](/contact)
+
+---
 `.trim();
 
   try {
@@ -104,7 +115,7 @@ async function main() {
     fs.mkdirSync(ARTICLES_DIR, { recursive: true });
   }
 
-  console.log("🤖 Generating daily article with Gemini...");
+  console.log("🤖 Generating article for Itchi...");
 
   let mdxContent;
   try {
@@ -121,13 +132,14 @@ async function main() {
     process.exit(1);
   }
 
-  const dateStr = today();
-  const filePath = uniqueFilePath(ARTICLES_DIR, dateStr);
+  // שם קובץ עם timestamp ו-suffix אקראי למניעת התנגשויות
+  const suffix = Math.random().toString(36).slice(2, 8);
+  const filePath = path.join(ARTICLES_DIR, `article-${Date.now()}-${suffix}.mdx`);
   const filename = path.basename(filePath);
 
   try {
     fs.writeFileSync(filePath, mdxContent, "utf8");
-    console.log(`✅ Success! Article saved: content/articles/${filename}`);
+    console.log(`✅ Article saved successfully! content/articles/${filename}`);
   } catch (err) {
     console.error("❌ Failed to save file:", err.message);
     process.exit(1);
