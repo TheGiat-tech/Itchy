@@ -52,11 +52,14 @@ export function getAllPests(): Pest[] {
 // ---------------------------------------------------------------------------
 
 export interface ArticleFrontmatter {
-  title: string;
+  title?: string;
+  titleHebrew?: string;
   excerpt?: string;
+  description?: string;
   date?: string;
   category?: string;
   image?: string;
+  imageOverride?: string;
   titleLatin?: string;
 }
 
