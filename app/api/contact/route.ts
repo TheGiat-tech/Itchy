@@ -5,9 +5,16 @@ const FALLBACK_RECIPIENT = "giat.hadbarot@gmail.com";
 const MAX_IMAGE_BASE64_LENGTH = 7_000_000;
 
 function extensionFromContentType(contentType?: string): string {
-  if (!contentType || !contentType.startsWith("image/")) return "jpg";
-  const ext = contentType.slice("image/".length).trim().toLowerCase();
+  const normalized = contentType?.split(";")[0]?.trim().toLowerCase() || "";
+  if (!normalized.startsWith("image/")) return "jpg";
+  const ext = normalized.slice("image/".length).trim();
   return ext || "jpg";
+}
+
+function sanitizeAttachmentFilename(filename: string, fallbackExt = "jpg"): string {
+  const cleaned = filename.replace(/[^\p{L}\p{N}._-]+/gu, "_").replace(/_+/g, "_").replace(/^_+|_+$/g, "");
+  if (!cleaned) return `uploaded-image.${fallbackExt}`;
+  return cleaned.includes(".") ? cleaned : `${cleaned}.${fallbackExt}`;
 }
 
 export async function POST(req: NextRequest) {
@@ -157,7 +164,10 @@ export async function POST(req: NextRequest) {
       attachments: imageBase64
         ? [
             {
-              filename: imageName || `uploaded-image.${extensionFromContentType(imageType)}`,
+              filename: sanitizeAttachmentFilename(
+                imageName || "uploaded-image",
+                extensionFromContentType(imageType)
+              ),
               content: imageBase64,
               contentType: imageType || "image/jpeg",
             },

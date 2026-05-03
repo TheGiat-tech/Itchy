@@ -106,7 +106,7 @@ function ContactPageContent() {
     try {
       const dataUrl = await readFileAsDataUrl(file);
       const commaIndex = dataUrl.indexOf(",");
-      if (commaIndex === -1) throw new Error("Invalid image data");
+      if (commaIndex === -1) throw new Error();
 
       setImageName(file.name);
       setImageType(file.type || "application/octet-stream");
