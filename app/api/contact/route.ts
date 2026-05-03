@@ -14,9 +14,9 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
 
-    const name = formData.get("name") as string | null;
-    const phone = formData.get("phone") as string | null;
-    const message = formData.get("message") as string | null;
+    const name = (formData.get("name") as string | null)?.trim() || null;
+    const phone = (formData.get("phone") as string | null)?.trim() || null;
+    const message = (formData.get("message") as string | null)?.trim() || null;
     const photo = formData.get("photo") as File | null;
 
     if (!name || !message) {

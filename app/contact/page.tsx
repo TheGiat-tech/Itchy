@@ -3,6 +3,11 @@
 import { useState } from "react";
 import Footer from "@/components/Footer";
 
+const fileInputClass =
+  "w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-600 " +
+  "file:ml-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm " +
+  "file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer";
+
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -105,7 +110,7 @@ export default function ContactPage() {
                 type="file"
                 name="photo"
                 accept="image/*"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-600 file:ml-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer"
+                className={fileInputClass}
               />
               <p className="text-xs text-gray-400 mt-1">
                 תמונה ברורה תעזור לנו לזהות את המזיק בצורה מדויקת יותר.
