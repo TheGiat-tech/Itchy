@@ -4,17 +4,71 @@ import { Resend } from "resend";
 const FALLBACK_RECIPIENT = "giat.hadbarot@gmail.com";
 const MAX_IMAGE_BASE64_LENGTH = 7_000_000;
 
-function extensionFromContentType(contentType?: string): string {
+function normalizeImageContentType(contentType?: string): string {
   const normalized = contentType?.split(";")[0]?.trim().toLowerCase() || "";
+  if (!normalized.startsWith("image/")) return "image/jpeg";
+  return normalized;
+}
+
+function extensionFromContentType(contentType?: string): string {
+  const normalized = normalizeImageContentType(contentType);
   if (!normalized.startsWith("image/")) return "jpg";
   const ext = normalized.slice("image/".length).trim();
   return ext || "jpg";
 }
 
+function isAllowedFilenameChar(char: string): boolean {
+  if (char === "_" || char === "-") return true;
+  const code = char.charCodeAt(0);
+  const isDigit = code >= 48 && code <= 57;
+  const isUpper = code >= 65 && code <= 90;
+  const isLower = code >= 97 && code <= 122;
+  const isHebrew = code >= 0x0590 && code <= 0x05ff;
+  return isDigit || isUpper || isLower || isHebrew;
+}
+
 function sanitizeAttachmentFilename(filename: string, fallbackExt = "jpg"): string {
-  const cleaned = filename.replace(/[^\p{L}\p{N}._-]+/gu, "_").replace(/_+/g, "_").replace(/^_+|_+$/g, "");
-  if (!cleaned) return `uploaded-image.${fallbackExt}`;
-  return cleaned.includes(".") ? cleaned : `${cleaned}.${fallbackExt}`;
+  const safeExt = extensionFromContentType(`image/${fallbackExt}`);
+  let base = "";
+  let prevUnderscore = false;
+
+  for (const char of filename.normalize("NFKC")) {
+    if (isAllowedFilenameChar(char)) {
+      base += char;
+      prevUnderscore = false;
+      continue;
+    }
+    if (!prevUnderscore) {
+      base += "_";
+      prevUnderscore = true;
+    }
+    if (base.length >= 80) break;
+  }
+
+  while (base.startsWith("_")) base = base.slice(1);
+  while (base.endsWith("_")) base = base.slice(0, -1);
+  if (!base) base = "uploaded-image";
+
+  return `${base}.${safeExt}`;
+}
+
+function getImageSection(imageUrl: string, imageBase64: string): string {
+  if (imageUrl) {
+    return `<tr>
+        <td style="padding:0 0 16px 0;">
+          <p style="margin:0 0 8px 0;font-weight:600;color:#374151;">תמונה שהועלתה:</p>
+          <img src="${imageUrl}" alt="תמונת מזיק" style="max-width:400px;border-radius:8px;border:1px solid #e5e7eb;" />
+        </td>
+      </tr>`;
+  }
+  if (imageBase64) {
+    return `<tr>
+          <td style="padding:0 0 16px 0;">
+            <p style="margin:0 0 8px 0;font-weight:600;color:#374151;">צורפה תמונה כקובץ מצורף למייל.</p>
+          </td>
+        </tr>`;
+  }
+  return "";
 }
 
 export async function POST(req: NextRequest) {
@@ -74,20 +128,7 @@ export async function POST(req: NextRequest) {
   const pestLabel = pestType || "לא צוין";
   const subject = `🛑 ליד חדש מאיצ'י: ${pestLabel} - ${name || "לקוח"}`;
 
-  const imageSection = imageUrl
-    ? `<tr>
-        <td style="padding:0 0 16px 0;">
-          <p style="margin:0 0 8px 0;font-weight:600;color:#374151;">תמונה שהועלתה:</p>
-          <img src="${imageUrl}" alt="תמונת מזיק" style="max-width:400px;border-radius:8px;border:1px solid #e5e7eb;" />
-        </td>
-      </tr>`
-    : imageBase64
-      ? `<tr>
-          <td style="padding:0 0 16px 0;">
-            <p style="margin:0 0 8px 0;font-weight:600;color:#374151;">צורפה תמונה כקובץ מצורף למייל.</p>
-          </td>
-        </tr>`
-      : "";
+  const imageSection = getImageSection(imageUrl, imageBase64);
 
   const html = `<!DOCTYPE html>
 <html lang="he" dir="rtl">
@@ -169,7 +210,7 @@ export async function POST(req: NextRequest) {
                 extensionFromContentType(imageType)
               ),
               content: imageBase64,
-              contentType: imageType || "image/jpeg",
+              contentType: normalizeImageContentType(imageType),
             },
           ]
         : undefined,

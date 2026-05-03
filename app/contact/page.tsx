@@ -11,7 +11,8 @@ function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(String(reader.result ?? ""));
-    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.onerror = () =>
+      reject(new Error("Failed to read image file as data URL"));
     reader.readAsDataURL(file);
   });
 }
@@ -106,7 +107,7 @@ function ContactPageContent() {
     try {
       const dataUrl = await readFileAsDataUrl(file);
       const commaIndex = dataUrl.indexOf(",");
-      if (commaIndex === -1) throw new Error();
+      if (commaIndex === -1) throw new Error("Invalid data URL format");
 
       setImageName(file.name);
       setImageType(file.type || "application/octet-stream");
