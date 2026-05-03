@@ -39,7 +39,8 @@ async function generateArticle() {
   // שימוש במודל gemini-1.5-flash בלבד
   const modelName = "gemini-1.5-flash";
   console.log(`🧠 Using Gemini model: ${modelName}`);
-  // נסיון ראשון עם v1beta; במקרה של 404 נבצע fallback לגרסת ברירת המחדל של ה-SDK
+  // נסיון ראשון עם v1beta; במקרה של 404 נבצע fallback ללא apiVersion
+  // (כלומר לגרסת ה-API שה-SDK בוחר כברירת מחדל).
   const model = genAI.getGenerativeModel(
     { model: modelName },
     { apiVersion: "v1beta" }
@@ -100,7 +101,9 @@ imageOverride: "${imageUrl}"
       result = await model.generateContent(prompt);
     } catch (error) {
       const errMsg = String(error?.message || "");
+      const statusCode = Number(error?.status || error?.code || 0);
       const isNotFound =
+        statusCode === 404 ||
         errMsg.includes("404") || errMsg.includes("Not Found") || errMsg.includes("not found");
       if (!isNotFound) {
         throw error;
