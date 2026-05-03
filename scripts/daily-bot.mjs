@@ -45,11 +45,13 @@ async function generateArticle() {
     throw new Error("Missing GEMINI_API_KEY environment variable.");
   }
 
-  // אתחול ה-SDK בגרסה המעודכנת
+  // אתחול ה-SDK
   const genAI = new GoogleGenerativeAI(apiKey);
-  
-  // שימוש במודל gemini-1.5-flash בגרסה היציבה (Stable)
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", apiVersion: "v1" });
+
+  // ניתן לעקוף את המודל באמצעות משתנה סביבה GEMINI_MODEL
+  const modelName = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+  console.log(`🧠 Using Gemini model: ${modelName}`);
+  const model = genAI.getGenerativeModel({ model: modelName });
 
   const randomImgNum = Math.floor(Math.random() * 10000);
 
@@ -78,9 +80,17 @@ imageOverride: "https://loremflickr.com/800/450/insect,pest,nature?lock=${random
   try {
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    return response.text().trim();
+    const text = response.text().trim();
+    if (!text) {
+      throw new Error(
+        `Model "${modelName}" returned an empty response. ` +
+        "This may be caused by content filtering or an API issue. " +
+        "Check the Gemini API status or adjust the prompt."
+      );
+    }
+    return text;
   } catch (error) {
-    throw new Error(`Gemini API Error: ${error.message}`);
+    throw new Error(`Gemini API call failed (model: "${modelName}"): ${error.message}`);
   }
 }
 
