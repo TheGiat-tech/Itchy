@@ -15,6 +15,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..");
 const ARTICLES_DIR = path.join(REPO_ROOT, "content", "articles");
 
+// מספר הטלפון / וואטסאפ לפניות – ניתן לעקוף עם CONTACT_PHONE
+const CONTACT_PHONE = process.env.CONTACT_PHONE || "972XXXXXXXXX";
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -51,30 +54,48 @@ async function generateArticle() {
   // ניתן לעקוף את המודל באמצעות משתנה סביבה GEMINI_MODEL
   const modelName = process.env.GEMINI_MODEL || "gemini-2.0-flash";
   console.log(`🧠 Using Gemini model: ${modelName}`);
-  const model = genAI.getGenerativeModel({ model: modelName });
+  const model = genAI.getGenerativeModel(
+    { model: modelName },
+    { apiVersion: "v1" }
+  );
 
-  const randomImgNum = Math.floor(Math.random() * 10000);
+  const unsplashKeywords = ["pest,insect", "cockroach", "rat,rodent", "ant,insect", "spider", "mosquito"];
+  const keyword = unsplashKeywords[Math.floor(Math.random() * unsplashKeywords.length)];
 
   const prompt = `
-אתה כותב תוכן מקצועי עבור "Itchi" (איצ'י) – מיזם ישראלי לזיהוי והדברת מזיקים.
+אתה כותב תוכן שיווקי ומקצועי עבור "איצ'י" ו"גיאת הדברות" – חברת הדברה ישראלית מובילה.
 
-המשימה: כתוב מאמר בלוג מקצועי ומעמיק בעברית (400-700 מילים) על חרק, מזיק או נושא טבע רלוונטי לישראל.
+המשימה: כתוב מאמר בלוג בעברית (400-700 מילים) על חרק, מזיק או נושא הדברה רלוונטי לישראל, בסגנון דף נחיתה ממיר ומשכנע.
 
 הפלט חייב להיות קובץ MDX בלבד עם Frontmatter במבנה הבא:
 
 ---
-titleHebrew: "<כותרת המאמר בעברית>"
-description: "<תיאור קצר ומסקרן>"
+title: "<כותרת המאמר בעברית – קצרה, מושכת, עם אמוג'י רלוונטי>"
+excerpt: "<תיאור קצר ומסקרן, 1-2 משפטים>"
 date: "${today()}"
-imageOverride: "https://loremflickr.com/800/450/insect,pest,nature?lock=${randomImgNum}"
+category: "הדברה"
+image: "https://source.unsplash.com/featured/800x450/?${keyword}"
 ---
 
-<גוף המאמר בפורמט Markdown הכולל כותרות ## ו-###, רשימות והסברים מקצועיים>
+<גוף המאמר בפורמט Markdown>
 
-דגשים:
-- אל תשתמש בתגיות קוד כמו \`\`\`mdx או \`\`\`markdown.
+דגשים חשובים לסגנון:
+- **השתמש באמוג'י רלוונטיים** בכותרות ## ו-### (לדוגמה: 🐜, 🛡️, 🏠, ⚠️, ✅, 🔍).
+- **השתמש בטקסט מודגש** (**כך**) להדגשת עובדות חשובות.
+- **כלול רשימות תבליטים** להפוך את התוכן לנגיש וקל לסריקה.
 - כלול לפחות 3 כותרות משנה (##).
-- סגנון הכתיבה צריך להיות מקצועי, מבוסס עובדות אך נגיש לקהל הרחב.
+- סגנון כתיבה: מקצועי, דחוף, מעורר פעולה – כמו דף נחיתה.
+- אל תשתמש בתגיות קוד כמו \`\`\`mdx או \`\`\`markdown.
+
+בסוף המאמר, **חובה** להוסיף את הקטע הבא בדיוק (ללא שינויים):
+
+---
+
+## 🆘 זקוקים לעזרה מקצועית?
+
+> **אל תתנו למזיקים להשתלט לכם על הבית.** הצוות של "איצ'י" ו"גיאת הדברות" זמין עבורכם עכשיו לייעוץ חינם והצעת מחיר משתלמת.
+>
+> <a href="https://wa.me/${CONTACT_PHONE}">👉 לחצו כאן לייעוץ בוואטסאפ</a> | <a href="tel:${CONTACT_PHONE}">📞 התקשרו עכשיו</a>
 `.trim();
 
   try {
