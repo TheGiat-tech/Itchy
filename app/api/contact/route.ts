@@ -28,7 +28,15 @@ function isAllowedFilenameChar(char: string): boolean {
 }
 
 function sanitizeAttachmentFilename(filename: string, fallbackExt = "jpg"): string {
-  const safeExt = extensionFromContentType(`image/${fallbackExt}`);
+  const rawExt = (fallbackExt || "jpg").toLowerCase();
+  let safeExt = "";
+  for (const char of rawExt) {
+    const code = char.charCodeAt(0);
+    const isDigit = code >= 48 && code <= 57;
+    const isLower = code >= 97 && code <= 122;
+    if (isDigit || isLower) safeExt += char;
+  }
+  if (!safeExt) safeExt = "jpg";
   let base = "";
   let prevUnderscore = false;
 
@@ -52,12 +60,26 @@ function sanitizeAttachmentFilename(filename: string, fallbackExt = "jpg"): stri
   return `${base}.${safeExt}`;
 }
 
+function getSafeImageUrl(imageUrl: string): string {
+  if (!imageUrl) return "";
+  try {
+    const parsed = new URL(imageUrl);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      return parsed.toString();
+    }
+    return "";
+  } catch {
+    return "";
+  }
+}
+
 function getImageSection(imageUrl: string, imageBase64: string): string {
-  if (imageUrl) {
+  const safeImageUrl = getSafeImageUrl(imageUrl);
+  if (safeImageUrl) {
     return `<tr>
         <td style="padding:0 0 16px 0;">
           <p style="margin:0 0 8px 0;font-weight:600;color:#374151;">תמונה שהועלתה:</p>
-          <img src="${imageUrl}" alt="תמונת מזיק" style="max-width:400px;border-radius:8px;border:1px solid #e5e7eb;" />
+          <img src="${safeImageUrl}" alt="תמונת מזיק" style="max-width:400px;border-radius:8px;border:1px solid #e5e7eb;" />
         </td>
       </tr>`;
   }
