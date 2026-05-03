@@ -5,10 +5,34 @@ import Footer from "@/components/Footer";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitted(true);
+    setError(null);
+    setLoading(true);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? "שגיאה בשליחת ההודעה");
+      }
+
+      setSubmitted(true);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "שגיאה בשליחת ההודעה, נסה שוב");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -75,24 +99,31 @@ export default function ContactPage() {
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                📸 תמונה לזיהוי (אופציונלי)
+                📷 צרף תמונה לזיהוי (אופציונלי)
               </label>
               <input
                 type="file"
                 name="photo"
                 accept="image/*"
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-600 file:ml-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-600 file:ml-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer"
               />
               <p className="text-xs text-gray-400 mt-1">
                 תמונה ברורה תעזור לנו לזהות את המזיק בצורה מדויקת יותר.
               </p>
             </div>
 
+            {error && (
+              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-right">
+                {error}
+              </p>
+            )}
+
             <button
               type="submit"
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-colors"
+              disabled={loading}
+              className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white font-bold py-3 rounded-xl transition-colors"
             >
-              שלח הודעה
+              {loading ? "שולח..." : "שלח הודעה"}
             </button>
           </form>
         )}
