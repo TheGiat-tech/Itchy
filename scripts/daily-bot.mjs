@@ -37,13 +37,14 @@ async function generateArticle() {
   const genAI = new GoogleGenerativeAI(apiKey);
 
   // ניתן לעקוף את המודל באמצעות משתנה סביבה GEMINI_MODEL
-  // ברירת מחדל יציבה יותר מ-"gemini-1.5-flash" כדי להימנע מ-404 "model not found".
-  const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash-latest";
+  const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
   console.log(`🧠 Using Gemini model: ${modelName}`);
 
-  // אל תכריח apiVersion (v1/v1beta) – ה-SDK בוחר את הגרסה המתאימה.
-  // כפייה עלולה לגרום ל-404 גם כשהמודל תקין.
-  const model = genAI.getGenerativeModel({ model: modelName });
+  // שימוש ב-v1beta שבו gemini-1.5-flash זמין; ה-SDK ינסה v1 כ-fallback.
+  const model = genAI.getGenerativeModel(
+    { model: modelName },
+    { apiVersion: "v1beta" }
+  );
 
   const prompt = `
 אתה מומחה SEO וכותב תוכן שיווקי בכיר עבור "Itchi" (איצ'י) ו-"גיאת הדברות".
@@ -72,7 +73,38 @@ pestType: "סוג המזיק בעברית (לדוגמה: ג'וקים, נמלים
 `.trim();
 
   try {
-    const result = await model.generateContent(prompt);
+    let result;
+    let usedFallback = false;
+
+    try {
+      result = await model.generateContent(prompt);
+    } catch (firstError) {
+      const msg = String(firstError?.message || "");
+      // בדיקה ראשית לפי קוד סטטוס; בדיקות מחרוזת משמשות כהגנה נוספת
+      // למקרים שבהם ה-SDK אינו חושף status code מספרי.
+      const status = Number(firstError?.status || firstError?.code || 0);
+      const is404 =
+        status === 404 ||
+        msg.includes("404") ||
+        msg.toLowerCase().includes("not found");
+
+      if (!is404) throw firstError;
+
+      console.warn(
+        `⚠️ v1beta endpoint returned 404 for model "${modelName}". ` +
+          "Retrying with SDK default API version..."
+      );
+      const fallbackModel = genAI.getGenerativeModel({ model: modelName });
+      result = await fallbackModel.generateContent(prompt);
+      usedFallback = true;
+    }
+
+    if (usedFallback) {
+      console.log(`ℹ️ Article generated using SDK default API version (fallback).`);
+    } else {
+      console.log(`ℹ️ Article generated using v1beta API version.`);
+    }
+
     const response = await result.response;
     const text = response.text().trim();
     if (!text) {
