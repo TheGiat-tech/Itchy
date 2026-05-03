@@ -1,9 +1,10 @@
 interface PestImageProps {
   scientificName: string;
   altText: string;
+  imageOverride?: string;
 }
 
-type ImageResult = { url: string; source: "Wikipedia" | "iNaturalist" } | null;
+type ImageResult = { url: string; source: "override" | "Wikipedia" | "iNaturalist" } | null;
 
 async function fetchFromWikipedia(scientificName: string): Promise<string | null> {
   try {
@@ -50,7 +51,28 @@ async function resolveImage(scientificName: string): Promise<ImageResult> {
 const containerClassName =
   "mt-6 mb-8 overflow-hidden rounded-2xl border border-gray-100 shadow-sm";
 
-export default async function PestImage({ scientificName, altText }: PestImageProps) {
+export default async function PestImage({ scientificName, altText, imageOverride }: PestImageProps) {
+  // Priority 1: use imageOverride if provided
+  if (imageOverride) {
+    const captionSource = "תמונה מותאמת אישית";
+    return (
+      <div className={containerClassName} dir="rtl">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={imageOverride}
+          alt={altText}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          className="w-full h-auto object-cover"
+        />
+        <p className="border-t border-gray-100 bg-gray-50 py-2 text-center text-xs text-gray-400">
+          מקור התמונה: {captionSource}
+        </p>
+      </div>
+    );
+  }
+
+  // Priority 2 & 3: fetch from Wikipedia / iNaturalist
   if (!scientificName) return null;
 
   const image = await resolveImage(scientificName);

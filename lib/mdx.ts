@@ -14,6 +14,7 @@ export interface PestFrontmatter {
   description?: string;
   category?: string;
   image?: string;
+  imageOverride?: string;
 }
 
 export interface Pest {

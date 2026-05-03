@@ -63,10 +63,11 @@ export default async function PestPage({ params }: Props) {
           )}
         </div>
 
-        {frontmatter.titleLatin && (
+        {(frontmatter.titleLatin || frontmatter.imageOverride) && (
           <PestImage
-            scientificName={frontmatter.titleLatin}
+            scientificName={frontmatter.titleLatin ?? ""}
             altText={frontmatter.title}
+            imageOverride={frontmatter.imageOverride}
           />
         )}
 
