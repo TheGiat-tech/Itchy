@@ -46,23 +46,6 @@ async function generateArticle() {
     { apiVersion: "v1" }
   );
 
-  // מגוון מילות מפתח להדברה לגיוון ויזואלי בין מאמרים שונים – loremflickr תומך בחיפוש מילות מפתח
-  const pestKeywords = [
-    "pest,insect,exterminator",
-    "cockroach,pest,control",
-    "ant,infestation,pest",
-    "termite,wood,damage",
-    "rodent,rat,exterminator",
-    "spider,pest,danger",
-    "flea,tick,pest",
-    "mosquito,insect,spray",
-    "pest,control,professional",
-    "insect,trap,exterminator",
-  ];
-  const keywords = pestKeywords[Math.floor(Math.random() * pestKeywords.length)];
-  const lockId = Math.floor(Math.random() * 9000) + 1000;
-  const imageUrl = `https://loremflickr.com/800/450/${keywords}?lock=${lockId}`;
-
   const prompt = `
 אתה מומחה SEO וכותב תוכן שיווקי בכיר עבור "Itchi" (איצ'י) ו-"גיאת הדברות".
 המשימה: לכתוב מאמר מקצועי (500-700 מילים) על הדברה בישראל שגורם לקורא להשאיר פרטים.
@@ -73,7 +56,7 @@ titleHebrew: "כותרת חזקה עם אמוג'י רלוונטי"
 excerpt: "תיאור קצר ומניע לפעולה שמדגיש את הסכנה או המטרד"
 date: "${today()}"
 category: "הדברה"
-imageOverride: "${imageUrl}"
+imageKeyword: "single English word for the pest described in the article (e.g. cockroach, ant, termite, rat, spider, mosquito, flea)"
 ---
 
 הנחיות לגוף המאמר:
@@ -133,6 +116,28 @@ async function main() {
       .replace(/^```(mdx|markdown)?\n/, "")
       .replace(/\n```$/, "")
       .trim();
+
+    // בניית URL לתמונה מתוך imageKeyword שהמודל סיפק, עם fallback
+    const FALLBACK_IMAGE = "https://loremflickr.com/800/600/exterminator,clean,house";
+    const keywordMatch = mdxContent.match(/^imageKeyword:\s*["']?([^"'\n]+)["']?\s*$/m);
+    const imageKeyword = keywordMatch ? keywordMatch[1].trim().toLowerCase() : "";
+    const imageUrl = imageKeyword
+      ? `https://loremflickr.com/800/600/${encodeURIComponent(imageKeyword)}`
+      : FALLBACK_IMAGE;
+
+    // החלפת שדה imageKeyword ב-imageOverride עם ה-URL הבנוי
+    mdxContent = mdxContent.replace(
+      /^imageKeyword:.*$/m,
+      `imageOverride: "${imageUrl}"`
+    );
+    // למקרה שהמודל דילג על imageKeyword לגמרי – הוסף imageOverride לפני סגירת ה-frontmatter
+    if (!mdxContent.includes("imageOverride:")) {
+      mdxContent = mdxContent.replace(
+        /^(---\n[\s\S]*?)(---)$/m,
+        `$1imageOverride: "${FALLBACK_IMAGE}"\n$2`
+      );
+    }
+    console.log(`🖼️  Image URL: ${imageUrl}`);
 
   } catch (err) {
     console.error("❌ Generation failed:", err.message);
