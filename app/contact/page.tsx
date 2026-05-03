@@ -231,7 +231,7 @@ function ContactPageContent() {
 
 export default function ContactPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<div className="min-h-[40vh]" />}>
       <ContactPageContent />
     </Suspense>
   );

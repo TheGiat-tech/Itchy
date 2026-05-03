@@ -4,6 +4,12 @@ import { Resend } from "resend";
 const FALLBACK_RECIPIENT = "giat.hadbarot@gmail.com";
 const MAX_IMAGE_BASE64_LENGTH = 7_000_000;
 
+function extensionFromContentType(contentType?: string): string {
+  if (!contentType || !contentType.startsWith("image/")) return "jpg";
+  const ext = contentType.slice("image/".length).trim().toLowerCase();
+  return ext || "jpg";
+}
+
 export async function POST(req: NextRequest) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -151,9 +157,9 @@ export async function POST(req: NextRequest) {
       attachments: imageBase64
         ? [
             {
-              filename: imageName || "uploaded-image",
+              filename: imageName || `uploaded-image.${extensionFromContentType(imageType)}`,
               content: imageBase64,
-              contentType: imageType || "application/octet-stream",
+              contentType: imageType || "image/jpeg",
             },
           ]
         : undefined,
