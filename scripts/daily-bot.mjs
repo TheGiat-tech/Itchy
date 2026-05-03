@@ -36,14 +36,13 @@ async function generateArticle() {
   // אתחול ה-SDK
   const genAI = new GoogleGenerativeAI(apiKey);
 
-  // ניתן לעקוף את המודל באמצעות משתנה סביבה GEMINI_MODEL
-  // שימוש ב-gemini-1.5-flash כברירת מחדל – יציב וחסכוני במכסה
-  const modelName = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+  // שימוש במודל gemini-1.5-flash בלבד
+  const modelName = "gemini-1.5-flash";
   console.log(`🧠 Using Gemini model: ${modelName}`);
-  // apiVersion כארגומנט שני (RequestOptions) – הדרך הנכונה לפי ה-SDK
+  // נסיון ראשון עם v1beta; במקרה של 404 נבצע fallback לגרסת ברירת המחדל של ה-SDK
   const model = genAI.getGenerativeModel(
     { model: modelName },
-    { apiVersion: "v1" }
+    { apiVersion: "v1beta" }
   );
 
   // מגוון מילות מפתח להדברה לגיוון ויזואלי בין מאמרים שונים – loremflickr תומך בחיפוש מילות מפתח
@@ -96,7 +95,24 @@ imageOverride: "${imageUrl}"
 `.trim();
 
   try {
-    const result = await model.generateContent(prompt);
+    let result;
+    try {
+      result = await model.generateContent(prompt);
+    } catch (error) {
+      const errMsg = String(error?.message || "");
+      const isNotFound =
+        errMsg.includes("404") || errMsg.includes("Not Found") || errMsg.includes("not found");
+      if (!isNotFound) {
+        throw error;
+      }
+
+      console.warn(
+        "⚠️ Gemini v1beta endpoint returned 404. Retrying with SDK default API version..."
+      );
+      const fallbackModel = genAI.getGenerativeModel({ model: modelName });
+      result = await fallbackModel.generateContent(prompt);
+    }
+
     const response = await result.response;
     const text = response.text().trim();
     if (!text) {
