@@ -107,7 +107,8 @@ function ContactPageContent() {
     try {
       const dataUrl = await readFileAsDataUrl(file);
       const commaIndex = dataUrl.indexOf(",");
-      if (commaIndex === -1) throw new Error("Data URL missing comma separator");
+      if (commaIndex === -1)
+        throw new Error("פורמט התמונה אינו תקין (חסר מפריד נתונים).");
 
       setImageName(file.name);
       setImageType(file.type || "application/octet-stream");

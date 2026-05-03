@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
 const FALLBACK_RECIPIENT = "giat.hadbarot@gmail.com";
-const MAX_IMAGE_BASE64_LENGTH = 7_000_000;
+const MAX_IMAGE_FILE_BYTES = 5 * 1024 * 1024;
+const MAX_IMAGE_BASE64_LENGTH = Math.ceil((MAX_IMAGE_FILE_BYTES * 4) / 3) + 1024;
+const MAX_JSON_BODY_BYTES = MAX_IMAGE_BASE64_LENGTH + 200_000;
 
 function normalizeImageContentType(contentType?: string): string {
   const normalized = contentType?.split(";")[0]?.trim().toLowerCase() || "";
@@ -94,6 +96,14 @@ function getImageSection(imageUrl: string, imageBase64: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  const contentLengthHeader = req.headers.get("content-length");
+  if (contentLengthHeader) {
+    const contentLength = Number(contentLengthHeader);
+    if (Number.isFinite(contentLength) && contentLength > MAX_JSON_BODY_BYTES) {
+      return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+    }
+  }
+
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     return NextResponse.json(
