@@ -92,7 +92,7 @@ export default async function ArticlePage({ params }: Props) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={displayImage}
-              alt={displayTitle}
+              alt={frontmatter.imageAlt || displayTitle}
               className="w-full h-auto object-cover"
               loading="lazy"
             />

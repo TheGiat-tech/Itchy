@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect width="800" height="600" fill="#2c1f0a"/>
+  <!-- wooden beam (cross-section damaged) -->
+  <!-- intact outer wood -->
+  <rect x="100" y="80" width="600" height="420" rx="8" fill="#8b5e2a"/>
+  <!-- wood grain lines -->
+  <g stroke="#7a4e1a" stroke-width="1.5" fill="none">
+    <line x1="100" y1="140" x2="700" y2="140"/>
+    <line x1="100" y1="200" x2="700" y2="200"/>
+    <line x1="100" y1="260" x2="700" y2="260"/>
+    <line x1="100" y1="320" x2="700" y2="320"/>
+    <line x1="100" y1="380" x2="700" y2="380"/>
+    <line x1="100" y1="440" x2="700" y2="440"/>
+  </g>
+  <!-- termite tunnels (hollow eaten-out areas) -->
+  <path d="M150,120 Q200,130 220,180 Q240,230 300,240 Q360,250 380,300 Q400,350 460,360 Q520,370 560,420 Q580,445 650,440" stroke="#1a0a00" stroke-width="28" fill="none" stroke-linecap="round"/>
+  <path d="M180,200 Q220,210 260,270 Q290,320 340,330 Q390,340 420,390" stroke="#1a0a00" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <path d="M500,120 Q520,160 510,220 Q500,280 540,330 Q570,370 580,420" stroke="#1a0a00" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <path d="M200,380 Q240,360 290,370 Q330,378 360,350" stroke="#1a0a00" stroke-width="16" fill="none" stroke-linecap="round"/>
+  <!-- mud tubes (darker lines following tunnels) -->
+  <path d="M150,120 Q200,130 220,180 Q240,230 300,240 Q360,250 380,300 Q400,350 460,360 Q520,370 560,420 Q580,445 650,440" stroke="#3a2010" stroke-width="30" fill="none" stroke-linecap="round" opacity="0.4"/>
+  <!-- damaged surface crack -->
+  <path d="M340,80 Q355,100 350,130 Q345,160 360,180" stroke="#5a3a10" stroke-width="3" fill="none"/>
+  <path d="M420,80 Q435,95 430,120" stroke="#5a3a10" stroke-width="2.5" fill="none"/>
+  <!-- termites in tunnels -->
+  <g fill="#f0d090">
+    <g transform="translate(230,200)">
+      <ellipse cx="0" cy="0" rx="7" ry="4" fill="#f0d090"/>
+      <ellipse cx="9" cy="-1" rx="5" ry="3" fill="#f0d090"/>
+      <ellipse cx="-8" cy="1" rx="6" ry="4" fill="#f0d090"/>
+      <line x1="-3" y1="2" x2="-12" y2="7" stroke="#c0a060" stroke-width="1.5"/>
+      <line x1="3" y1="2" x2="10" y2="7" stroke="#c0a060" stroke-width="1.5"/>
+      <line x1="-3" y1="-1" x2="-12" y2="-6" stroke="#c0a060" stroke-width="1.5"/>
+      <line x1="3" y1="-1" x2="10" y2="-6" stroke="#c0a060" stroke-width="1.5"/>
+      <line x1="13" y1="-2" x2="21" y2="-8" stroke="#c0a060" stroke-width="1.5"/>
+      <line x1="13" y1="0" x2="22" y2="3" stroke="#c0a060" stroke-width="1.5"/>
+    </g>
+    <g transform="translate(440,345) scale(0.9)">
+      <ellipse cx="0" cy="0" rx="7" ry="4" fill="#f0d090"/>
+      <ellipse cx="9" cy="-1" rx="5" ry="3" fill="#f0d090"/>
+      <ellipse cx="-8" cy="1" rx="6" ry="4" fill="#f0d090"/>
+      <line x1="-3" y1="2" x2="-12" y2="7" stroke="#c0a060" stroke-width="1.5"/>
+      <line x1="3" y1="2" x2="10" y2="7" stroke="#c0a060" stroke-width="1.5"/>
+      <line x1="-3" y1="-1" x2="-12" y2="-6" stroke="#c0a060" stroke-width="1.5"/>
+      <line x1="3" y1="-1" x2="10" y2="-6" stroke="#c0a060" stroke-width="1.5"/>
+      <line x1="13" y1="-2" x2="21" y2="-8" stroke="#c0a060" stroke-width="1.5"/>
+    </g>
+  </g>
+  <!-- wood sawdust pile at bottom -->
+  <ellipse cx="400" cy="515" rx="200" ry="25" fill="#c09050" opacity="0.7"/>
+  <ellipse cx="320" cy="510" rx="80" ry="14" fill="#c09050" opacity="0.5"/>
+  <ellipse cx="500" cy="513" rx="70" ry="12" fill="#c09050" opacity="0.5"/>
+  <!-- label -->
+  <rect x="0" y="540" width="800" height="60" fill="rgba(0,0,0,0.7)"/>
+  <text x="400" y="578" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="bold" fill="#fff">Termite Damage in Wooden Beams</text>
+</svg>

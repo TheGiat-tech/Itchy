@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect width="800" height="600" fill="#c8a47a"/>
+  <!-- dog fur texture (curved strokes) -->
+  <g stroke="#b08060" stroke-width="2" fill="none" opacity="0.7">
+    <path d="M50,100 Q80,80 110,100"/>
+    <path d="M120,80 Q150,60 180,80"/>
+    <path d="M200,110 Q230,90 260,110"/>
+    <path d="M50,160 Q80,140 110,160"/>
+    <path d="M140,150 Q170,130 200,150"/>
+    <path d="M250,140 Q280,120 310,140"/>
+    <path d="M300,100 Q330,80 360,100"/>
+    <path d="M380,120 Q410,100 440,120"/>
+    <path d="M460,90 Q490,70 520,90"/>
+    <path d="M540,130 Q570,110 600,130"/>
+    <path d="M620,80 Q650,60 680,80"/>
+    <path d="M50,220 Q80,200 110,220"/>
+    <path d="M160,200 Q190,180 220,200"/>
+    <path d="M280,210 Q310,190 340,210"/>
+    <path d="M400,190 Q430,170 460,190"/>
+    <path d="M500,220 Q530,200 560,220"/>
+    <path d="M600,200 Q630,180 660,200"/>
+    <path d="M50,280 Q80,260 110,280"/>
+    <path d="M130,270 Q160,250 190,270"/>
+    <path d="M220,290 Q250,270 280,290"/>
+    <path d="M330,260 Q360,240 390,260"/>
+    <path d="M420,280 Q450,260 480,280"/>
+    <path d="M510,250 Q540,230 570,250"/>
+    <path d="M600,270 Q630,250 660,270"/>
+    <path d="M50,340 Q80,320 110,340"/>
+    <path d="M160,330 Q190,310 220,330"/>
+    <path d="M280,350 Q310,330 340,350"/>
+    <path d="M380,320 Q410,300 440,320"/>
+    <path d="M480,340 Q510,320 540,340"/>
+    <path d="M580,360 Q610,340 640,360"/>
+    <path d="M50,400 Q80,380 110,400"/>
+    <path d="M140,390 Q170,370 200,390"/>
+    <path d="M240,410 Q270,390 300,410"/>
+    <path d="M360,380 Q390,360 420,380"/>
+    <path d="M460,400 Q490,380 520,400"/>
+    <path d="M550,420 Q580,400 610,420"/>
+    <path d="M640,390 Q670,370 700,390"/>
+    <path d="M50,460 Q80,440 110,460"/>
+    <path d="M160,450 Q190,430 220,450"/>
+    <path d="M270,470 Q300,450 330,470"/>
+    <path d="M370,440 Q400,420 430,440"/>
+    <path d="M480,460 Q510,440 540,460"/>
+    <path d="M600,450 Q630,430 660,450"/>
+    <path d="M50,520 Q80,500 110,520"/>
+    <path d="M150,510 Q180,490 210,510"/>
+    <path d="M280,530 Q310,510 340,530"/>
+    <path d="M400,510 Q430,490 460,510"/>
+    <path d="M510,520 Q540,500 570,520"/>
+    <path d="M620,510 Q650,490 680,510"/>
+  </g>
+  <!-- flea (highly magnified, laterally compressed) -->
+  <g transform="translate(400,300)">
+    <!-- body - compressed oval -->
+    <ellipse cx="0" cy="0" rx="22" ry="30" fill="#3d1f0a" transform="rotate(-15)"/>
+    <!-- head -->
+    <ellipse cx="12" cy="-22" rx="10" ry="8" fill="#2e1505" transform="rotate(-15)"/>
+    <!-- eye -->
+    <circle cx="16" cy="-25" r="3" fill="#ff4444"/>
+    <!-- legs (3 per side, long and powerful) -->
+    <line x1="-8" y1="-5" x2="-40" y2="-20" stroke="#2e1505" stroke-width="2.5"/>
+    <line x1="-10" y1="5" x2="-42" y2="5" stroke="#2e1505" stroke-width="2.5"/>
+    <line x1="-8" y1="15" x2="-38" y2="35" stroke="#2e1505" stroke-width="3"/>
+    <line x1="8" y1="-5" x2="40" y2="-20" stroke="#2e1505" stroke-width="2.5"/>
+    <line x1="10" y1="5" x2="42" y2="5" stroke="#2e1505" stroke-width="2.5"/>
+    <line x1="8" y1="15" x2="36" y2="35" stroke="#2e1505" stroke-width="3"/>
+    <!-- antennae -->
+    <line x1="10" y1="-28" x2="20" y2="-44" stroke="#2e1505" stroke-width="1.5"/>
+    <line x1="14" y1="-26" x2="26" y2="-38" stroke="#2e1505" stroke-width="1.5"/>
+  </g>
+  <!-- label -->
+  <rect x="0" y="540" width="800" height="60" fill="rgba(0,0,0,0.55)"/>
+  <text x="400" y="578" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="bold" fill="#fff">Flea on Dog Fur</text>
+</svg>

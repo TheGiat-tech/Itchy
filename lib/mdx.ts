@@ -70,137 +70,74 @@ export interface ArticleFrontmatter {
   thumbnail?: string;
   coverImage?: string;
   cover_image?: string;
-  // Keyword used to drive an Unsplash featured image search (e.g. "german cockroach close up")
+  // Kept for backward compatibility with existing frontmatter files.
   imageKeyword?: string;
+  // Alt text for the article image (used in <img alt="…">).
+  imageAlt?: string;
   titleLatin?: string;
 }
 
 /**
- * Ordered list of direct-URL image fields to check, from highest to lowest
- * priority.  Having a single source of truth makes it trivial to add or
- * reorder fields in the future.
- */
-const IMAGE_FIELDS = [
-  "imageOverride",
-  "image",
-  "imageUrl",
-  "image_url",
-  "featuredImage",
-  "featured_image",
-  "thumbnail",
-  "coverImage",
-  "cover_image",
-] as const;
-
-/**
- * Derives a specific, visually descriptive English keyword for an article when
- * its frontmatter does not provide an explicit imageKeyword.
+ * Slug → local static image path.
  *
- * The function inspects the Hebrew/English title, description, and slug for
- * known pest patterns and maps them to narrow visual search terms that an
- * image-search service can use to return a relevant photo.
+ * All paths are relative to /public and served at the listed URL by Next.js.
+ * When adding a new article, add an entry here so it gets a relevant image
+ * automatically even before the frontmatter image field is set.
  */
-export function inferImageKeyword(
-  frontmatter: Pick<ArticleFrontmatter, "title" | "titleHebrew" | "description" | "pestType">,
-  slug?: string
-): string {
-  const text = [
-    frontmatter.title ?? "",
-    frontmatter.titleHebrew ?? "",
-    frontmatter.description ?? "",
-    frontmatter.pestType ?? "",
-    slug ?? "",
-  ]
-    .join(" ")
-    .toLowerCase();
+const ARTICLE_IMAGE_BY_SLUG: Record<string, string> = {
+  "ants-in-kitchen-eliminating-the-nest": "/images/articles/ants-kitchen.svg",
+  "bed-bugs-identification-and-prevention": "/images/articles/bed-bugs-mattress.svg",
+  "fleas-pets-home-integrated-treatment": "/images/articles/flea-dog-fur.svg",
+  "german-cockroach-the-kitchen-invader": "/images/articles/german-cockroach.svg",
+  "green-pest-control-myths-and-safety": "/images/articles/pest-control-technician.svg",
+  "how-to-prevent-cockroaches-summer": "/images/articles/cockroach-kitchen.svg",
+  "little-fire-ant-stings-and-treatment": "/images/articles/fire-ant-colony.svg",
+  "rats-vs-mice-noises-and-health-risks": "/images/articles/rat-house.svg",
+  "termites-signs-of-damage-and-treatment": "/images/articles/termite-damage.svg",
+  "venomous-spiders-identification-israel": "/images/articles/brown-recluse-spider.svg",
+};
 
-  if (/תיקן גרמני|german[- ]cockroach|german[- ]roach/i.test(text))
-    return "german cockroach close up";
-  if (/תיקן אמריקאי|american[- ]cockroach/i.test(text))
-    return "american cockroach";
-  if (/ג'וק|ג'וקים|מקק|מקקים|cockroach|roach/i.test(text))
-    return "cockroach infestation kitchen";
-  if (/ששן|עכביש|spider/i.test(text))
-    return "venomous spider close up";
-  if (/יתוש|יתושים|mosquito/i.test(text))
-    return "mosquito close up";
-  if (/פשפש|bed[- ]bug/i.test(text))
-    return "bed bug mattress close up";
-  if (/נמלת אש|נמלות אש|fire[- ]ant/i.test(text))
-    return "fire ant colony close up";
-  if (/נמלה|נמלים|ant\b/i.test(text))
-    return "ants marching kitchen counter";
-  if (/עכבר|עכברים|mouse|mice/i.test(text))
-    return "mouse in house close up";
-  if (/חולדה|חולדות|\brat\b|\brats\b/i.test(text))
-    return "rat in house close up";
-  if (/טרמיט|termite/i.test(text))
-    return "termite damage wood beams";
-  if (/פרעוש|פרעושים|flea/i.test(text))
-    return "flea on dog fur close up";
-  if (/צרעה|צרעות|\bwasp\b/i.test(text))
-    return "wasp nest close up";
-  if (/קרציה|קרציות|\btick\b/i.test(text))
-    return "tick close up";
-  if (/עש מזון|pantry[- ]moth/i.test(text))
-    return "pantry moth insect";
-  if (/דג הכסף|silverfish/i.test(text))
-    return "silverfish insect";
-  if (/זבוב|זבובים|\bfly\b|\bflies\b/i.test(text))
-    return "fly infestation kitchen";
-
-  return "pest control technician inspection";
-}
+/** Fallback image served for any article that has no specific mapping. */
+const DEFAULT_ARTICLE_IMAGE = "/images/articles/default-pest-control.svg";
 
 /**
- * Builds a topic-aware image URL from a keyword using Unsplash's featured
- * photo search.  Unlike a seed-based random service, this actually returns
- * photos matching the subject of the keyword.
- */
-function keywordToImageUrl(keyword: string): string {
-  const query = encodeURIComponent(keyword.trim());
-  return `https://source.unsplash.com/featured/800x600/?${query}`;
-}
-
-/**
- * Resolves the best available image URL for an article/post.
+ * Resolves the best available local image path for an article.
  *
  * Priority:
- *   1. Direct image URL from frontmatter fields (imageOverride, image, …)
- *   2. Explicit frontmatter.imageKeyword → Unsplash featured search
- *   3. inferImageKeyword() keyword derived from title/description/slug → Unsplash featured search
+ *   1. frontmatter.image — explicit local path set in the MDX file.
+ *   2. ARTICLE_IMAGE_BY_SLUG[slug] — topic-specific local SVG by article slug.
+ *   3. DEFAULT_ARTICLE_IMAGE — generic pest-control placeholder.
  *
- * Returns undefined only when the post has absolutely no image information –
- * callers should render their own fallback in that case.
+ * No external image services (Unsplash, picsum, loremflickr, …) are used.
+ * Every returned path starts with "/images/articles/" and is a file that
+ * exists inside /public.
  *
- * @param frontmatter  Article frontmatter parsed from MDX.
- * @param slug         Optional article slug used by inferImageKeyword when
- *                     frontmatter fields alone are insufficient.
+ * @param frontmatter  Article frontmatter parsed from the MDX file.
+ * @param slug         Article slug (filename without extension).
  */
 export function getPostImage(
   frontmatter: ArticleFrontmatter,
   slug?: string
-): string | undefined {
-  for (const field of IMAGE_FIELDS) {
-    const val = frontmatter[field];
-    // Accept only non-empty string URLs; skip numbers, booleans, or objects
-    // that gray-matter might parse from unusual frontmatter values.
-    if (typeof val === "string" && val.trim()) return val.trim();
+): string {
+  // 1. Explicit local image path in frontmatter takes highest priority.
+  if (typeof frontmatter.image === "string" && frontmatter.image.trim()) {
+    return frontmatter.image.trim();
   }
 
-  // Use explicit keyword first, then fall back to an inferred one.
-  const keyword =
-    (frontmatter.imageKeyword && frontmatter.imageKeyword.trim()) ||
-    inferImageKeyword(frontmatter, slug);
+  // 2. Slug-based mapping to a topic-specific local image.
+  if (slug && ARTICLE_IMAGE_BY_SLUG[slug]) {
+    return ARTICLE_IMAGE_BY_SLUG[slug];
+  }
 
-  return keywordToImageUrl(keyword);
+  // 3. Static fallback – always resolves to a real local file.
+  return DEFAULT_ARTICLE_IMAGE;
 }
 
 /** @deprecated Use getPostImage instead. */
 export function buildImageUrl(
-  frontmatter: Pick<ArticleFrontmatter, "imageOverride" | "imageKeyword" | "image">,
+  frontmatter: ArticleFrontmatter,
   slug?: string
-): string | undefined {
+): string {
   return getPostImage(frontmatter, slug);
 }
 

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect width="800" height="600" fill="#e8f4e8"/>
+  <!-- room floor -->
+  <rect x="0" y="460" width="800" height="140" fill="#c8b89a"/>
+  <!-- wall -->
+  <rect x="0" y="0" width="800" height="460" fill="#f0ece4"/>
+  <!-- baseboard -->
+  <rect x="0" y="440" width="800" height="25" fill="#d4c8b0"/>
+  <!-- technician - body (white protective suit) -->
+  <!-- legs -->
+  <rect x="345" y="370" width="40" height="100" rx="8" fill="#f0f0f0" stroke="#ccc" stroke-width="1"/>
+  <rect x="415" y="370" width="40" height="100" rx="8" fill="#f0f0f0" stroke="#ccc" stroke-width="1"/>
+  <!-- boots -->
+  <rect x="340" y="450" width="50" height="22" rx="6" fill="#3a3a3a"/>
+  <rect x="410" y="450" width="50" height="22" rx="6" fill="#3a3a3a"/>
+  <!-- torso -->
+  <rect x="335" y="230" width="130" height="150" rx="15" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+  <!-- green logo patch -->
+  <rect x="350" y="250" width="45" height="30" rx="4" fill="#2e7d32"/>
+  <text x="373" y="270" text-anchor="middle" font-size="10" fill="#fff" font-family="Arial">ECO</text>
+  <!-- right arm holding sprayer -->
+  <rect x="465" y="240" width="35" height="110" rx="12" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+  <!-- left arm -->
+  <rect x="300" y="240" width="35" height="100" rx="12" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+  <!-- gloves -->
+  <ellipse cx="317" cy="345" rx="20" ry="14" fill="#ffd54f"/>
+  <ellipse cx="482" cy="355" rx="20" ry="14" fill="#ffd54f"/>
+  <!-- spray wand -->
+  <rect x="480" y="310" width="8" height="100" rx="3" fill="#607d8b"/>
+  <rect x="488" y="395" width="40" height="8" rx="3" fill="#607d8b"/>
+  <!-- spray mist -->
+  <circle cx="534" cy="410" r="6" fill="#b3e5fc" opacity="0.7"/>
+  <circle cx="546" cy="402" r="5" fill="#b3e5fc" opacity="0.6"/>
+  <circle cx="558" cy="415" r="4" fill="#b3e5fc" opacity="0.5"/>
+  <circle cx="540" cy="422" r="3" fill="#b3e5fc" opacity="0.6"/>
+  <circle cx="552" cy="406" r="3" fill="#b3e5fc" opacity="0.5"/>
+  <!-- sprayer tank on back (visible as cylinder) -->
+  <rect x="460" y="245" width="30" height="70" rx="10" fill="#8bc34a" stroke="#689f38" stroke-width="2"/>
+  <!-- head - helmet/mask -->
+  <circle cx="400" cy="190" r="55" fill="#f5f5f5" stroke="#ccc" stroke-width="2"/>
+  <!-- face shield -->
+  <ellipse cx="400" cy="195" rx="35" ry="30" fill="#b3e5fc" opacity="0.7" stroke="#90caf9" stroke-width="1.5"/>
+  <!-- helmet brim -->
+  <rect x="340" y="158" width="120" height="18" rx="6" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+  <!-- helmet stripe (company color) -->
+  <rect x="340" y="158" width="120" height="8" rx="4" fill="#2e7d32"/>
+  <!-- label -->
+  <rect x="0" y="540" width="800" height="60" fill="rgba(0,0,0,0.55)"/>
+  <text x="400" y="578" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="bold" fill="#fff">Pest Control Technician – Eco Treatment</text>
+</svg>

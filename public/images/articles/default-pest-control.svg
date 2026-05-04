@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect width="800" height="600" fill="#e8f4e8"/>
+  <!-- shield emblem -->
+  <path d="M400,80 L520,130 L520,280 Q520,380 400,440 Q280,380 280,280 L280,130 Z" fill="#2e7d32" opacity="0.15"/>
+  <path d="M400,100 L510,145 L510,278 Q510,368 400,425 Q290,368 290,278 L290,145 Z" fill="none" stroke="#2e7d32" stroke-width="4"/>
+  <!-- check mark inside shield -->
+  <polyline points="340,270 380,320 460,210" stroke="#2e7d32" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- bug icon (generic, struck through) -->
+  <g transform="translate(400,300)" opacity="0.18">
+    <ellipse cx="0" cy="0" rx="35" ry="25" fill="#333"/>
+    <ellipse cx="40" cy="-5" rx="22" ry="18" fill="#333"/>
+    <ellipse cx="-38" cy="5" rx="24" ry="18" fill="#333"/>
+    <line x1="-10" y1="20" x2="-40" y2="40" stroke="#333" stroke-width="4"/>
+    <line x1="10" y1="20" x2="40" y2="40" stroke="#333" stroke-width="4"/>
+    <line x1="-10" y1="-18" x2="-40" y2="-38" stroke="#333" stroke-width="4"/>
+    <line x1="10" y1="-18" x2="40" y2="-38" stroke="#333" stroke-width="4"/>
+  </g>
+  <!-- title text -->
+  <text x="400" y="490" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" font-weight="bold" fill="#2e7d32">Pest Control</text>
+  <text x="400" y="525" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#558b2f">Professional Extermination</text>
+  <!-- label bar -->
+  <rect x="0" y="555" width="800" height="45" fill="rgba(46,125,50,0.85)"/>
+  <text x="400" y="584" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#fff">Professional Pest Control</text>
+</svg>
