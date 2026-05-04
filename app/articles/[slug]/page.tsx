@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!article) return {};
   const { frontmatter } = article;
   const metaTitle = frontmatter.titleHebrew || frontmatter.title || "";
-  const metaImage = getPostImage(frontmatter);
+  const metaImage = getPostImage(frontmatter, slug);
   return {
     title: metaTitle,
     description: frontmatter.excerpt || frontmatter.description,
@@ -52,7 +52,7 @@ export default async function ArticlePage({ params }: Props) {
   const { frontmatter, content } = article;
   const displayTitle = frontmatter.titleHebrew || frontmatter.title || "";
   const displayExcerpt = frontmatter.excerpt || frontmatter.subtitle || frontmatter.description;
-  const displayImage = getPostImage(frontmatter);
+  const displayImage = getPostImage(frontmatter, slug);
 
   return (
     <>

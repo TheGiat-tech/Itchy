@@ -40,7 +40,7 @@ export default function ArticlesPage() {
             {articles.map((article) => {
               const cardTitle = article.frontmatter.titleHebrew || article.frontmatter.title || "";
               const cardExcerpt = article.frontmatter.excerpt || article.frontmatter.subtitle || article.frontmatter.description;
-              const cardImage = getPostImage(article.frontmatter);
+              const cardImage = getPostImage(article.frontmatter, article.slug);
               return (
               <Link
                 key={article.slug}

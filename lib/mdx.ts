@@ -70,7 +70,7 @@ export interface ArticleFrontmatter {
   thumbnail?: string;
   coverImage?: string;
   cover_image?: string;
-  // Keyword used to generate a deterministic picsum.photos placeholder image
+  // Keyword used to drive an Unsplash featured image search (e.g. "german cockroach close up")
   imageKeyword?: string;
   titleLatin?: string;
 }
@@ -93,36 +93,115 @@ const IMAGE_FIELDS = [
 ] as const;
 
 /**
+ * Derives a specific, visually descriptive English keyword for an article when
+ * its frontmatter does not provide an explicit imageKeyword.
+ *
+ * The function inspects the Hebrew/English title, description, and slug for
+ * known pest patterns and maps them to narrow visual search terms that an
+ * image-search service can use to return a relevant photo.
+ */
+export function inferImageKeyword(
+  frontmatter: Pick<ArticleFrontmatter, "title" | "titleHebrew" | "description" | "pestType">,
+  slug?: string
+): string {
+  const text = [
+    frontmatter.title ?? "",
+    frontmatter.titleHebrew ?? "",
+    frontmatter.description ?? "",
+    frontmatter.pestType ?? "",
+    slug ?? "",
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  if (/תיקן גרמני|german[- ]cockroach|german[- ]roach/i.test(text))
+    return "german cockroach close up";
+  if (/תיקן אמריקאי|american[- ]cockroach/i.test(text))
+    return "american cockroach";
+  if (/ג'וק|ג'וקים|מקק|מקקים|cockroach|roach/i.test(text))
+    return "cockroach infestation kitchen";
+  if (/ששן|עכביש|spider/i.test(text))
+    return "venomous spider close up";
+  if (/יתוש|יתושים|mosquito/i.test(text))
+    return "mosquito close up";
+  if (/פשפש|bed[- ]bug/i.test(text))
+    return "bed bug mattress close up";
+  if (/נמלת אש|נמלות אש|fire[- ]ant/i.test(text))
+    return "fire ant colony close up";
+  if (/נמלה|נמלים|ant\b/i.test(text))
+    return "ants marching kitchen counter";
+  if (/עכבר|עכברים|mouse|mice/i.test(text))
+    return "mouse in house close up";
+  if (/חולדה|חולדות|\brat\b|\brats\b/i.test(text))
+    return "rat in house close up";
+  if (/טרמיט|termite/i.test(text))
+    return "termite damage wood beams";
+  if (/פרעוש|פרעושים|flea/i.test(text))
+    return "flea on dog fur close up";
+  if (/צרעה|צרעות|\bwasp\b/i.test(text))
+    return "wasp nest close up";
+  if (/קרציה|קרציות|\btick\b/i.test(text))
+    return "tick close up";
+  if (/עש מזון|pantry[- ]moth/i.test(text))
+    return "pantry moth insect";
+  if (/דג הכסף|silverfish/i.test(text))
+    return "silverfish insect";
+  if (/זבוב|זבובים|\bfly\b|\bflies\b/i.test(text))
+    return "fly infestation kitchen";
+
+  return "pest control technician inspection";
+}
+
+/**
+ * Builds a topic-aware image URL from a keyword using Unsplash's featured
+ * photo search.  Unlike a seed-based random service, this actually returns
+ * photos matching the subject of the keyword.
+ */
+function keywordToImageUrl(keyword: string): string {
+  const query = encodeURIComponent(keyword.trim());
+  return `https://source.unsplash.com/featured/800x600/?${query}`;
+}
+
+/**
  * Resolves the best available image URL for an article/post.
  *
- * Checks direct URL fields first (in priority order via IMAGE_FIELDS), then
- * falls back to a deterministic picsum.photos/seed URL derived from
- * imageKeyword. Returns undefined only when the post has no image information
- * at all – callers should render their own fallback in that case.
+ * Priority:
+ *   1. Direct image URL from frontmatter fields (imageOverride, image, …)
+ *   2. Explicit frontmatter.imageKeyword → Unsplash featured search
+ *   3. inferImageKeyword() keyword derived from title/description/slug → Unsplash featured search
+ *
+ * Returns undefined only when the post has absolutely no image information –
+ * callers should render their own fallback in that case.
+ *
+ * @param frontmatter  Article frontmatter parsed from MDX.
+ * @param slug         Optional article slug used by inferImageKeyword when
+ *                     frontmatter fields alone are insufficient.
  */
-export function getPostImage(frontmatter: ArticleFrontmatter): string | undefined {
+export function getPostImage(
+  frontmatter: ArticleFrontmatter,
+  slug?: string
+): string | undefined {
   for (const field of IMAGE_FIELDS) {
     const val = frontmatter[field];
     // Accept only non-empty string URLs; skip numbers, booleans, or objects
     // that gray-matter might parse from unusual frontmatter values.
     if (typeof val === "string" && val.trim()) return val.trim();
   }
-  if (frontmatter.imageKeyword) {
-    // Use picsum.photos with a deterministic seed derived from the keyword.
-    // This gives every article a unique, stable image without relying on
-    // loremflickr.com, which is broken as of 2024-2025 (returns the same
-    // image for every tag combination regardless of the URL).
-    const seed = frontmatter.imageKeyword.trim().toLowerCase().replace(/\s+/g, "-");
-    return `https://picsum.photos/seed/${encodeURIComponent(seed)}/800/600`;
-  }
-  return undefined;
+
+  // Use explicit keyword first, then fall back to an inferred one.
+  const keyword =
+    (frontmatter.imageKeyword && frontmatter.imageKeyword.trim()) ||
+    inferImageKeyword(frontmatter, slug);
+
+  return keywordToImageUrl(keyword);
 }
 
 /** @deprecated Use getPostImage instead. */
 export function buildImageUrl(
-  frontmatter: Pick<ArticleFrontmatter, "imageOverride" | "imageKeyword" | "image">
+  frontmatter: Pick<ArticleFrontmatter, "imageOverride" | "imageKeyword" | "image">,
+  slug?: string
 ): string | undefined {
-  return getPostImage(frontmatter);
+  return getPostImage(frontmatter, slug);
 }
 
 export interface Article {
