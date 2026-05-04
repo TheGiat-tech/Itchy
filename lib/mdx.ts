@@ -70,7 +70,7 @@ export interface ArticleFrontmatter {
   thumbnail?: string;
   coverImage?: string;
   cover_image?: string;
-  // Keyword used to generate a placeholder image via loremflickr
+  // Keyword used to generate a deterministic picsum.photos placeholder image
   imageKeyword?: string;
   titleLatin?: string;
 }
@@ -96,26 +96,24 @@ const IMAGE_FIELDS = [
  * Resolves the best available image URL for an article/post.
  *
  * Checks direct URL fields first (in priority order via IMAGE_FIELDS), then
- * falls back to generating a loremflickr placeholder from imageKeyword.
- * Returns undefined only when the post has no image information at all –
- * callers should render their own fallback in that case.
+ * falls back to a deterministic picsum.photos/seed URL derived from
+ * imageKeyword. Returns undefined only when the post has no image information
+ * at all – callers should render their own fallback in that case.
  */
 export function getPostImage(frontmatter: ArticleFrontmatter): string | undefined {
   for (const field of IMAGE_FIELDS) {
     const val = frontmatter[field];
-    // Treat empty strings as absent – an empty string is not a usable URL.
-    if (val) return val;
+    // Accept only non-empty string URLs; skip numbers, booleans, or objects
+    // that gray-matter might parse from unusual frontmatter values.
+    if (typeof val === "string" && val.trim()) return val.trim();
   }
   if (frontmatter.imageKeyword) {
-    // Encode each tag individually to avoid special-character issues, then
-    // join with "," which loremflickr expects as its tag separator.
-    // e.g. "ants kitchen pest" → "https://loremflickr.com/800/600/ants,kitchen,pest"
-    const tags = frontmatter.imageKeyword
-      .trim()
-      .split(/\s+/)
-      .map((t) => encodeURIComponent(t))
-      .join(",");
-    return `https://loremflickr.com/800/600/${tags}`;
+    // Use picsum.photos with a deterministic seed derived from the keyword.
+    // This gives every article a unique, stable image without relying on
+    // loremflickr.com, which is broken as of 2024-2025 (returns the same
+    // image for every tag combination regardless of the URL).
+    const seed = frontmatter.imageKeyword.trim().toLowerCase().replace(/\s+/g, "-");
+    return `https://picsum.photos/seed/${encodeURIComponent(seed)}/800/600`;
   }
   return undefined;
 }
