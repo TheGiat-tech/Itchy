@@ -1,20 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 
 const COOKIE_KEY = "itchy_cookie_consent";
 
+function subscribe(onChange: () => void) {
+  window.addEventListener("storage", onChange);
+  return () => window.removeEventListener("storage", onChange);
+}
+
+function getSnapshot() {
+  return !localStorage.getItem(COOKIE_KEY);
+}
+
+function getServerSnapshot() {
+  return false;
+}
+
 export default function CookieBanner() {
-  const [visible, setVisible] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return !localStorage.getItem(COOKIE_KEY);
-  });
+  const consentMissing = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const [dismissed, setDismissed] = useState(false);
 
   function accept() {
     localStorage.setItem(COOKIE_KEY, "accepted");
-    setVisible(false);
+    setDismissed(true);
   }
+
+  const visible = consentMissing && !dismissed;
 
   if (!visible) return null;
 
