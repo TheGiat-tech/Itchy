@@ -51,23 +51,6 @@ export function getAllPests(): Pest[] {
 // Articles
 // ---------------------------------------------------------------------------
 
-/**
- * Builds a loremflickr image URL from an imageKeyword string.
- * Spaces in the keyword are converted to commas because loremflickr
- * uses comma-separated tag search (spaces encoded as %20 return no results).
- * e.g. "ants kitchen pest" → "https://loremflickr.com/800/600/ants,kitchen,pest"
- */
-export function buildImageUrl(
-  frontmatter: Pick<ArticleFrontmatter, "imageOverride" | "imageKeyword" | "image">
-): string | undefined {
-  if (frontmatter.imageOverride) return frontmatter.imageOverride;
-  if (frontmatter.imageKeyword) {
-    const tags = frontmatter.imageKeyword.trim().replace(/\s+/g, ",");
-    return `https://loremflickr.com/800/600/${tags}`;
-  }
-  return frontmatter.image;
-}
-
 export interface ArticleFrontmatter {
   title?: string;
   titleHebrew?: string;
@@ -77,10 +60,71 @@ export interface ArticleFrontmatter {
   date?: string;
   category?: string;
   pestType?: string;
-  image?: string;
+  // Direct image URL fields (priority order is defined in IMAGE_FIELDS below)
   imageOverride?: string;
+  image?: string;
+  imageUrl?: string;
+  image_url?: string;
+  featuredImage?: string;
+  featured_image?: string;
+  thumbnail?: string;
+  coverImage?: string;
+  cover_image?: string;
+  // Keyword used to generate a placeholder image via loremflickr
   imageKeyword?: string;
   titleLatin?: string;
+}
+
+/**
+ * Ordered list of direct-URL image fields to check, from highest to lowest
+ * priority.  Having a single source of truth makes it trivial to add or
+ * reorder fields in the future.
+ */
+const IMAGE_FIELDS = [
+  "imageOverride",
+  "image",
+  "imageUrl",
+  "image_url",
+  "featuredImage",
+  "featured_image",
+  "thumbnail",
+  "coverImage",
+  "cover_image",
+] as const;
+
+/**
+ * Resolves the best available image URL for an article/post.
+ *
+ * Checks direct URL fields first (in priority order via IMAGE_FIELDS), then
+ * falls back to generating a loremflickr placeholder from imageKeyword.
+ * Returns undefined only when the post has no image information at all –
+ * callers should render their own fallback in that case.
+ */
+export function getPostImage(frontmatter: ArticleFrontmatter): string | undefined {
+  for (const field of IMAGE_FIELDS) {
+    const val = frontmatter[field];
+    // Treat empty strings as absent – an empty string is not a usable URL.
+    if (val) return val;
+  }
+  if (frontmatter.imageKeyword) {
+    // Encode each tag individually to avoid special-character issues, then
+    // join with "," which loremflickr expects as its tag separator.
+    // e.g. "ants kitchen pest" → "https://loremflickr.com/800/600/ants,kitchen,pest"
+    const tags = frontmatter.imageKeyword
+      .trim()
+      .split(/\s+/)
+      .map((t) => encodeURIComponent(t))
+      .join(",");
+    return `https://loremflickr.com/800/600/${tags}`;
+  }
+  return undefined;
+}
+
+/** @deprecated Use getPostImage instead. */
+export function buildImageUrl(
+  frontmatter: Pick<ArticleFrontmatter, "imageOverride" | "imageKeyword" | "image">
+): string | undefined {
+  return getPostImage(frontmatter);
 }
 
 export interface Article {
