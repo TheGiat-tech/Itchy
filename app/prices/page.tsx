@@ -3,20 +3,20 @@ import Link from "next/link";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "מחירון הדברה | גיאת הדברות - איצ'י",
+  title: "מחירון הדברה נפוץ | איצ'י",
   description:
     "מחירון הדברה מעודכן: תיקנים, נמלים, נמלת האש, חולדות, פינוי פגרים ועוד. שקיפות מלאה ומחירים הוגנים.",
 };
 
 const PRICE_ITEMS = [
   {
-    category: "חרקים סורקים",
+    category: "מזיקים נפוצים",
     icon: "🪲",
     items: [
       { service: "טיפול בג'וקים (דירה)", price: "החל מ-₪250" },
-      { service: "טיפול בנמלים", price: "החל מ-₪200" },
+      { service: "טיפול בנמלים", price: "החל מ-₪250" },
       { service: "טיפול בנמלת האש", price: "החל מ-₪350" },
-      { service: "טיפול בכינים (ריסוס)", price: "החל מ-₪180" },
+      { service: "טיפול בכיני יונים (ריסוס)", price: "החל מ-₪280" },
     ],
   },
   {
