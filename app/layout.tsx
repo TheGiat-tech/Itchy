@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import StickyLeadBar from "@/components/StickyLeadBar";
 import Navbar from "@/components/Navbar";
+import CookieBanner from "@/components/CookieBanner";
 
 export const metadata: Metadata = {
   title: {
@@ -32,6 +33,7 @@ export default function RootLayout({
         <div className="animate-[fade-in-up_0.5s_ease_both]">
           {children}
         </div>
+        <CookieBanner />
       </body>
     </html>
   );

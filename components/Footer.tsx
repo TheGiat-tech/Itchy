@@ -59,8 +59,16 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="border-t border-gray-700 mt-8 pt-6 text-center text-xs text-gray-500">
-          © איצ&#39;י 2026 – כל הזכויות שמורות
+        <div className="border-t border-gray-700 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+          <span>© איצ&#39;י 2026 – כל הזכויות שמורות</span>
+          <div className="flex gap-4">
+            <Link href="/privacy-policy" className="hover:text-gray-300 transition-colors">
+              מדיניות פרטיות
+            </Link>
+            <Link href="/terms" className="hover:text-gray-300 transition-colors">
+              תנאי שימוש
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
