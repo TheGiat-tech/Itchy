@@ -15,11 +15,12 @@ export default function ContactForm() {
 
     // הגדרות Web3Forms
     formData.append("subject", "פנייה חדשה לזיהוי מזיק - איצ׳י");
-    formData.append("from_name", "אתר איצ'י");
     
-    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY || "c5651e0e-d0c4-4305-bbbd-c1d0da50a3ce";
-    formData.append("access_key", accessKey);
+  formData.append("from_name", "אתר איצ'י");
+    
+    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
 
+    
     try {
       const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
