@@ -12,8 +12,9 @@ export async function submitContactForm(
   console.log("[contact] received formData keys:", [...formData.keys()]);
 
   // --- Environment variable validation ---
+  // BLOB_READ_WRITE_TOKEN is checked only inside the blob-upload block (below),
+  // so attachment-free submissions are never blocked by a missing/rotated blob token.
   const missingEnvVars: string[] = [];
-  if (!process.env.BLOB_READ_WRITE_TOKEN) missingEnvVars.push("BLOB_READ_WRITE_TOKEN");
   if (!process.env.POSTGRES_URL) missingEnvVars.push("POSTGRES_URL");
   if (!process.env.NEXT_PUBLIC_WEB3FORMS_KEY) missingEnvVars.push("NEXT_PUBLIC_WEB3FORMS_KEY");
 
