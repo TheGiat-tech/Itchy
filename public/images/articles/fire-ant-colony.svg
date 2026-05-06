@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect width="800" height="600" fill="#d4a85a"/>
+  <!-- ground / soil -->
+  <rect x="0" y="380" width="800" height="220" fill="#8b5e2a"/>
+  <!-- mound -->
+  <ellipse cx="400" cy="380" rx="220" ry="80" fill="#a0703a"/>
+  <ellipse cx="400" cy="380" rx="180" ry="60" fill="#b07d42"/>
+  <!-- mound entrance hole -->
+  <ellipse cx="400" cy="365" rx="30" ry="15" fill="#5a3010"/>
+  <!-- grass blades -->
+  <g stroke="#4a7c20" stroke-width="3" fill="none">
+    <path d="M80,380 Q70,330 90,280"/>
+    <path d="M110,380 Q130,340 115,295"/>
+    <path d="M150,380 Q140,320 160,270"/>
+    <path d="M660,380 Q650,330 670,285"/>
+    <path d="M700,380 Q720,340 705,295"/>
+    <path d="M740,380 Q730,320 750,275"/>
+  </g>
+  <!-- fire ants (orange-red) scattered on mound -->
+  <g fill="#cc3300">
+    <!-- ant 1 -->
+    <g transform="translate(340,340)">
+      <ellipse cx="0" cy="0" rx="8" ry="5" fill="#cc3300"/>
+      <ellipse cx="11" cy="-2" rx="6" ry="4" fill="#cc3300"/>
+      <ellipse cx="-10" cy="2" rx="7" ry="5" fill="#cc3300"/>
+      <line x1="-4" y1="3" x2="-16" y2="10" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="0" y1="4" x2="-5" y2="13" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="4" y1="3" x2="14" y2="9" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="-4" y1="-2" x2="-16" y2="-8" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="4" y1="-2" x2="14" y2="-7" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="16" y1="-3" x2="26" y2="-13" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="16" y1="-1" x2="28" y2="-4" stroke="#aa2200" stroke-width="1.5"/>
+    </g>
+    <!-- ant 2 -->
+    <g transform="translate(410,355)">
+      <ellipse cx="0" cy="0" rx="8" ry="5" fill="#cc3300"/>
+      <ellipse cx="11" cy="-2" rx="6" ry="4" fill="#cc3300"/>
+      <ellipse cx="-10" cy="2" rx="7" ry="5" fill="#cc3300"/>
+      <line x1="-4" y1="3" x2="-16" y2="10" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="4" y1="3" x2="14" y2="9" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="-4" y1="-2" x2="-16" y2="-8" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="4" y1="-2" x2="14" y2="-7" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="16" y1="-3" x2="26" y2="-13" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="16" y1="-1" x2="28" y2="-4" stroke="#aa2200" stroke-width="1.5"/>
+    </g>
+    <!-- ant 3 -->
+    <g transform="translate(370,375)">
+      <ellipse cx="0" cy="0" rx="8" ry="5" fill="#cc3300"/>
+      <ellipse cx="11" cy="-2" rx="6" ry="4" fill="#cc3300"/>
+      <ellipse cx="-10" cy="2" rx="7" ry="5" fill="#cc3300"/>
+      <line x1="-4" y1="3" x2="-16" y2="10" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="4" y1="3" x2="14" y2="9" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="-4" y1="-2" x2="-16" y2="-8" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="4" y1="-2" x2="14" y2="-7" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="16" y1="-3" x2="26" y2="-13" stroke="#aa2200" stroke-width="1.5"/>
+    </g>
+    <!-- ant 4 smaller -->
+    <g transform="translate(440,340) scale(0.8)">
+      <ellipse cx="0" cy="0" rx="8" ry="5" fill="#cc3300"/>
+      <ellipse cx="11" cy="-2" rx="6" ry="4" fill="#cc3300"/>
+      <ellipse cx="-10" cy="2" rx="7" ry="5" fill="#cc3300"/>
+      <line x1="-4" y1="3" x2="-16" y2="10" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="4" y1="3" x2="14" y2="9" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="-4" y1="-2" x2="-16" y2="-8" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="16" y1="-3" x2="26" y2="-13" stroke="#aa2200" stroke-width="1.5"/>
+    </g>
+    <!-- ant 5 -->
+    <g transform="translate(320,360) scale(0.9)">
+      <ellipse cx="0" cy="0" rx="8" ry="5" fill="#cc3300"/>
+      <ellipse cx="11" cy="-2" rx="6" ry="4" fill="#cc3300"/>
+      <ellipse cx="-10" cy="2" rx="7" ry="5" fill="#cc3300"/>
+      <line x1="-4" y1="3" x2="-16" y2="10" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="4" y1="3" x2="14" y2="9" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="-4" y1="-2" x2="-16" y2="-8" stroke="#aa2200" stroke-width="1.5"/>
+      <line x1="16" y1="-3" x2="26" y2="-13" stroke="#aa2200" stroke-width="1.5"/>
+    </g>
+  </g>
+  <!-- "stings" warning symbol -->
+  <polygon points="650,80 680,140 620,140" fill="#ff4400" stroke="#cc2200" stroke-width="3"/>
+  <text x="650" y="133" text-anchor="middle" font-size="36" fill="#fff" font-weight="bold">!</text>
+  <!-- label -->
+  <rect x="0" y="540" width="800" height="60" fill="rgba(0,0,0,0.55)"/>
+  <text x="400" y="578" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="bold" fill="#fff">Fire Ant Colony (Wasmannia auropunctata)</text>
+</svg>

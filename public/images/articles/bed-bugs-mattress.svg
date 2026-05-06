@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect width="800" height="600" fill="#e8d5c4"/>
+  <!-- mattress -->
+  <rect x="80" y="280" width="640" height="200" rx="18" fill="#f5f0ea" stroke="#c8b89a" stroke-width="3"/>
+  <rect x="80" y="280" width="640" height="40" rx="18" fill="#ddd0be" stroke="#c8b89a" stroke-width="2"/>
+  <!-- mattress tufts -->
+  <circle cx="200" cy="380" r="8" fill="#c8b89a"/>
+  <circle cx="400" cy="380" r="8" fill="#c8b89a"/>
+  <circle cx="600" cy="380" r="8" fill="#c8b89a"/>
+  <circle cx="300" cy="430" r="8" fill="#c8b89a"/>
+  <circle cx="500" cy="430" r="8" fill="#c8b89a"/>
+  <!-- bed bug (enlarged, realistic shape) -->
+  <g transform="translate(390,350)">
+    <!-- body - flat oval, reddish-brown -->
+    <ellipse cx="0" cy="0" rx="28" ry="18" fill="#8b3a2a"/>
+    <!-- head -->
+    <ellipse cx="26" cy="0" rx="10" ry="8" fill="#7a2e1e"/>
+    <!-- segmentation lines -->
+    <line x1="-20" y1="-10" x2="-20" y2="10" stroke="#6b2918" stroke-width="1.5"/>
+    <line x1="-8" y1="-15" x2="-8" y2="15" stroke="#6b2918" stroke-width="1.5"/>
+    <line x1="6" y1="-16" x2="6" y2="16" stroke="#6b2918" stroke-width="1.5"/>
+    <!-- legs (3 per side) -->
+    <line x1="-15" y1="-12" x2="-35" y2="-28" stroke="#5a2010" stroke-width="2.5"/>
+    <line x1="0" y1="-16" x2="-10" y2="-34" stroke="#5a2010" stroke-width="2.5"/>
+    <line x1="12" y1="-14" x2="20" y2="-32" stroke="#5a2010" stroke-width="2.5"/>
+    <line x1="-15" y1="12" x2="-35" y2="28" stroke="#5a2010" stroke-width="2.5"/>
+    <line x1="0" y1="16" x2="-10" y2="34" stroke="#5a2010" stroke-width="2.5"/>
+    <line x1="12" y1="14" x2="20" y2="32" stroke="#5a2010" stroke-width="2.5"/>
+    <!-- antennae -->
+    <line x1="32" y1="-5" x2="52" y2="-18" stroke="#5a2010" stroke-width="2"/>
+    <line x1="32" y1="3" x2="52" y2="12" stroke="#5a2010" stroke-width="2"/>
+  </g>
+  <!-- small bug 2 -->
+  <g transform="translate(240,400) scale(0.6)">
+    <ellipse cx="0" cy="0" rx="28" ry="18" fill="#8b3a2a"/>
+    <ellipse cx="26" cy="0" rx="10" ry="8" fill="#7a2e1e"/>
+    <line x1="-15" y1="-12" x2="-35" y2="-28" stroke="#5a2010" stroke-width="2.5"/>
+    <line x1="0" y1="-16" x2="-10" y2="-34" stroke="#5a2010" stroke-width="2.5"/>
+    <line x1="-15" y1="12" x2="-35" y2="28" stroke="#5a2010" stroke-width="2.5"/>
+    <line x1="0" y1="16" x2="-10" y2="34" stroke="#5a2010" stroke-width="2.5"/>
+  </g>
+  <!-- label -->
+  <rect x="0" y="540" width="800" height="60" fill="rgba(0,0,0,0.55)"/>
+  <text x="400" y="578" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="bold" fill="#fff">Bed Bug on Mattress</text>
+</svg>

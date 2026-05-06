@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect width="800" height="600" fill="#1e1a16"/>
+  <!-- dark corner / wall background -->
+  <rect x="0" y="0" width="400" height="600" fill="#241e18"/>
+  <rect x="400" y="0" width="400" height="600" fill="#1a1510"/>
+  <!-- corner line -->
+  <line x1="400" y1="0" x2="400" y2="600" stroke="#2e2620" stroke-width="3"/>
+  <!-- cobweb -->
+  <g stroke="#888" stroke-width="0.8" opacity="0.5" fill="none">
+    <!-- radial lines from top-right -->
+    <line x1="650" y1="50" x2="400" y2="300"/>
+    <line x1="700" y1="100" x2="400" y2="300"/>
+    <line x1="750" y1="50" x2="400" y2="300"/>
+    <line x1="800" y1="100" x2="400" y2="300"/>
+    <line x1="650" y1="50" x2="800" y2="200"/>
+    <!-- arcs -->
+    <path d="M500,110 Q650,80 760,140"/>
+    <path d="M455,175 Q640,130 780,210"/>
+    <path d="M430,240 Q630,180 800" />
+  </g>
+  <!-- BROWN RECLUSE SPIDER -->
+  <g transform="translate(400,300)">
+    <!-- abdomen -->
+    <ellipse cx="-40" cy="10" rx="52" ry="38" fill="#8b6530"/>
+    <!-- cephalothorax -->
+    <ellipse cx="25" cy="0" rx="42" ry="32" fill="#9a7038"/>
+    <!-- violin mark (dark) on cephalothorax -->
+    <ellipse cx="20" cy="-2" rx="18" ry="22" fill="#4a3010"/>
+    <!-- violin narrow neck -->
+    <rect x="10" y="14" width="12" height="16" rx="3" fill="#4a3010"/>
+    <!-- eyes (6 in pairs - recluse characteristic) -->
+    <circle cx="36" cy="-18" r="4" fill="#111"/>
+    <circle cx="44" cy="-18" r="4" fill="#111"/>
+    <circle cx="30" cy="-10" r="3.5" fill="#111"/>
+    <circle cx="50" cy="-10" r="3.5" fill="#111"/>
+    <circle cx="28" cy="-2" r="3" fill="#111"/>
+    <circle cx="52" cy="-2" r="3" fill="#111"/>
+    <!-- eye shine -->
+    <circle cx="37" cy="-19" r="1.5" fill="#666"/>
+    <circle cx="45" cy="-19" r="1.5" fill="#666"/>
+    <!-- chelicerae -->
+    <ellipse cx="60" cy="8" rx="10" ry="7" fill="#7a5828" transform="rotate(20,60,8)"/>
+    <ellipse cx="68" cy="16" rx="8" ry="5" fill="#4a3010"/>
+    <!-- legs (4 per side, long and slender) -->
+    <!-- left legs -->
+    <line x1="10" y1="-15" x2="-40" y2="-70" stroke="#7a5828" stroke-width="3"/>
+    <line x1="-40" y1="-70" x2="-80" y2="-100" stroke="#7a5828" stroke-width="2"/>
+    <line x1="-80" y1="-100" x2="-110" y2="-80" stroke="#7a5828" stroke-width="2"/>
+    <line x1="5" y1="-5" x2="-50" y2="-35" stroke="#7a5828" stroke-width="3"/>
+    <line x1="-50" y1="-35" x2="-95" y2="-30" stroke="#7a5828" stroke-width="2"/>
+    <line x1="-95" y1="-30" x2="-130" y2="-10" stroke="#7a5828" stroke-width="2"/>
+    <line x1="0" y1="10" x2="-55" y2="15" stroke="#7a5828" stroke-width="3"/>
+    <line x1="-55" y1="15" x2="-95" y2="35" stroke="#7a5828" stroke-width="2"/>
+    <line x1="-95" y1="35" x2="-125" y2="60" stroke="#7a5828" stroke-width="2"/>
+    <line x1="-5" y1="25" x2="-45" y2="60" stroke="#7a5828" stroke-width="3"/>
+    <line x1="-45" y1="60" x2="-75" y2="90" stroke="#7a5828" stroke-width="2"/>
+    <line x1="-75" y1="90" x2="-95" y2="120" stroke="#7a5828" stroke-width="2"/>
+    <!-- right legs -->
+    <line x1="40" y1="-20" x2="85" y2="-72" stroke="#7a5828" stroke-width="3"/>
+    <line x1="85" y1="-72" x2="125" y2="-100" stroke="#7a5828" stroke-width="2"/>
+    <line x1="125" y1="-100" x2="155" y2="-80" stroke="#7a5828" stroke-width="2"/>
+    <line x1="48" y1="-8" x2="98" y2="-35" stroke="#7a5828" stroke-width="3"/>
+    <line x1="98" y1="-35" x2="140" y2="-28" stroke="#7a5828" stroke-width="2"/>
+    <line x1="140" y1="-28" x2="170" y2="-5" stroke="#7a5828" stroke-width="2"/>
+    <line x1="48" y1="8" x2="100" y2="16" stroke="#7a5828" stroke-width="3"/>
+    <line x1="100" y1="16" x2="138" y2="38" stroke="#7a5828" stroke-width="2"/>
+    <line x1="138" y1="38" x2="162" y2="65" stroke="#7a5828" stroke-width="2"/>
+    <line x1="42" y1="22" x2="85" y2="58" stroke="#7a5828" stroke-width="3"/>
+    <line x1="85" y1="58" x2="112" y2="90" stroke="#7a5828" stroke-width="2"/>
+    <line x1="112" y1="90" x2="128" y2="122" stroke="#7a5828" stroke-width="2"/>
+  </g>
+  <!-- danger warning badge -->
+  <circle cx="680" cy="100" r="50" fill="#cc2200" opacity="0.9"/>
+  <text x="680" y="95" text-anchor="middle" font-size="32" fill="#fff" font-weight="bold">☠</text>
+  <text x="680" y="120" text-anchor="middle" font-size="12" fill="#fff" font-family="Arial">VENOMOUS</text>
+  <!-- label -->
+  <rect x="0" y="540" width="800" height="60" fill="rgba(0,0,0,0.7)"/>
+  <text x="400" y="578" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="bold" fill="#fff">Brown Recluse Spider – Venomous</text>
+</svg>

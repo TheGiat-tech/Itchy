@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect width="800" height="600" fill="#f0e8d0"/>
+  <!-- kitchen counter background -->
+  <rect x="0" y="420" width="800" height="180" fill="#d4a97a"/>
+  <rect x="0" y="414" width="800" height="12" fill="#b8874e"/>
+  <!-- cockroach (Blattella germanica - tan/light brown with two dark stripes) -->
+  <g transform="translate(400,350)">
+    <!-- pronotum (head shield) -->
+    <ellipse cx="0" cy="-52" rx="28" ry="20" fill="#c8a44a"/>
+    <!-- two dark stripes on pronotum -->
+    <ellipse cx="-8" cy="-52" rx="6" ry="16" fill="#5a3a10" opacity="0.8"/>
+    <ellipse cx="8" cy="-52" rx="6" ry="16" fill="#5a3a10" opacity="0.8"/>
+    <!-- body (abdomen) -->
+    <ellipse cx="0" cy="0" rx="30" ry="55" fill="#c8a44a"/>
+    <!-- body segmentation -->
+    <line x1="-28" y1="-25" x2="28" y2="-25" stroke="#a07830" stroke-width="1.5"/>
+    <line x1="-29" y1="-10" x2="29" y2="-10" stroke="#a07830" stroke-width="1.5"/>
+    <line x1="-30" y1="5" x2="30" y2="5" stroke="#a07830" stroke-width="1.5"/>
+    <line x1="-29" y1="20" x2="29" y2="20" stroke="#a07830" stroke-width="1.5"/>
+    <line x1="-27" y1="35" x2="27" y2="35" stroke="#a07830" stroke-width="1.5"/>
+    <!-- wings -->
+    <ellipse cx="-18" cy="-5" rx="14" ry="48" fill="#b89438" opacity="0.6" transform="rotate(-8,-18,-5)"/>
+    <ellipse cx="18" cy="-5" rx="14" ry="48" fill="#b89438" opacity="0.6" transform="rotate(8,18,-5)"/>
+    <!-- legs (3 pairs) -->
+    <line x1="-28" y1="-30" x2="-65" y2="-50" stroke="#7a5220" stroke-width="2.5"/>
+    <line x1="-65" y1="-50" x2="-80" y2="-30" stroke="#7a5220" stroke-width="2"/>
+    <line x1="-29" y1="-5" x2="-68" y2="-5" stroke="#7a5220" stroke-width="2.5"/>
+    <line x1="-68" y1="-5" x2="-82" y2="15" stroke="#7a5220" stroke-width="2"/>
+    <line x1="-27" y1="22" x2="-62" y2="40" stroke="#7a5220" stroke-width="2.5"/>
+    <line x1="-62" y1="40" x2="-72" y2="62" stroke="#7a5220" stroke-width="2"/>
+    <line x1="28" y1="-30" x2="65" y2="-50" stroke="#7a5220" stroke-width="2.5"/>
+    <line x1="65" y1="-50" x2="80" y2="-30" stroke="#7a5220" stroke-width="2"/>
+    <line x1="29" y1="-5" x2="68" y2="-5" stroke="#7a5220" stroke-width="2.5"/>
+    <line x1="68" y1="-5" x2="82" y2="15" stroke="#7a5220" stroke-width="2"/>
+    <line x1="27" y1="22" x2="62" y2="40" stroke="#7a5220" stroke-width="2.5"/>
+    <line x1="62" y1="40" x2="72" y2="62" stroke="#7a5220" stroke-width="2"/>
+    <!-- antennae (long) -->
+    <line x1="-15" y1="-68" x2="-60" y2="-120" stroke="#7a5220" stroke-width="2"/>
+    <line x1="-60" y1="-120" x2="-90" y2="-155" stroke="#7a5220" stroke-width="1.5"/>
+    <line x1="15" y1="-68" x2="60" y2="-120" stroke="#7a5220" stroke-width="2"/>
+    <line x1="60" y1="-120" x2="90" y2="-155" stroke="#7a5220" stroke-width="1.5"/>
+    <!-- eyes -->
+    <circle cx="-12" cy="-66" r="4" fill="#1a1a1a"/>
+    <circle cx="12" cy="-66" r="4" fill="#1a1a1a"/>
+  </g>
+  <!-- label -->
+  <rect x="0" y="540" width="800" height="60" fill="rgba(0,0,0,0.55)"/>
+  <text x="400" y="578" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="bold" fill="#fff">German Cockroach (Blattella germanica)</text>
+</svg>

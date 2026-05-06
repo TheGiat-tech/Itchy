@@ -51,23 +51,6 @@ export function getAllPests(): Pest[] {
 // Articles
 // ---------------------------------------------------------------------------
 
-/**
- * Builds a loremflickr image URL from an imageKeyword string.
- * Spaces in the keyword are converted to commas because loremflickr
- * uses comma-separated tag search (spaces encoded as %20 return no results).
- * e.g. "ants kitchen pest" → "https://loremflickr.com/800/600/ants,kitchen,pest"
- */
-export function buildImageUrl(
-  frontmatter: Pick<ArticleFrontmatter, "imageOverride" | "imageKeyword" | "image">
-): string | undefined {
-  if (frontmatter.imageOverride) return frontmatter.imageOverride;
-  if (frontmatter.imageKeyword) {
-    const tags = frontmatter.imageKeyword.trim().replace(/\s+/g, ",");
-    return `https://loremflickr.com/800/600/${tags}`;
-  }
-  return frontmatter.image;
-}
-
 export interface ArticleFrontmatter {
   title?: string;
   titleHebrew?: string;
@@ -77,10 +60,85 @@ export interface ArticleFrontmatter {
   date?: string;
   category?: string;
   pestType?: string;
-  image?: string;
+  // Direct image URL fields (priority order is defined in IMAGE_FIELDS below)
   imageOverride?: string;
+  image?: string;
+  imageUrl?: string;
+  image_url?: string;
+  featuredImage?: string;
+  featured_image?: string;
+  thumbnail?: string;
+  coverImage?: string;
+  cover_image?: string;
+  // Kept for backward compatibility with existing frontmatter files.
   imageKeyword?: string;
+  // Alt text for the article image (used in <img alt="…">).
+  imageAlt?: string;
   titleLatin?: string;
+}
+
+/**
+ * Slug → local static image path.
+ *
+ * All paths are relative to /public and served at the listed URL by Next.js.
+ * When adding a new article, add an entry here so it gets a relevant image
+ * automatically even before the frontmatter image field is set.
+ */
+const ARTICLE_IMAGE_BY_SLUG: Record<string, string> = {
+  "ants-in-kitchen-eliminating-the-nest": "/images/articles/ants-kitchen.svg",
+  "bed-bugs-identification-and-prevention": "/images/articles/bed-bugs-mattress.svg",
+  "fleas-pets-home-integrated-treatment": "/images/articles/flea-dog-fur.svg",
+  "german-cockroach-the-kitchen-invader": "/images/articles/german-cockroach.svg",
+  "green-pest-control-myths-and-safety": "/images/articles/pest-control-technician.svg",
+  "how-to-prevent-cockroaches-summer": "/images/articles/cockroach-kitchen.svg",
+  "little-fire-ant-stings-and-treatment": "/images/articles/fire-ant-colony.svg",
+  "rats-vs-mice-noises-and-health-risks": "/images/articles/rat-house.svg",
+  "termites-signs-of-damage-and-treatment": "/images/articles/termite-damage.svg",
+  "venomous-spiders-identification-israel": "/images/articles/brown-recluse-spider.svg",
+};
+
+/** Fallback image served for any article that has no specific mapping. */
+const DEFAULT_ARTICLE_IMAGE = "/images/articles/default-pest-control.svg";
+
+/**
+ * Resolves the best available local image path for an article.
+ *
+ * Priority:
+ *   1. frontmatter.image — explicit local path set in the MDX file.
+ *   2. ARTICLE_IMAGE_BY_SLUG[slug] — topic-specific local SVG by article slug.
+ *   3. DEFAULT_ARTICLE_IMAGE — generic pest-control placeholder.
+ *
+ * No external image services (Unsplash, picsum, loremflickr, …) are used.
+ * Every returned path starts with "/images/articles/" and is a file that
+ * exists inside /public.
+ *
+ * @param frontmatter  Article frontmatter parsed from the MDX file.
+ * @param slug         Article slug (filename without extension).
+ */
+export function getPostImage(
+  frontmatter: ArticleFrontmatter,
+  slug?: string
+): string {
+  // 1. Explicit local image path in frontmatter takes highest priority.
+  if (typeof frontmatter.image === "string" && frontmatter.image.trim()) {
+    return frontmatter.image.trim();
+  }
+
+  // 2. Slug-based mapping to a topic-specific local image.
+  if (slug && ARTICLE_IMAGE_BY_SLUG[slug]) {
+    return ARTICLE_IMAGE_BY_SLUG[slug];
+  }
+
+  // 3. Static fallback – always resolves to a real local file.
+  return DEFAULT_ARTICLE_IMAGE;
+}
+
+/** @deprecated Use getPostImage instead. */
+export function buildImageUrl(
+  frontmatter: ArticleFrontmatter,
+  slug?: string
+): string {
+  return getPostImage(frontmatter, slug);
 }
 
 export interface Article {
