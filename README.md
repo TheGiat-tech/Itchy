@@ -10,16 +10,7 @@ cp .env.example .env.local
 
 | Variable | Required | Description |
 |---|---|---|
-| `RESEND_API_KEY` | ✅ | Resend secret API key – get one at [resend.com](https://resend.com). **Server-only; never expose to the browser.** |
-| `RESEND_FROM_EMAIL` | ✅ | Verified sender address, e.g. `Itchi <noreply@yourdomain.com>`. The domain must be verified in the Resend dashboard. Use `onboarding@resend.dev` for local testing. |
-| `RESEND_TO_EMAIL` | ☑️ optional | Recipient of contact-form leads. Falls back to the hardcoded address when not set. |
-
-### Resend setup (production – Vercel)
-
-1. Sign up at <https://resend.com> and create an API key.
-2. Verify your sending domain under **Domains → Add Domain**.
-3. Add the three variables above in **Vercel → Project Settings → Environment Variables**.
-4. Redeploy for the changes to take effect.
+| `NEXT_PUBLIC_WEB3FORMS_KEY` | ✅ | Web3Forms access key – get one at [web3forms.com](https://web3forms.com). Safe to expose to the browser (public key). |
 
 ## Getting Started
 
