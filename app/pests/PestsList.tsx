@@ -50,32 +50,48 @@ export default function PestsList({ pests }: Props) {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filtered.map((pest) => (
+          {filtered.map((pest) => {
+            const thumbSrc = pest.frontmatter.titleLatin
+              ? `/api/pest-image?name=${encodeURIComponent(pest.frontmatter.titleLatin)}`
+              : null;
+            return (
             <Link
               key={pest.slug}
               href={`/pests/${pest.slug}`}
-              className="block bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-lg hover:border-green-200 transition-all duration-300 hover:-translate-y-1"
+              className="group flex flex-col bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:border-green-200 transition-all duration-300 hover:-translate-y-1"
             >
-              <h2 className="font-bold text-gray-800 text-lg">
-                {pest.frontmatter.title}
-              </h2>
-              {pest.frontmatter.titleLatin && (
-                <p className="text-sm text-gray-400 italic">
-                  {pest.frontmatter.titleLatin}
-                </p>
+              {thumbSrc && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={thumbSrc}
+                  alt={pest.frontmatter.title}
+                  loading="lazy"
+                  className="w-full h-40 object-cover"
+                />
               )}
-              {pest.frontmatter.habitat && (
-                <p className="text-xs text-gray-500 mt-2">
-                  🏠 {pest.frontmatter.habitat}
-                </p>
-              )}
-              {pest.frontmatter.description && (
-                <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-                  {pest.frontmatter.description}
-                </p>
-              )}
+              <div className="p-5 flex flex-col flex-1">
+                <h2 className="font-bold text-gray-800 text-lg group-hover:text-green-700 transition-colors">
+                  {pest.frontmatter.title}
+                </h2>
+                {pest.frontmatter.titleLatin && (
+                  <p className="text-sm text-gray-400 italic">
+                    {pest.frontmatter.titleLatin}
+                  </p>
+                )}
+                {pest.frontmatter.habitat && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    🏠 {pest.frontmatter.habitat}
+                  </p>
+                )}
+                {pest.frontmatter.description && (
+                  <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                    {pest.frontmatter.description}
+                  </p>
+                )}
+              </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
       )}
     </>
