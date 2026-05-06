@@ -46,10 +46,17 @@ export async function submitContactForm(
   // --- Blob upload ---
   if (attachment && attachment.size > 0) {
     try {
+      const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
+      if (!blobToken) {
+        console.error("[contact] BLOB_READ_WRITE_TOKEN is missing at upload time");
+        return { success: false, error: "שגיאת הגדרות שרת – BLOB_READ_WRITE_TOKEN חסר" };
+      }
+      console.log("[contact] BLOB_READ_WRITE_TOKEN present, length:", blobToken.length);
       const safeName = attachment.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
       console.log("[contact] uploading blob:", safeName, attachment.size, "bytes");
       const blob = await put(`itchi-leads/${Date.now()}-${safeName}`, attachment, {
         access: "public",
+        token: blobToken,
       });
       imageUrl = blob.url;
       console.log("[contact] blob uploaded:", imageUrl);
