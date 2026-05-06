@@ -42,13 +42,13 @@ export default function ContactForm() {
       const data = await response.json();
 
       if (data.success) {
-        setResult("הפנייה נשלחה בהצלחה! נחזור אליך בהקדם.");
+        setResult("✅ הפנייה נשלחה בהצלחה! נחזור אליך בהקדם.");
         (event.target as HTMLFormElement).reset();
       } else {
-        setResult("אופס! הייתה שגיאה בשליחה. ניתן לשלוח גם בוואטסאפ.");
+        setResult("❌ אופס! הייתה שגיאה במפתח או בשליחה.");
       }
     } catch {
-      setResult("שגיאת תקשורת. בדוק את החיבור לאינטרנט.");
+      setResult("❌ שגיאת תקשורת. נסה שוב מאוחר יותר.");
     } finally {
       setIsSubmitting(false);
     }
@@ -107,7 +107,6 @@ export default function ContactForm() {
           ></textarea>
         </div>
 
-        {/* שדה העלאת תמונה */}
         <div className="bg-green-50 p-4 rounded-lg border border-green-100">
           <label className="block text-sm font-bold text-green-800 mb-2">📸 צרף תמונה לזיהוי המזיק</label>
           <input
