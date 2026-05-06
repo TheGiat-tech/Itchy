@@ -14,7 +14,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..");
 const ARTICLES_DIR = path.join(REPO_ROOT, "content", "articles");
 
-const CTA = "<a>📍 ליצירת קשר וייעוץ בנושא מזיקים - לחצו כאן</a>";
+const CTA = "<a>📍 ליצירת קשר וייעוץ בנושא מזיקים עם הצוות של איצ'י - לחצו כאן</a>";
 
 function today() {
   return new Date().toISOString().split("T")[0];
@@ -28,7 +28,7 @@ function stripCodeFences(text) {
 }
 
 function removeBrandName(text) {
-  return text.replace(/גיאת הדברות/g, "");
+  return text.replace(/גיאת הדברות|גבעת הדברות|גיאט הדברות|Giat Pest Control|Giat Hadbarot|Giat Extermination/g, "הצוות של איצ'י");
 }
 
 function validateArticle(content) {
@@ -138,7 +138,7 @@ pestType: "סוג המזיק בעברית"
 
 בסוף המאמר חובה להוסיף בדיוק את השורה הבאה:
 
-<a>📍 ליצירת קשר וייעוץ בנושא מזיקים - לחצו כאן</a>
+<a>📍 ליצירת קשר וייעוץ בנושא מזיקים עם הצוות של איצ'י - לחצו כאן</a>
 `.trim();
 
   const result = await model.generateContent(prompt);
