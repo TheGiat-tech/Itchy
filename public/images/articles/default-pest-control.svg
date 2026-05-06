@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F0FDF4"/><stop offset="100%" stop-color="#DCFCE7"/></linearGradient>
+    <linearGradient id="top" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#14532D"/><stop offset="100%" stop-color="#22C55E"/></linearGradient>
+    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22C55E"/><stop offset="100%" stop-color="#16A34A"/></linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1.2" fill="#86EFAC" opacity="0.45"/></pattern>
+  <rect width="800" height="600" fill="url(#dots)"/>
+  <rect width="800" height="72" fill="url(#top)"/>
+  <text x="32" y="46" font-family="system-ui,-apple-system,sans-serif" font-size="22" font-weight="700" fill="#FFFFFF">🛡 Professional Pest Control · הדברה מקצועית</text>
+  <!-- Glow circle -->
+  <circle cx="400" cy="295" r="200" fill="#BBF7D0" opacity="0.55"/>
+  <!-- Shield outline -->
+  <path d="M400,140 L530,192 L530,320 Q530,420 400,470 Q270,420 270,320 L270,192 Z" fill="none" stroke="#86EFAC" stroke-width="6" opacity="0.6"/>
+  <!-- Shield filled -->
+  <path d="M400,155 L520,203 L520,318 Q520,408 400,456 Q280,408 280,318 L280,203 Z" fill="url(#shield)" opacity="0.18"/>
+  <!-- Shield inner ring -->
+  <path d="M400,172 L506,214 L506,316 Q506,396 400,440 Q294,396 294,316 L294,214 Z" fill="none" stroke="#16A34A" stroke-width="3" opacity="0.4"/>
+  <!-- Checkmark inside shield -->
+  <polyline points="336,300 380,352 468,234" stroke="#15803D" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Decorative circles (top left, top right) -->
+  <circle cx="132" cy="200" r="60" fill="#BBF7D0" opacity="0.4"/>
+  <circle cx="668" cy="200" r="60" fill="#BBF7D0" opacity="0.4"/>
+  <!-- Pest icons (simplified flat) in corner circles -->
+  <!-- Left circle: ant silhouette -->
+  <g transform="translate(132,200) scale(0.7)" fill="#15803D" opacity="0.6">
+    <ellipse cx="0" cy="0" rx="11" ry="7"/><ellipse cx="17" cy="-3" rx="9" ry="6"/><ellipse cx="-13" cy="3" rx="10" ry="6"/>
+    <line x1="-5" y1="4" x2="-18" y2="12" stroke="#15803D" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="5" y1="4" x2="16" y2="10" stroke="#15803D" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="-5" y1="-3" x2="-18" y2="-10" stroke="#15803D" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="5" y1="-3" x2="16" y2="-9" stroke="#15803D" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="23" y1="-4" x2="38" y2="-16" stroke="#15803D" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <!-- Right circle: spider silhouette -->
+  <g transform="translate(668,200) scale(0.6)" fill="#15803D" opacity="0.6">
+    <circle cx="0" cy="0" r="16"/>
+    <ellipse cx="-22" cy="6" rx="22" ry="8" fill="none" stroke="#15803D" stroke-width="1"/>
+    <line x1="-12" y1="-10" x2="-50" y2="-32" stroke="#15803D" stroke-width="3" stroke-linecap="round"/>
+    <line x1="-14" y1="0" x2="-52" y2="0" stroke="#15803D" stroke-width="3" stroke-linecap="round"/>
+    <line x1="-10" y1="12" x2="-44" y2="30" stroke="#15803D" stroke-width="3" stroke-linecap="round"/>
+    <line x1="12" y1="-10" x2="50" y2="-32" stroke="#15803D" stroke-width="3" stroke-linecap="round"/>
+    <line x1="14" y1="0" x2="52" y2="0" stroke="#15803D" stroke-width="3" stroke-linecap="round"/>
+    <line x1="10" y1="12" x2="44" y2="30" stroke="#15803D" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <!-- Bottom tagline -->
+  <text x="400" y="492" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-size="18" fill="#15803D" font-weight="600" opacity="0.8">Safe · Professional · Effective</text>
+  <!-- Bottom label -->
+  <rect y="510" width="800" height="90" fill="#14532D"/>
+  <text x="400" y="566" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-size="26" font-weight="700" fill="#FFFFFF">Professional Pest Control · הדברה מקצועית</text>
+</svg>

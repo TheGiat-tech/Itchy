@@ -51,23 +51,6 @@ export function getAllPests(): Pest[] {
 // Articles
 // ---------------------------------------------------------------------------
 
-/**
- * Builds a loremflickr image URL from an imageKeyword string.
- * Spaces in the keyword are converted to commas because loremflickr
- * uses comma-separated tag search (spaces encoded as %20 return no results).
- * e.g. "ants kitchen pest" → "https://loremflickr.com/800/600/ants,kitchen,pest"
- */
-export function buildImageUrl(
-  frontmatter: Pick<ArticleFrontmatter, "imageOverride" | "imageKeyword" | "image">
-): string | undefined {
-  if (frontmatter.imageOverride) return frontmatter.imageOverride;
-  if (frontmatter.imageKeyword) {
-    const tags = frontmatter.imageKeyword.trim().replace(/\s+/g, ",");
-    return `https://loremflickr.com/800/600/${tags}`;
-  }
-  return frontmatter.image;
-}
-
 export interface ArticleFrontmatter {
   title?: string;
   titleHebrew?: string;
@@ -77,10 +60,98 @@ export interface ArticleFrontmatter {
   date?: string;
   category?: string;
   pestType?: string;
-  image?: string;
+  // Direct image URL fields (priority order is defined in IMAGE_FIELDS below)
   imageOverride?: string;
+  image?: string;
+  imageUrl?: string;
+  image_url?: string;
+  featuredImage?: string;
+  featured_image?: string;
+  thumbnail?: string;
+  coverImage?: string;
+  cover_image?: string;
+  // Kept for backward compatibility with existing frontmatter files.
   imageKeyword?: string;
+  // Alt text for the article image (used in <img alt="…">).
+  imageAlt?: string;
   titleLatin?: string;
+}
+
+/**
+ * Slug → image URL using the /api/pest-image route (Wikipedia pageimages API).
+ * Wikipedia always serves a curated article thumbnail, which is more reliable
+ * than searching Wikimedia Commons for matching JPEG files.
+ *
+ * When adding a new article, add a slug → Wikipedia article-name entry here.
+ */
+/**
+ * Uses the /api/pest-image route (Wikipedia pageimages API) because it always
+ * returns a curated article thumbnail – far more reliable than searching
+ * Wikimedia Commons for matching JPEG files.
+ */
+const ARTICLE_IMAGE_BY_SLUG: Record<string, string> = {
+  "ants-in-kitchen-eliminating-the-nest":
+    "/api/pest-image?name=Formicidae",
+  "bed-bugs-identification-and-prevention":
+    "/api/pest-image?name=Cimex+lectularius",
+  "fleas-pets-home-integrated-treatment":
+    "/api/pest-image?name=Ctenocephalides+felis",
+  "german-cockroach-the-kitchen-invader":
+    "/api/pest-image?name=Blattella+germanica",
+  "green-pest-control-myths-and-safety":
+    "/api/pest-image?name=Pest+control",
+  "how-to-prevent-cockroaches-summer":
+    "/api/pest-image?name=Cockroach",
+  "little-fire-ant-stings-and-treatment":
+    "/api/pest-image?name=Wasmannia+auropunctata",
+  "rats-vs-mice-noises-and-health-risks":
+    "/api/pest-image?name=Rattus+rattus",
+  "termites-signs-of-damage-and-treatment":
+    "/api/pest-image?name=Termite",
+  "venomous-spiders-identification-israel":
+    "/api/pest-image?name=Loxosceles+rufescens",
+};
+
+/** Fallback image served for any article that has no specific mapping. */
+const DEFAULT_ARTICLE_IMAGE = "/images/articles/default-pest-control.svg";
+
+/**
+ * Resolves the best available image URL for an article.
+ *
+ * Priority:
+ *   1. frontmatter.image — explicit path/URL set in the MDX file.
+ *   2. ARTICLE_IMAGE_BY_SLUG[slug] — /api/article-image?q=… route that
+ *      fetches a real photo from Wikimedia Commons at runtime and proxies
+ *      it back to the browser (24-hour cache, CC-licensed).
+ *   3. DEFAULT_ARTICLE_IMAGE — generic local pest-control SVG placeholder.
+ *
+ * @param frontmatter  Article frontmatter parsed from the MDX file.
+ * @param slug         Article slug (filename without extension).
+ */
+export function getPostImage(
+  frontmatter: ArticleFrontmatter,
+  slug?: string
+): string {
+  // 1. Explicit local image path in frontmatter takes highest priority.
+  if (typeof frontmatter.image === "string" && frontmatter.image.trim()) {
+    return frontmatter.image.trim();
+  }
+
+  // 2. Slug-based mapping to a topic-specific local image.
+  if (slug && ARTICLE_IMAGE_BY_SLUG[slug]) {
+    return ARTICLE_IMAGE_BY_SLUG[slug];
+  }
+
+  // 3. Static fallback – always resolves to a real local file.
+  return DEFAULT_ARTICLE_IMAGE;
+}
+
+/** @deprecated Use getPostImage instead. */
+export function buildImageUrl(
+  frontmatter: ArticleFrontmatter,
+  slug?: string
+): string {
+  return getPostImage(frontmatter, slug);
 }
 
 export interface Article {

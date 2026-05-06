@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Footer from "@/components/Footer";
-import { getArticleBySlug, getAllArticleSlugs, buildImageUrl } from "@/lib/mdx";
+import { getArticleBySlug, getAllArticleSlugs, getPostImage } from "@/lib/mdx";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!article) return {};
   const { frontmatter } = article;
   const metaTitle = frontmatter.titleHebrew || frontmatter.title || "";
-  const metaImage = buildImageUrl(frontmatter);
+  const metaImage = getPostImage(frontmatter, slug);
   return {
     title: metaTitle,
     description: frontmatter.excerpt || frontmatter.description,
@@ -52,7 +52,7 @@ export default async function ArticlePage({ params }: Props) {
   const { frontmatter, content } = article;
   const displayTitle = frontmatter.titleHebrew || frontmatter.title || "";
   const displayExcerpt = frontmatter.excerpt || frontmatter.subtitle || frontmatter.description;
-  const displayImage = buildImageUrl(frontmatter);
+  const displayImage = getPostImage(frontmatter, slug);
 
   return (
     <>
@@ -92,7 +92,7 @@ export default async function ArticlePage({ params }: Props) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={displayImage}
-              alt={displayTitle}
+              alt={frontmatter.imageAlt || displayTitle}
               className="w-full h-auto object-cover"
               loading="lazy"
             />
