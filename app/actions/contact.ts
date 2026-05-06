@@ -86,7 +86,7 @@ export async function submitContactForm(
   // --- Web3Forms notification ---
   try {
     const payload: Record<string, string> = {
-      access_key: accessKey,
+      apikey: accessKey,
       subject: "פנייה חדשה מאתר איצ׳י",
       from_name: "אתר איצ'י",
       name,
@@ -102,12 +102,20 @@ export async function submitContactForm(
       body: JSON.stringify(payload),
     });
 
-    const web3Json = await web3Res.json();
-    console.log("[contact] Web3Forms response:", web3Res.status, web3Json);
-
-    if (!web3Json.success) {
-      // Lead is already saved; log but don't fail the user
-      console.error("[contact] Web3Forms returned failure:", web3Json.message);
+    if (!web3Res.ok) {
+      // Non-fatal: DB already has the lead
+      console.error(
+        "[contact] Web3Forms HTTP error:",
+        web3Res.status,
+        web3Res.statusText
+      );
+    } else {
+      const web3Json = await web3Res.json();
+      console.log("[contact] Web3Forms response:", web3Res.status, web3Json);
+      if (!web3Json.success) {
+        // Lead is already saved; log but don't fail the user
+        console.error("[contact] Web3Forms returned failure:", web3Json.message);
+      }
     }
   } catch (w3Err) {
     // Non-fatal: DB already has the lead
