@@ -25,7 +25,9 @@ jobs:
       - name: Generate daily article
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          GENERATE_ARTICLE_IMAGES: ${{ vars.GENERATE_ARTICLE_IMAGES }}
+          GEMINI_IMAGE_MODEL: ${{ vars.GEMINI_IMAGE_MODEL }}
         run: node scripts/daily-bot.mjs
 
       - name: Commit and push generated article
@@ -33,4 +35,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add content/articles/
+          if [ -d public/images/articles/generated ]; then
+            git add public/images/articles/generated/
+          fi
           git diff --cached --quiet || (git commit -m "🤖 Auto-generated daily article" && git push origin ${{ github.event.repository.default_branch }})

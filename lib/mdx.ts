@@ -78,16 +78,63 @@ export interface ArticleFrontmatter {
 }
 
 /**
+ * Keyword rules → local SVG image path.
+ * Checked in declaration order; the first matching rule wins.
+ */
+const TOPIC_IMAGE_RULES: Array<{ pattern: RegExp; image: string }> = [
+  {
+    pattern: /fire.?ant|wasmannia|נמלה.*(אש|אדומ)|נמלת.*(אש|אדומ)/i,
+    image: "/images/articles/fire-ant-colony.svg",
+  },
+  { pattern: /ant|נמל/i, image: "/images/articles/ants-kitchen.svg" },
+  {
+    pattern: /bed.?bug|cimex|פשפש/i,
+    image: "/images/articles/bed-bugs-mattress.svg",
+  },
+  { pattern: /flea|פרעוש/i, image: "/images/articles/flea-dog-fur.svg" },
+  {
+    pattern: /german.?cockroach|blattella/i,
+    image: "/images/articles/german-cockroach.svg",
+  },
+  {
+    pattern: /cockroach|roach|תיקן|ג['"]?וק/i,
+    image: "/images/articles/cockroach-kitchen.svg",
+  },
+  {
+    pattern: /rat|mouse|mice|rodent|חולד|עכבר|מכרסם/i,
+    image: "/images/articles/rat-house.svg",
+  },
+  {
+    pattern: /termite|טרמיט/i,
+    image: "/images/articles/termite-damage.svg",
+  },
+  {
+    pattern: /spider|עכביש/i,
+    image: "/images/articles/brown-recluse-spider.svg",
+  },
+  {
+    pattern: /technician|מדביר/i,
+    image: "/images/articles/pest-control-technician.svg",
+  },
+];
+
+/**
+ * Infers the best local image path from a plain-text hint (pestType,
+ * imageKeyword, title, etc.). Returns `null` when no rule matches.
+ */
+export function resolveLocalImage(hint: string): string | null {
+  for (const { pattern, image } of TOPIC_IMAGE_RULES) {
+    if (pattern.test(hint)) return image;
+  }
+  return null;
+}
+
+/**
  * Slug → image URL using the /api/pest-image route (Wikipedia pageimages API).
  * Wikipedia always serves a curated article thumbnail, which is more reliable
  * than searching Wikimedia Commons for matching JPEG files.
  *
  * When adding a new article, add a slug → Wikipedia article-name entry here.
- */
-/**
- * Uses the /api/pest-image route (Wikipedia pageimages API) because it always
- * returns a curated article thumbnail – far more reliable than searching
- * Wikimedia Commons for matching JPEG files.
  */
 const ARTICLE_IMAGE_BY_SLUG: Record<string, string> = {
   "ants-in-kitchen-eliminating-the-nest":
@@ -137,12 +184,26 @@ export function getPostImage(
     return frontmatter.image.trim();
   }
 
-  // 2. Slug-based mapping to a topic-specific local image.
+  // 2. Topic inference from pestType / imageKeyword / title fields.
+  const hint = [
+    frontmatter.pestType,
+    frontmatter.imageKeyword,
+    frontmatter.titleHebrew,
+    frontmatter.title,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  if (hint) {
+    const inferred = resolveLocalImage(hint);
+    if (inferred) return inferred;
+  }
+
+  // 3. Slug-based mapping (legacy Wikipedia API routes).
   if (slug && ARTICLE_IMAGE_BY_SLUG[slug]) {
     return ARTICLE_IMAGE_BY_SLUG[slug];
   }
 
-  // 3. Static fallback – always resolves to a real local file.
+  // 4. Static fallback – always resolves to a real local file.
   return DEFAULT_ARTICLE_IMAGE;
 }
 

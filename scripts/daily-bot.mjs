@@ -13,8 +13,74 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..");
 const ARTICLES_DIR = path.join(REPO_ROOT, "content", "articles");
+const GENERATED_IMAGES_DIR = path.join(REPO_ROOT, "public", "images", "articles", "generated");
 
 const CTA = "<a>📍 ליצירת קשר וייעוץ בנושא מזיקים עם הצוות של איצ'י - לחצו כאן</a>";
+
+/**
+ * Topic rules → local SVG path + default alt text.
+ * Must mirror the TOPIC_IMAGE_RULES in lib/mdx.ts.
+ */
+const TOPIC_IMAGE_RULES = [
+  { pattern: /fire.?ant|wasmannia|נמלה.*(אש|אדומ)|נמלת.*(אש|אדומ)/i, image: "/images/articles/fire-ant-colony.svg", alt: "fire ant colony" },
+  { pattern: /ant|נמל/i, image: "/images/articles/ants-kitchen.svg", alt: "ants in kitchen" },
+  { pattern: /bed.?bug|cimex|פשפש/i, image: "/images/articles/bed-bugs-mattress.svg", alt: "bed bugs on mattress" },
+  { pattern: /flea|פרעוש/i, image: "/images/articles/flea-dog-fur.svg", alt: "flea on dog fur" },
+  { pattern: /german.?cockroach|blattella/i, image: "/images/articles/german-cockroach.svg", alt: "german cockroach" },
+  { pattern: /cockroach|roach|תיקן|ג['"']?וק/i, image: "/images/articles/cockroach-kitchen.svg", alt: "cockroach in kitchen" },
+  { pattern: /rat|mouse|mice|rodent|חולד|עכבר|מכרסם/i, image: "/images/articles/rat-house.svg", alt: "rat in house" },
+  { pattern: /termite|טרמיט/i, image: "/images/articles/termite-damage.svg", alt: "termite damage" },
+  { pattern: /spider|עכביש/i, image: "/images/articles/brown-recluse-spider.svg", alt: "brown recluse spider" },
+  { pattern: /technician|מדביר/i, image: "/images/articles/pest-control-technician.svg", alt: "pest control technician" },
+];
+const DEFAULT_IMAGE = "/images/articles/default-pest-control.svg";
+const DEFAULT_ALT = "pest control";
+
+function pickLocalImage(hint) {
+  for (const { pattern, image, alt } of TOPIC_IMAGE_RULES) {
+    if (pattern.test(hint)) return { image, alt };
+  }
+  return { image: DEFAULT_IMAGE, alt: DEFAULT_ALT };
+}
+
+/**
+ * Parses the generated MDX content, determines the correct local image from
+ * the article topic, and injects/replaces `image:` + `imageAlt:` in the
+ * frontmatter block so the final file always has a real local image path.
+ */
+function injectImageFields(content, overrideImage, overrideAlt) {
+  const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!fmMatch) return content;
+
+  const fmBlock = fmMatch[1];
+
+  const pestTypeMatch = fmBlock.match(/^pestType:\s*["']?(.+?)["']?\s*$/m);
+  const imageKeywordMatch = fmBlock.match(/^imageKeyword:\s*["']?(.+?)["']?\s*$/m);
+  const titleHebrewMatch = fmBlock.match(/^titleHebrew:\s*["']?(.+?)["']?\s*$/m);
+
+  const hint = [
+    pestTypeMatch?.[1] ?? "",
+    imageKeywordMatch?.[1] ?? "",
+    titleHebrewMatch?.[1] ?? "",
+  ].join(" ");
+
+  let image, alt;
+  if (overrideImage) {
+    image = overrideImage;
+    alt = overrideAlt ?? DEFAULT_ALT;
+  } else {
+    ({ image, alt } = pickLocalImage(hint));
+  }
+
+  const cleanedFm = fmBlock
+    .replace(/^image:.*$/m, "")
+    .replace(/^imageAlt:.*$/m, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trimEnd();
+
+  const newFmBlock = `${cleanedFm}\nimage: "${image}"\nimageAlt: "${alt}"`;
+  return content.replace(fmMatch[0], `---\n${newFmBlock}\n---`);
+}
 
 function today() {
   return new Date().toISOString().split("T")[0];
@@ -28,28 +94,36 @@ function stripCodeFences(text) {
 }
 
 function removeBrandName(text) {
-  return text.replace(/גיאת הדברות|גבעת הדברות|גיאט הדברות|Giat Pest Control|Giat Hadbarot|Giat Extermination/g, "הצוות של איצ'י");
+  return text.replace(
+    /גיאת הדברות|גבעת הדברות|גיאט הדברות|Giat Pest Control|Giat Hadbarot|Giat Extermination/g,
+    "הצוות של איצ'י"
+  );
 }
 
 function validateArticle(content) {
   const errors = [];
-
-  if (!content.includes("---")) {
-    errors.push("Missing frontmatter (---)");
-  }
-  if (!content.includes("titleHebrew:")) {
-    errors.push("Missing titleHebrew in frontmatter");
-  }
-  if (!content.includes(CTA)) {
-    errors.push("Missing final CTA");
-  }
-
+  if (!content.includes("---")) errors.push("Missing frontmatter (---)");
+  if (!content.includes("titleHebrew:")) errors.push("Missing titleHebrew in frontmatter");
+  if (!content.includes("image:")) errors.push("Missing image in frontmatter");
+  if (!content.includes("imageAlt:")) errors.push("Missing imageAlt in frontmatter");
+  if (!content.includes("pestType:")) errors.push("Missing pestType in frontmatter");
+  if (!content.includes(CTA)) errors.push("Missing final CTA");
   return errors;
 }
 
+// ---------------------------------------------------------------------------
+// Gemini model priority list — no gemini-2.0-flash
+// ---------------------------------------------------------------------------
+
+const MODEL_PRIORITY = [
+  "gemini-3.1-flash-lite",
+  "gemini-2.5-flash-lite",
+  "gemini-2.5-flash",
+  "gemini-3-flash",
+];
+
 const RETRY_DELAYS_MS = [10_000, 20_000, 40_000];
-const MAX_PRIMARY_ATTEMPTS = 3; // initial attempt + 2 retries
-const FALLBACK_MODEL = "gemini-2.0-flash";
+const MAX_503_RETRIES = 3;
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -62,47 +136,66 @@ function is503(err) {
   );
 }
 
-async function generateWithRetry(apiKey, primaryModel) {
-  // Build model list: primary first, then fallback (unless they're the same).
-  const modelsToTry =
-    primaryModel === FALLBACK_MODEL
-      ? [primaryModel]
-      : [primaryModel, FALLBACK_MODEL];
+function is429(err) {
+  return (
+    err?.status === 429 ||
+    /429|quota.*(exceeded|exhausted)|rate.?limit/i.test(err?.message ?? "")
+  );
+}
+
+function is404(err) {
+  return (
+    err?.status === 404 ||
+    /404|not.?found|unknown model/i.test(err?.message ?? "")
+  );
+}
+
+/** Build a deduplicated model list: env model first, then defaults. */
+function buildModelList(envModel) {
+  const candidates = envModel ? [envModel, ...MODEL_PRIORITY] : [...MODEL_PRIORITY];
+  return [...new Set(candidates)];
+}
+
+async function generateWithRetry(apiKey, envModel) {
+  const modelsToTry = buildModelList(envModel);
+  console.log(`🗒️  Model priority list: ${modelsToTry.join(", ")}`);
 
   let lastError;
-  let delayIndex = 0;
 
-  for (let mi = 0; mi < modelsToTry.length; mi++) {
-    const modelName = modelsToTry[mi];
-    // Primary model gets MAX_PRIMARY_ATTEMPTS attempts; fallback gets one attempt.
-    const maxAttempts = mi === 0 ? MAX_PRIMARY_ATTEMPTS : 1;
+  for (const modelName of modelsToTry) {
+    console.log(`🔄 Trying model: ${modelName}`);
+    let retryCount = 0;
 
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      // Wait before every attempt except the very first overall attempt.
-      // delayIndex tracks position in RETRY_DELAYS_MS across all attempts/models.
-      if (mi > 0 || attempt > 0) {
-        const ms = RETRY_DELAYS_MS[Math.min(delayIndex, RETRY_DELAYS_MS.length - 1)];
-        console.log(`⏳ Waiting ${ms / 1000}s before next attempt...`);
-        await sleep(ms);
-        delayIndex++;
-      }
-
-      console.log(`🔄 Trying model: ${modelName} (attempt ${attempt + 1})`);
+    while (retryCount < MAX_503_RETRIES) {
       try {
         return await generateArticle(apiKey, modelName);
       } catch (err) {
         lastError = err;
+
         if (is503(err)) {
-          console.warn(`⚠️ Model ${modelName} returned 503 (overloaded). Will retry...`);
+          retryCount++;
+          if (retryCount < MAX_503_RETRIES) {
+            const delay = RETRY_DELAYS_MS[retryCount - 1] ?? RETRY_DELAYS_MS[RETRY_DELAYS_MS.length - 1];
+            console.warn(`⚠️  503 on ${modelName}. Retry ${retryCount}/${MAX_503_RETRIES - 1} in ${delay / 1000}s...`);
+            await sleep(delay);
+          } else {
+            console.warn(`⚠️  ${modelName} failed ${MAX_503_RETRIES}× with 503. Moving to next model.`);
+            break;
+          }
+        } else if (is429(err)) {
+          console.warn(`⚠️  Quota exceeded for model ${modelName}. Trying next available model.`);
+          break;
+        } else if (is404(err)) {
+          console.warn(`⚠️  Model ${modelName} not found. Trying next available model.`);
+          break;
         } else {
-          // Non-503 error – propagate immediately.
           throw err;
         }
       }
     }
   }
 
-  throw lastError ?? new Error("All retry attempts exhausted.");
+  throw lastError ?? new Error("All Gemini models failed. Check model availability or quota.");
 }
 
 async function generateArticle(apiKey, modelName) {
@@ -110,10 +203,10 @@ async function generateArticle(apiKey, modelName) {
   const model = genAI.getGenerativeModel({ model: modelName });
 
   const prompt = `
-אתה מומחה SEO וכותב תוכן מקצועי לאתר הדברה ישראלי.
+אתה כותב תוכן מקצועי המתמחה ב-SEO לאתר הדברה ישראלי.
 
 המשימה:
-לכתוב מאמר מקצועי, איכותי ואמין (500-700 מילים) בנושא אחד מהבאים: הדברה, מזיקים, חרקים, נחשים, מכרסמים, מניעה ביתית, או טבע בישראל.
+כתוב מאמר בעברית בלבד (500-700 מילים) בנושא אחד מהבאים: הדברה, מזיקים, חרקים, נחשים, מכרסמים, מניעה ביתית, או טבע בישראל.
 
 הפלט חייב להיות MDX נקי ללא תגיות קוד, עם frontmatter בדיוק בפורמט:
 
@@ -121,24 +214,51 @@ async function generateArticle(apiKey, modelName) {
 titleHebrew: "כותרת חזקה בעברית עם אמוג'י רלוונטי"
 subtitle: "כותרת משנה מושכת שמסבירה את ערך המאמר"
 date: "${today()}"
+image: "/images/articles/FILENAME.svg"
+imageAlt: "short relevant English description of the image"
 imageKeyword: "two or three English words describing the pest and treatment"
 pestType: "סוג המזיק בעברית"
 ---
 
-הנחיות לגוף המאמר:
+בחר את שדה image מתוך הרשימה המותרת בלבד:
+- נמלים רגילות / ants → /images/articles/ants-kitchen.svg
+- נמלת אש / fire ant → /images/articles/fire-ant-colony.svg
+- פשפש המיטה / bed bugs → /images/articles/bed-bugs-mattress.svg
+- פרעושים / fleas → /images/articles/flea-dog-fur.svg
+- תיקן גרמני / german cockroach → /images/articles/german-cockroach.svg
+- ג'וק / תיקן כללי / cockroach → /images/articles/cockroach-kitchen.svg
+- עכבר / חולדה / מכרסמים / rat / mouse → /images/articles/rat-house.svg
+- טרמיטים / termites → /images/articles/termite-damage.svg
+- עכביש / spider → /images/articles/brown-recluse-spider.svg
+- מדביר / technician → /images/articles/pest-control-technician.svg
+- הדברה כללית / מניעה / general → /images/articles/default-pest-control.svg
 
-1. השורה הראשונה אחרי ה-frontmatter חייבת להיות: # [titleHebrew]
-2. השתמש בכותרות ## ו-### לאורך המאמר
-3. הוסף אמוג'ים רלוונטיים: 🐜 🛡️ 🏠 ⚠️ ✅ 🔍
-4. הדגש משפטים חשובים עם **bold**
-5. שלב רשימות תבליטים, טיפים פרקטיים ומידע מקצועי
-6. אל תכלול תגיות קוד כגון: \`\`\` או \`\`\`mdx או \`\`\`markdown
-7. כתוב בעברית טבעית, קריאה וזורמת
-8. אל תזכיר שמות של חברות הדברה ספציפיות
+חובה: אל תמציא כתובות URL חיצוניות. image חייב להיות אחד מהנתיבים שלמעלה בלבד.
 
-בסוף המאמר חובה להוסיף בדיוק את השורה הבאה:
+מבנה חובה של המאמר (לפי הסדר):
+
+1. **Frontmatter** כמוגדר למעלה
+2. **כותרת H1 אחת בלבד** — כתוב אותה פעם אחת בדיוק, בשורה הראשונה אחרי ה-frontmatter, בפורמט: # [titleHebrew]. אל תחזור על הכותרת בגוף המאמר.
+3. **פתיחה — סיטואציה אמיתית או נקודת כאב**: התחל במשפטים שמתארים מצב מוכר מהחיים האמיתיים שהקורא יזדהה איתו. אל תתחיל בהגדרה אנציקלופדית.
+4. **למה הבעיה חוזרת**: הסבר מדוע הפתרון הביתי הנפוץ נכשל, ומה שורש הבעיה האמיתית.
+5. **מה באמת פותר את זה**: הצג את הפתרון הנכון בצורה ברורה ומעשית, בפסקאות קוהרנטיות.
+6. **3 טיפים מעשיים**: ניתן להשתמש כאן ברשימת תבליטים — זוהי **רשימת התבליטים היחידה המותרת בכל המאמר**. אל תוסיף רשימות תבליטים נוספות בשום מקום אחר.
+7. **מתי לפנות לאיש מקצוע**: כתוב פסקה קצרה ובהירה שמסבירה מתי הטיפול העצמי לא מספיק.
+8. **CTA**: בסוף המאמר הוסף בדיוק את השורה הבאה, ואל תשנה אותה:
 
 <a>📍 ליצירת קשר וייעוץ בנושא מזיקים עם הצוות של איצ'י - לחצו כאן</a>
+
+הנחיות סגנון:
+
+- כתוב בעברית טבעית, אנושית וקריאה — כמו כתבה טובה, לא מדריך טכני
+- השתמש בפסקאות ובסיפור, לא ברשימות תבליטים ארוכות
+- השתמש בכותרות ## ו-### מעשיות ו-SEO-ידידותיות
+- הדגש משפטים חשובים עם **bold** במשורה
+- הוסף אמוג'ים רלוונטיים: 🐜 🛡️ 🏠 ⚠️ ✅ 🔍
+- אל תזכיר גיאת הדברות, גבעת הדברות, נועם גיאת, שם המייסד, או שותפויות עסקיות
+- אל תזכיר שמות של חברות הדברה ספציפיות אחרות
+- ניתן להזכיר את Itchi (האתר/המותג) באופן טבעי וקל, לא יותר מפעם אחת
+- אל תכלול תגיות קוד כגון: \`\`\` או \`\`\`mdx
 `.trim();
 
   const result = await model.generateContent(prompt);
@@ -151,8 +271,69 @@ pestType: "סוג המזיק בעברית"
   return text;
 }
 
+// ---------------------------------------------------------------------------
+// Optional image generation
+// ---------------------------------------------------------------------------
+
+function extractTopicHint(content) {
+  const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!fmMatch) return "";
+  const fm = fmMatch[1];
+  const get = (key) =>
+    fm.match(new RegExp(`^${key}:\\s*["']?(.+?)["']?\\s*$`, "m"))?.[1] ?? "";
+  return [get("pestType"), get("imageKeyword"), get("titleHebrew")].join(" ");
+}
+
+/**
+ * Attempt to generate an image via the Gemini image model.
+ * Returns the saved public path on success, or null on any failure.
+ */
+async function tryGenerateImage(apiKey, imageModel, slug, topicHint) {
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: imageModel });
+
+    const imagePrompt =
+      `Professional realistic article hero image for a pest control website, ` +
+      `showing ${topicHint || "pest control"}, clean modern Israeli home context, ` +
+      `natural light, realistic details, no text, no logos, no gore, 16:9 aspect ratio.`;
+
+    console.log(`🖼️  Generating image with model: ${imageModel}`);
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts: [{ text: imagePrompt }] }],
+      generationConfig: { responseMimeType: "image/png" },
+    });
+
+    const parts = result.response?.candidates?.[0]?.content?.parts ?? [];
+    const imagePart = parts.find((p) => p.inlineData?.mimeType?.startsWith("image/"));
+    if (!imagePart?.inlineData?.data) {
+      console.warn("⚠️  Image generation returned no image data.");
+      return null;
+    }
+
+    if (!fs.existsSync(GENERATED_IMAGES_DIR)) {
+      fs.mkdirSync(GENERATED_IMAGES_DIR, { recursive: true });
+    }
+
+    const timestamp = Date.now();
+    const filename = `article-${timestamp}-${slug}.png`;
+    const filePath = path.join(GENERATED_IMAGES_DIR, filename);
+    fs.writeFileSync(filePath, Buffer.from(imagePart.inlineData.data, "base64"));
+
+    const publicPath = `/images/articles/generated/${filename}`;
+    console.log(`✅ Generated image saved: ${publicPath}`);
+    return publicPath;
+  } catch (err) {
+    console.warn(`⚠️  Image generation failed (${err.message}). Using local fallback image.`);
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+
 async function main() {
-  // --- Debug: API key presence ---
   const apiKey = process.env.GEMINI_API_KEY;
   console.log(`🔑 GEMINI_API_KEY present: ${Boolean(apiKey)}`);
 
@@ -161,9 +342,14 @@ async function main() {
     process.exit(1);
   }
 
-  // --- Debug: model name ---
-  const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-  console.log(`🧠 GEMINI_MODEL: ${modelName}`);
+  const envModel = process.env.GEMINI_MODEL || "";
+  console.log(`🧠 GEMINI_MODEL env: ${envModel || "(not set, using priority list)"}`);
+
+  const generateImages =
+    (process.env.GENERATE_ARTICLE_IMAGES ?? "").toLowerCase() === "true";
+  const imageModel = process.env.GEMINI_IMAGE_MODEL || "gemini-2.5-flash-image";
+  console.log(`🖼️  Image generation enabled: ${generateImages}`);
+  if (generateImages) console.log(`🖼️  Image model: ${imageModel}`);
 
   if (!fs.existsSync(ARTICLES_DIR)) {
     fs.mkdirSync(ARTICLES_DIR, { recursive: true });
@@ -173,19 +359,38 @@ async function main() {
 
   let mdxContent;
   try {
-    mdxContent = await generateWithRetry(apiKey, modelName);
+    mdxContent = await generateWithRetry(apiKey, envModel || null);
   } catch (err) {
-    console.error(`❌ Gemini API call failed: ${err.message}`);
+    console.error(`❌ ${err.message}`);
     process.exit(1);
   }
 
-  // Strip code fences if the model wrapped the output
   mdxContent = stripCodeFences(mdxContent);
-
-  // Remove brand name mentions
   mdxContent = removeBrandName(mdxContent);
 
-  // Validate required sections
+  const topicHint = extractTopicHint(mdxContent);
+  const localMatch = pickLocalImage(topicHint);
+  const hasGoodLocalImage = localMatch.image !== DEFAULT_IMAGE;
+  console.log(
+    `🗂️  Local image match: ${localMatch.image} (${hasGoodLocalImage ? "topic-specific" : "fallback"})`
+  );
+
+  let generatedImagePath = null;
+  if (!hasGoodLocalImage && generateImages) {
+    const imgSlug = Math.random().toString(36).slice(2, 8);
+    generatedImagePath = await tryGenerateImage(apiKey, imageModel, imgSlug, topicHint);
+  }
+
+  if (generatedImagePath) {
+    mdxContent = injectImageFields(
+      mdxContent,
+      generatedImagePath,
+      topicHint ? `${topicHint} pest control` : DEFAULT_ALT
+    );
+  } else {
+    mdxContent = injectImageFields(mdxContent);
+  }
+
   const validationErrors = validateArticle(mdxContent);
   if (validationErrors.length > 0) {
     console.error("❌ Article validation failed:");
@@ -200,8 +405,6 @@ async function main() {
   const filePath = path.join(ARTICLES_DIR, filename);
 
   fs.writeFileSync(filePath, mdxContent, "utf8");
-
-  // --- Debug: output file path ---
   console.log(`📄 Output file: content/articles/${filename}`);
   console.log("✅ Article generated and saved successfully.");
 }
