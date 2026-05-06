@@ -29,17 +29,10 @@ async function generateArticle() {
   // אתחול ה-SDK
   const genAI = new GoogleGenerativeAI(apiKey);
 
-  const modelName = "gemini-1.5-flash";
+  const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash-lite";
   console.log(`🧠 Using Gemini model: ${modelName}`);
 
-  /**
-   * תיקון קריטי: הגדרת apiVersion ל-v1beta כדי למנוע שגיאת 404
-   * המודל gemini-1.5-flash דורש גרסה זו כרגע בנקודות קצה מסוימות.
-   */
-  const model = genAI.getGenerativeModel(
-    { model: modelName },
-    { apiVersion: "v1beta" }
-  );
+  const model = genAI.getGenerativeModel({ model: modelName });
 
   const prompt = `
 אתה מומחה SEO וכותב תוכן שיווקי בכיר עבור "Itchi" (איצ'י) ו-"גיאת הדברות".
