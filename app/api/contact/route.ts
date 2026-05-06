@@ -100,22 +100,24 @@ export async function POST(req: NextRequest) {
   if (contentLengthHeader) {
     const contentLength = Number(contentLengthHeader);
     if (Number.isFinite(contentLength) && contentLength > MAX_JSON_BODY_BYTES) {
-      return NextResponse.json({ error: "Payload too large" }, { status: 413 });
+      return NextResponse.json({ success: false, message: "Payload too large" }, { status: 413 });
     }
   }
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
+    console.error("[contact] RESEND_API_KEY is not configured");
     return NextResponse.json(
-      { error: "Missing RESEND_API_KEY" },
+      { success: false, message: "שגיאת תצורה פנימית, נסה שנית מאוחר יותר" },
       { status: 500 }
     );
   }
 
   const fromAddress = process.env.RESEND_FROM_EMAIL;
   if (!fromAddress) {
+    console.error("[contact] RESEND_FROM_EMAIL is not configured");
     return NextResponse.json(
-      { error: "Missing RESEND_FROM_EMAIL" },
+      { success: false, message: "שגיאת תצורה פנימית, נסה שנית מאוחר יותר" },
       { status: 500 }
     );
   }
@@ -136,7 +138,7 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    return NextResponse.json({ success: false, message: "Invalid JSON body" }, { status: 400 });
   }
 
   const {
@@ -152,7 +154,7 @@ export async function POST(req: NextRequest) {
 
   if (imageBase64 && imageBase64.length > MAX_IMAGE_BASE64_LENGTH) {
     return NextResponse.json(
-      { error: "Image payload too large" },
+      { success: false, message: "Image payload too large" },
       { status: 413 }
     );
   }
@@ -248,9 +250,13 @@ export async function POST(req: NextRequest) {
         : undefined,
     });
 
+    console.log(`[contact] Email sent successfully to ${recipient} (pest: ${pestLabel})`);
     return NextResponse.json({ success: true });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("[contact] Failed to send email via Resend:", err instanceof Error ? err.message : err);
+    return NextResponse.json(
+      { success: false, message: "שגיאה בשליחת ההודעה, נסה שנית מאוחר יותר" },
+      { status: 500 }
+    );
   }
 }
