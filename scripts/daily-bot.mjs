@@ -48,6 +48,7 @@ function validateArticle(content) {
 }
 
 const RETRY_DELAYS_MS = [10_000, 20_000, 40_000];
+const MAX_PRIMARY_ATTEMPTS = 3; // initial attempt + 2 retries
 const FALLBACK_MODEL = "gemini-2.0-flash";
 
 function sleep(ms) {
@@ -73,13 +74,14 @@ async function generateWithRetry(apiKey, primaryModel) {
 
   for (let mi = 0; mi < modelsToTry.length; mi++) {
     const modelName = modelsToTry[mi];
-    // Attempts per model: 3 for the primary (initial + 2 retries), 1 for the fallback.
-    const maxAttempts = mi === 0 ? RETRY_DELAYS_MS.length : 1;
+    // Primary model gets MAX_PRIMARY_ATTEMPTS attempts; fallback gets one attempt.
+    const maxAttempts = mi === 0 ? MAX_PRIMARY_ATTEMPTS : 1;
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
-      // Wait before every attempt except the very first.
+      // Wait before every attempt except the very first overall attempt.
+      // delayIndex tracks position in RETRY_DELAYS_MS across all attempts/models.
       if (mi > 0 || attempt > 0) {
-        const ms = RETRY_DELAYS_MS[delayIndex] ?? RETRY_DELAYS_MS[RETRY_DELAYS_MS.length - 1];
+        const ms = RETRY_DELAYS_MS[Math.min(delayIndex, RETRY_DELAYS_MS.length - 1)];
         console.log(`⏳ Waiting ${ms / 1000}s before next attempt...`);
         await sleep(ms);
         delayIndex++;
