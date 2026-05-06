@@ -40,7 +40,7 @@ function validateArticle(content) {
   if (!content.includes("titleHebrew:")) {
     errors.push("Missing titleHebrew in frontmatter");
   }
-  if (!content.includes("📍 ליצירת קשר וייעוץ בנושא מזיקים - לחצו כאן")) {
+  if (!content.includes(CTA)) {
     errors.push("Missing final CTA");
   }
 
