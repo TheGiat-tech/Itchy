@@ -3,6 +3,7 @@
 import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Footer from "@/components/Footer";
+import { submitContactForm } from "@/app/actions/contact";
 
 function ContactPageContent() {
   const searchParams = useSearchParams();
@@ -26,27 +27,13 @@ function ContactPageContent() {
     setError("");
 
     const formData = new FormData(e.currentTarget);
-    
-    // הגדרות Web3Forms
-    // מומלץ להגדיר את המפתח ב-Vercel תחת NEXT_PUBLIC_WEB3FORMS_KEY
-    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY || "c5651e0e-d0c4-4305-bbbd-c1d0da50a3ce";
-    formData.append("access_key", accessKey);
-    formData.append("subject", isPhotoFlow ? "פנייה חדשה לזיהוי מזיק - איצ׳י" : "פנייה חדשה מצור קשר - איצ׳י");
-    formData.append("from_name", "אתר איצ'י");
 
     try {
-      // שליחה ישירה ל-Web3Forms (עוקף את ה-404 של /api/contact)
-      const res = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        body: formData,
-      });
-
-      const json = await res.json();
-
-      if (json.success) {
+      const result = await submitContactForm(formData);
+      if (result.success) {
         setSubmitted(true);
       } else {
-        throw new Error(json.message || "שגיאה בשליחה");
+        throw new Error(result.error || "שגיאה בשליחה");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "שגיאה בתקשורת, נסה שנית");
@@ -76,9 +63,6 @@ function ContactPageContent() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 space-y-5" dir="rtl">
-            {/* שדה נגד בוטים */}
-            <input type="checkbox" name="botcheck" className="hidden" style={{ display: "none" }} />
-
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-red-700 text-sm">
                 {error}
