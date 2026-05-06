@@ -16,6 +16,67 @@ const ARTICLES_DIR = path.join(REPO_ROOT, "content", "articles");
 
 const CTA = "<a>📍 ליצירת קשר וייעוץ בנושא מזיקים - לחצו כאן</a>";
 
+/**
+ * Topic rules → local SVG path + default alt text.
+ * Must mirror the TOPIC_IMAGE_RULES in lib/mdx.ts.
+ */
+const TOPIC_IMAGE_RULES = [
+  { pattern: /fire.?ant|wasmannia|נמלה.*(אש|אדומ)|נמלת.*(אש|אדומ)/i, image: "/images/articles/fire-ant-colony.svg", alt: "fire ant colony" },
+  { pattern: /ant|נמל/i, image: "/images/articles/ants-kitchen.svg", alt: "ants in kitchen" },
+  { pattern: /bed.?bug|cimex|פשפש/i, image: "/images/articles/bed-bugs-mattress.svg", alt: "bed bugs on mattress" },
+  { pattern: /flea|פרעוש/i, image: "/images/articles/flea-dog-fur.svg", alt: "flea on dog fur" },
+  { pattern: /german.?cockroach|blattella/i, image: "/images/articles/german-cockroach.svg", alt: "german cockroach" },
+  { pattern: /cockroach|roach|תיקן|ג['"']?וק/i, image: "/images/articles/cockroach-kitchen.svg", alt: "cockroach in kitchen" },
+  { pattern: /rat|mouse|mice|rodent|חולד|עכבר|מכרסם/i, image: "/images/articles/rat-house.svg", alt: "rat in house" },
+  { pattern: /termite|טרמיט/i, image: "/images/articles/termite-damage.svg", alt: "termite damage" },
+  { pattern: /spider|עכביש/i, image: "/images/articles/brown-recluse-spider.svg", alt: "brown recluse spider" },
+  { pattern: /technician|מדביר/i, image: "/images/articles/pest-control-technician.svg", alt: "pest control technician" },
+];
+const DEFAULT_IMAGE = "/images/articles/default-pest-control.svg";
+const DEFAULT_ALT = "pest control";
+
+function pickLocalImage(hint) {
+  for (const { pattern, image, alt } of TOPIC_IMAGE_RULES) {
+    if (pattern.test(hint)) return { image, alt };
+  }
+  return { image: DEFAULT_IMAGE, alt: DEFAULT_ALT };
+}
+
+/**
+ * Parses the generated MDX content, determines the correct local image from
+ * the article topic, and injects/replaces `image:` + `imageAlt:` in the
+ * frontmatter block so the final file always has a real local image path.
+ */
+function injectImageFields(content) {
+  const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!fmMatch) return content;
+
+  const fmBlock = fmMatch[1];
+
+  // Extract relevant fields for topic matching
+  const pestTypeMatch = fmBlock.match(/^pestType:\s*["']?(.+?)["']?\s*$/m);
+  const imageKeywordMatch = fmBlock.match(/^imageKeyword:\s*["']?(.+?)["']?\s*$/m);
+  const titleHebrewMatch = fmBlock.match(/^titleHebrew:\s*["']?(.+?)["']?\s*$/m);
+
+  const hint = [
+    pestTypeMatch?.[1] ?? "",
+    imageKeywordMatch?.[1] ?? "",
+    titleHebrewMatch?.[1] ?? "",
+  ].join(" ");
+
+  const { image, alt } = pickLocalImage(hint);
+
+  // Remove any existing image/imageAlt lines then append the correct ones
+  const cleanedFm = fmBlock
+    .replace(/^image:.*$/m, "")
+    .replace(/^imageAlt:.*$/m, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trimEnd();
+
+  const newFmBlock = `${cleanedFm}\nimage: "${image}"\nimageAlt: "${alt}"`;
+  return content.replace(fmMatch[0], `---\n${newFmBlock}\n---`);
+}
+
 function today() {
   return new Date().toISOString().split("T")[0];
 }
@@ -39,6 +100,9 @@ function validateArticle(content) {
   }
   if (!content.includes("titleHebrew:")) {
     errors.push("Missing titleHebrew in frontmatter");
+  }
+  if (!content.includes("image:")) {
+    errors.push("Missing image in frontmatter");
   }
   if (!content.includes(CTA)) {
     errors.push("Missing final CTA");
@@ -121,9 +185,26 @@ async function generateArticle(apiKey, modelName) {
 titleHebrew: "כותרת חזקה בעברית עם אמוג'י רלוונטי"
 subtitle: "כותרת משנה מושכת שמסבירה את ערך המאמר"
 date: "${today()}"
+image: "/images/articles/FILENAME.svg"
+imageAlt: "short relevant English description of the image"
 imageKeyword: "two or three English words describing the pest and treatment"
 pestType: "סוג המזיק בעברית"
 ---
+
+בחר את שדה image מתוך הרשימה המותרת בלבד:
+- נמלים רגילות / ants → /images/articles/ants-kitchen.svg
+- נמלת אש / fire ant → /images/articles/fire-ant-colony.svg
+- פשפש המיטה / bed bugs → /images/articles/bed-bugs-mattress.svg
+- פרעושים / fleas → /images/articles/flea-dog-fur.svg
+- תיקן גרמני / german cockroach → /images/articles/german-cockroach.svg
+- ג'וק / תיקן כללי / cockroach → /images/articles/cockroach-kitchen.svg
+- עכבר / חולדה / מכרסמים / rat / mouse → /images/articles/rat-house.svg
+- טרמיטים / termites → /images/articles/termite-damage.svg
+- עכביש / spider → /images/articles/brown-recluse-spider.svg
+- מדביר / technician → /images/articles/pest-control-technician.svg
+- הדברה כללית / מניעה / general → /images/articles/default-pest-control.svg
+
+חובה: אל תמציא כתובות URL חיצוניות. image חייב להיות אחד מהנתיבים שלמעלה בלבד.
 
 מבנה חובה של המאמר (לפי הסדר):
 
@@ -194,6 +275,9 @@ async function main() {
 
   // Remove brand name mentions
   mdxContent = removeBrandName(mdxContent);
+
+  // Inject / override image fields with a deterministic local image
+  mdxContent = injectImageFields(mdxContent);
 
   // Validate required sections
   const validationErrors = validateArticle(mdxContent);
