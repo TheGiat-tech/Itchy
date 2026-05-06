@@ -29,7 +29,7 @@ export default function ArticleLeadForm({ pestName }: ArticleLeadFormProps) {
         let errorMsg = "שגיאה בשליחה";
         try {
           const json = await res.json();
-          errorMsg = json.error || errorMsg;
+          errorMsg = json.message || errorMsg;
         } catch {
           // response was not JSON (e.g. HTML error page)
         }
