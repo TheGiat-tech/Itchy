@@ -47,6 +47,64 @@ function validateArticle(content) {
   return errors;
 }
 
+const RETRY_DELAYS_MS = [10_000, 20_000, 40_000];
+const MAX_PRIMARY_ATTEMPTS = 3; // initial attempt + 2 retries
+const FALLBACK_MODEL = "gemini-2.0-flash";
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function is503(err) {
+  return (
+    err?.status === 503 ||
+    /503|overloaded|service\s*unavailable/i.test(err?.message ?? "")
+  );
+}
+
+async function generateWithRetry(apiKey, primaryModel) {
+  // Build model list: primary first, then fallback (unless they're the same).
+  const modelsToTry =
+    primaryModel === FALLBACK_MODEL
+      ? [primaryModel]
+      : [primaryModel, FALLBACK_MODEL];
+
+  let lastError;
+  let delayIndex = 0;
+
+  for (let mi = 0; mi < modelsToTry.length; mi++) {
+    const modelName = modelsToTry[mi];
+    // Primary model gets MAX_PRIMARY_ATTEMPTS attempts; fallback gets one attempt.
+    const maxAttempts = mi === 0 ? MAX_PRIMARY_ATTEMPTS : 1;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      // Wait before every attempt except the very first overall attempt.
+      // delayIndex tracks position in RETRY_DELAYS_MS across all attempts/models.
+      if (mi > 0 || attempt > 0) {
+        const ms = RETRY_DELAYS_MS[Math.min(delayIndex, RETRY_DELAYS_MS.length - 1)];
+        console.log(`⏳ Waiting ${ms / 1000}s before next attempt...`);
+        await sleep(ms);
+        delayIndex++;
+      }
+
+      console.log(`🔄 Trying model: ${modelName} (attempt ${attempt + 1})`);
+      try {
+        return await generateArticle(apiKey, modelName);
+      } catch (err) {
+        lastError = err;
+        if (is503(err)) {
+          console.warn(`⚠️ Model ${modelName} returned 503 (overloaded). Will retry...`);
+        } else {
+          // Non-503 error – propagate immediately.
+          throw err;
+        }
+      }
+    }
+  }
+
+  throw lastError ?? new Error("All retry attempts exhausted.");
+}
+
 async function generateArticle(apiKey, modelName) {
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: modelName });
@@ -115,7 +173,7 @@ async function main() {
 
   let mdxContent;
   try {
-    mdxContent = await generateArticle(apiKey, modelName);
+    mdxContent = await generateWithRetry(apiKey, modelName);
   } catch (err) {
     console.error(`❌ Gemini API call failed: ${err.message}`);
     process.exit(1);
