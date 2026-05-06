@@ -78,36 +78,38 @@ export interface ArticleFrontmatter {
 }
 
 /**
- * Slug → API route URL that fetches a real photo from Wikimedia Commons at
- * runtime and proxies it back to the browser.
+ * Slug → image URL using the /api/pest-image route (Wikipedia pageimages API).
+ * Wikipedia always serves a curated article thumbnail, which is more reliable
+ * than searching Wikimedia Commons for matching JPEG files.
  *
- * The /api/article-image route accepts a `q` search query, finds the best
- * matching JPEG on Wikimedia Commons (free, CC-licensed), and serves it with
- * 24-hour caching.  It falls back to the default local SVG on any error.
- *
- * When adding a new article, add a slug → search-query entry here.
+ * When adding a new article, add a slug → Wikipedia article-name entry here.
+ */
+/**
+ * Uses the /api/pest-image route (Wikipedia pageimages API) because it always
+ * returns a curated article thumbnail – far more reliable than searching
+ * Wikimedia Commons for matching JPEG files.
  */
 const ARTICLE_IMAGE_BY_SLUG: Record<string, string> = {
   "ants-in-kitchen-eliminating-the-nest":
-    "/api/article-image?q=ant+trail+food+kitchen+insect+close+up",
+    "/api/pest-image?name=Formicidae",
   "bed-bugs-identification-and-prevention":
-    "/api/article-image?q=Cimex+lectularius+bed+bug+mattress",
+    "/api/pest-image?name=Cimex+lectularius",
   "fleas-pets-home-integrated-treatment":
-    "/api/article-image?q=flea+dog+cat+fur+insect+close+up",
+    "/api/pest-image?name=Ctenocephalides+felis",
   "german-cockroach-the-kitchen-invader":
-    "/api/article-image?q=Blattella+germanica+German+cockroach",
+    "/api/pest-image?name=Blattella+germanica",
   "green-pest-control-myths-and-safety":
-    "/api/article-image?q=pest+control+technician+spraying+home",
+    "/api/pest-image?name=Pest+control",
   "how-to-prevent-cockroaches-summer":
-    "/api/article-image?q=cockroach+kitchen+food+surface",
+    "/api/pest-image?name=Cockroach",
   "little-fire-ant-stings-and-treatment":
-    "/api/article-image?q=Wasmannia+auropunctata+fire+ant+colony",
+    "/api/pest-image?name=Wasmannia+auropunctata",
   "rats-vs-mice-noises-and-health-risks":
-    "/api/article-image?q=rat+mouse+indoor+house+rodent",
+    "/api/pest-image?name=Rattus+rattus",
   "termites-signs-of-damage-and-treatment":
-    "/api/article-image?q=termite+wood+damage+subterranean",
+    "/api/pest-image?name=Termite",
   "venomous-spiders-identification-israel":
-    "/api/article-image?q=brown+recluse+spider+Loxosceles+venomous",
+    "/api/pest-image?name=Loxosceles+rufescens",
 };
 
 /** Fallback image served for any article that has no specific mapping. */
