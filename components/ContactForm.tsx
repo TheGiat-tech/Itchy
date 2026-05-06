@@ -6,18 +6,17 @@ export default function ContactForm() {
   const [result, setResult] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit = async (event) => {
+  const onSubmit = async (event: any) => {
     event.preventDefault();
     setIsSubmitting(true);
-    setResult("שולח פנייה...");
+    setResult("שולח פנייה למערכת...");
 
     const formData = new FormData(event.target);
 
-    // הגדרת נושא המייל שיגיע אליך
-    formData.append("subject", "פנייה חדשה מאתר איצ׳י");
+    // הגדרות Web3Forms
+    formData.append("subject", "פנייה חדשה לזיהוי מזיק - איצ׳י");
+    formData.append("from_name", "אתר איצ'י");
     
-    // שימוש במשתנה סביבה (מומלץ מאוד ב-Vercel)
-    // אם לא הגדרת, הקוד ישתמש במפתח שכתבת כברירת מחדל
     const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY || "c5651e0e-d0c4-4305-bbbd-c1d0da50a3ce";
     formData.append("access_key", accessKey);
 
@@ -30,10 +29,10 @@ export default function ContactForm() {
       const data = await response.json();
 
       if (data.success) {
-        setResult("הפנייה נשלחה בהצלחה! נחזור אליך בקרוב.");
+        setResult("הפנייה נשלחה בהצלחה! נחזור אליך בהקדם.");
         event.target.reset();
       } else {
-        setResult("אופס! הייתה שגיאה בשליחה. נסה שוב.");
+        setResult("אופס! הייתה שגיאה בשליחה. ניתן לשלוח גם בוואטסאפ.");
       }
     } catch (error) {
       setResult("שגיאת תקשורת. בדוק את החיבור לאינטרנט.");
@@ -43,51 +42,83 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="contact-wrapper" style={{ direction: 'rtl', maxWidth: '400px', margin: '0 auto' }}>
-      <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+    <div className="w-full max-w-lg mx-auto bg-white p-6 rounded-xl shadow-md border border-gray-100" dir="rtl">
+      <form onSubmit={onSubmit} className="space-y-4">
         
-        {/* שדה Honeypot - בוטים ימלאו אותו והודעתם תיחסם, בני אדם לא רואים אותו */}
+        {/* Anti-Spam Honeypot */}
         <input type="checkbox" name="botcheck" className="hidden" style={{ display: "none" }} />
 
-        <input 
-          type="text" 
-          name="name" 
-          placeholder="שם מלא" 
-          required 
-          style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-        />
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">שם מלא</label>
+          <input 
+            type="text" 
+            name="name" 
+            placeholder="איך קוראים לך?" 
+            required 
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">אימייל</label>
+            <input 
+              type="email" 
+              name="email" 
+              placeholder="email@example.com" 
+              required 
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">טלפון</label>
+            <input 
+              type="tel" 
+              name="phone" 
+              placeholder="05X-XXXXXXX" 
+              required 
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
+            />
+          </div>
+        </div>
         
-        <input 
-          type="email" 
-          name="email" 
-          placeholder="אימייל לחזרה" 
-          required 
-          style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
-        />
-        
-        <textarea 
-          name="message" 
-          placeholder="איך אפשר לעזור?" 
-          required 
-          style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc', minHeight: '100px' }}
-        ></textarea>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">מה הבעיה? (סוג המזיק, מיקום וכו')</label>
+          <textarea 
+            name="message" 
+            placeholder="תאר לנו בקצרה מה מצאת..." 
+            required 
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all min-h-[100px]"
+          ></textarea>
+        </div>
+
+        {/* שדה העלאת תמונה */}
+        <div className="bg-green-50 p-4 rounded-lg border border-green-100">
+          <label className="block text-sm font-bold text-green-800 mb-2">📸 צרף תמונה לזיהוי המזיק</label>
+          <input 
+            type="file" 
+            name="attachment" 
+            accept="image/*" 
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700 cursor:pointer"
+          />
+          <p className="mt-2 text-xs text-green-700 italic">מומלץ לצלם מקרוב ובאור טוב לזיהוי מדויק</p>
+        </div>
 
         <button 
           type="submit" 
           disabled={isSubmitting}
-          style={{ 
-            backgroundColor: isSubmitting ? '#ccc' : '#2563eb', 
-            color: 'white', 
-            padding: '10px', 
-            borderRadius: '4px', 
-            cursor: isSubmitting ? 'not-allowed' : 'pointer',
-            border: 'none'
-          }}
+          className={`w-full py-3 px-4 rounded-lg font-bold text-white shadow-lg transition-all ${
+            isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 active:transform active:scale-95'
+          }`}
         >
-          {isSubmitting ? 'שולח...' : 'שלח הודעה'}
+          {isSubmitting ? 'שולח פנייה...' : 'שלח לזיהוי וייעוץ'}
         </button>
         
-        <p style={{ textAlign: 'center', fontSize: '0.9rem', marginTop: '10px' }}>{result}</p>
+        {result && (
+          <p className={`text-center font-medium mt-4 ${result.includes('הצלחה') ? 'text-green-600' : 'text-red-600'}`}>
+            {result}
+          </p>
+        )}
       </form>
     </div>
   );
