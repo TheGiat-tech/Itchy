@@ -78,39 +78,50 @@ export interface ArticleFrontmatter {
 }
 
 /**
- * Slug → local static image path.
+ * Slug → API route URL that fetches a real photo from Wikimedia Commons at
+ * runtime and proxies it back to the browser.
  *
- * All paths are relative to /public and served at the listed URL by Next.js.
- * When adding a new article, add an entry here so it gets a relevant image
- * automatically even before the frontmatter image field is set.
+ * The /api/article-image route accepts a `q` search query, finds the best
+ * matching JPEG on Wikimedia Commons (free, CC-licensed), and serves it with
+ * 24-hour caching.  It falls back to the default local SVG on any error.
+ *
+ * When adding a new article, add a slug → search-query entry here.
  */
 const ARTICLE_IMAGE_BY_SLUG: Record<string, string> = {
-  "ants-in-kitchen-eliminating-the-nest": "/images/articles/ants-kitchen.svg",
-  "bed-bugs-identification-and-prevention": "/images/articles/bed-bugs-mattress.svg",
-  "fleas-pets-home-integrated-treatment": "/images/articles/flea-dog-fur.svg",
-  "german-cockroach-the-kitchen-invader": "/images/articles/german-cockroach.svg",
-  "green-pest-control-myths-and-safety": "/images/articles/pest-control-technician.svg",
-  "how-to-prevent-cockroaches-summer": "/images/articles/cockroach-kitchen.svg",
-  "little-fire-ant-stings-and-treatment": "/images/articles/fire-ant-colony.svg",
-  "rats-vs-mice-noises-and-health-risks": "/images/articles/rat-house.svg",
-  "termites-signs-of-damage-and-treatment": "/images/articles/termite-damage.svg",
-  "venomous-spiders-identification-israel": "/images/articles/brown-recluse-spider.svg",
+  "ants-in-kitchen-eliminating-the-nest":
+    "/api/article-image?q=ant+trail+food+kitchen+insect+close+up",
+  "bed-bugs-identification-and-prevention":
+    "/api/article-image?q=Cimex+lectularius+bed+bug+mattress",
+  "fleas-pets-home-integrated-treatment":
+    "/api/article-image?q=flea+dog+cat+fur+insect+close+up",
+  "german-cockroach-the-kitchen-invader":
+    "/api/article-image?q=Blattella+germanica+German+cockroach",
+  "green-pest-control-myths-and-safety":
+    "/api/article-image?q=pest+control+technician+spraying+home",
+  "how-to-prevent-cockroaches-summer":
+    "/api/article-image?q=cockroach+kitchen+food+surface",
+  "little-fire-ant-stings-and-treatment":
+    "/api/article-image?q=Wasmannia+auropunctata+fire+ant+colony",
+  "rats-vs-mice-noises-and-health-risks":
+    "/api/article-image?q=rat+mouse+indoor+house+rodent",
+  "termites-signs-of-damage-and-treatment":
+    "/api/article-image?q=termite+wood+damage+subterranean",
+  "venomous-spiders-identification-israel":
+    "/api/article-image?q=brown+recluse+spider+Loxosceles+venomous",
 };
 
 /** Fallback image served for any article that has no specific mapping. */
 const DEFAULT_ARTICLE_IMAGE = "/images/articles/default-pest-control.svg";
 
 /**
- * Resolves the best available local image path for an article.
+ * Resolves the best available image URL for an article.
  *
  * Priority:
- *   1. frontmatter.image — explicit local path set in the MDX file.
- *   2. ARTICLE_IMAGE_BY_SLUG[slug] — topic-specific local SVG by article slug.
- *   3. DEFAULT_ARTICLE_IMAGE — generic pest-control placeholder.
- *
- * No external image services (Unsplash, picsum, loremflickr, …) are used.
- * Every returned path starts with "/images/articles/" and is a file that
- * exists inside /public.
+ *   1. frontmatter.image — explicit path/URL set in the MDX file.
+ *   2. ARTICLE_IMAGE_BY_SLUG[slug] — /api/article-image?q=… route that
+ *      fetches a real photo from Wikimedia Commons at runtime and proxies
+ *      it back to the browser (24-hour cache, CC-licensed).
+ *   3. DEFAULT_ARTICLE_IMAGE — generic local pest-control SVG placeholder.
  *
  * @param frontmatter  Article frontmatter parsed from the MDX file.
  * @param slug         Article slug (filename without extension).
