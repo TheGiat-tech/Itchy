@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 const STORAGE_KEY = "itchy_cookie_consent";
 
 export default function CookieBanner() {
-  const [visible, setVisible] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return !localStorage.getItem(STORAGE_KEY);
-  });
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    setVisible(!localStorage.getItem(STORAGE_KEY));
+  }, []);
 
   function accept() {
     localStorage.setItem(STORAGE_KEY, "accepted");
