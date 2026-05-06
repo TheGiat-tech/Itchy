@@ -1,16 +1,15 @@
-name: 🤖 Daily Article Bot
+name: 🤖 Generate Daily Article
+
 on:
   schedule:
-    - cron: '0 8 * * *' # רץ כל יום ב-8 בבוקר
-  workflow_dispatch: # מאפשר הרצה ידנית מהממשק
+    - cron: '0 8 * * *'
+  workflow_dispatch:
 
 jobs:
   generate-article:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # תמיכה בגרסאות Node חדשות
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,6 +25,7 @@ jobs:
       - name: Generate daily article
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ secrets.GEMINI_MODEL }}
         run: node scripts/daily-bot.mjs
 
       - name: Commit and push generated article
