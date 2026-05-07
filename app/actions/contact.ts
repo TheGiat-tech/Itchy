@@ -86,7 +86,7 @@ export async function submitContactForm(
   // --- Web3Forms notification ---
   try {
     const payload: Record<string, string> = {
-      apikey: accessKey,
+      access_key: accessKey,
       subject: "פנייה חדשה מאתר איצ׳י",
       from_name: "אתר איצ'י",
       name,
