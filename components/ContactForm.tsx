@@ -23,8 +23,8 @@ export default function ContactForm() {
 
     const errors: Record<string, string> = {};
     if (!name) errors.name = "נא להזין שם מלא.";
-    if (!email || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) errors.email = "נא להזין אימייל תקין.";
-    if (!/^0\\d{8,9}$/.test(phone)) errors.phone = "נא להזין מספר טלפון תקין.";
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "נא להזין אימייל תקין.";
+    if (!/^0\d{8,9}$/.test(phone)) errors.phone = "נא להזין מספר טלפון תקין.";
     if (!message) errors.message = "נא להזין הודעה.";
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
