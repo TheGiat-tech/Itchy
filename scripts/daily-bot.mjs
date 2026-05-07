@@ -69,10 +69,11 @@ function injectImageFields(content, overrideImage, overrideAlt) {
     image = overrideImage;
     alt = overrideAlt ?? DEFAULT_ALT;
   } else if (imageKeywordMatch?.[1]) {
-    // Use the free Wikimedia Commons API proxy for a real photo based on article topic
+    // Use the free Wikimedia Commons API proxy for a real photo based on article topic.
+    // The /api/article-image route already falls back to the default SVG on any API error.
     const keyword = imageKeywordMatch[1].trim();
     image = `/api/article-image?q=${encodeURIComponent(keyword)}`;
-    alt = keyword;
+    alt = `${keyword} pest control`;
   } else {
     ({ image, alt } = pickLocalImage(hint));
   }
