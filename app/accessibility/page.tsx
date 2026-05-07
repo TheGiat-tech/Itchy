@@ -92,10 +92,6 @@ export default function AccessibilityPage() {
                 עמוד יצירת קשר: <Link href="/contact">/contact</Link>
               </li>
             </ul>
-            <p>
-              האתר נמצא בתהליך שיפור מתמיד של נגישות. אם נתקלתם בבעיה, נשמח
-              שתפנו אלינו דרך עמוד יצירת הקשר.
-            </p>
           </section>
         </div>
       </main>
