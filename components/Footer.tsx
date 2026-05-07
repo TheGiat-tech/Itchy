@@ -42,10 +42,10 @@ export default function Footer() {
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
-                  href="/contact?type=photo"
+                  href="/quote"
                   className="hover:text-white transition-colors"
                 >
-                  שלח תמונה לזיהוי
+                  קבלת הצעת מחיר
                 </Link>
               </li>
               <li>
