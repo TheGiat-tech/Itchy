@@ -72,6 +72,7 @@ export interface ArticleFrontmatter {
   cover_image?: string;
   // Kept for backward compatibility with existing frontmatter files.
   imageKeyword?: string;
+  imageQuery?: string;
   // Alt text for the article image (used in <img alt="…">).
   imageAlt?: string;
   titleLatin?: string;
@@ -129,38 +130,28 @@ export function resolveLocalImage(hint: string): string | null {
   return null;
 }
 
-/**
- * Slug → image URL using the /api/pest-image route (Wikipedia pageimages API).
- * Wikipedia always serves a curated article thumbnail, which is more reliable
- * than searching Wikimedia Commons for matching JPEG files.
- *
- * When adding a new article, add a slug → Wikipedia article-name entry here.
- */
-const ARTICLE_IMAGE_BY_SLUG: Record<string, string> = {
-  "ants-in-kitchen-eliminating-the-nest":
-    "/api/pest-image?name=Formicidae",
-  "bed-bugs-identification-and-prevention":
-    "/api/pest-image?name=Cimex+lectularius",
-  "fleas-pets-home-integrated-treatment":
-    "/api/pest-image?name=Ctenocephalides+felis",
-  "german-cockroach-the-kitchen-invader":
-    "/api/pest-image?name=Blattella+germanica",
-  "green-pest-control-myths-and-safety":
-    "/api/pest-image?name=Pest+control",
-  "how-to-prevent-cockroaches-summer":
-    "/api/pest-image?name=Cockroach",
-  "little-fire-ant-stings-and-treatment":
-    "/api/pest-image?name=Wasmannia+auropunctata",
-  "rats-vs-mice-noises-and-health-risks":
-    "/api/pest-image?name=Rattus+rattus",
-  "termites-signs-of-damage-and-treatment":
-    "/api/pest-image?name=Termite",
-  "venomous-spiders-identification-israel":
-    "/api/pest-image?name=Loxosceles+rufescens",
+const ARTICLE_IMAGE_QUERY_BY_SLUG: Record<string, string> = {
+  "ants-in-kitchen-eliminating-the-nest": "ants kitchen counter",
+  "article-2026-05-06-i2xzrw": "mouse in house",
+  "article-2026-05-06-s1t0u4": "cockroach kitchen infestation",
+  "article-2026-05-07-5ncibd": "bed bug mattress infestation",
+  "bed-bugs-identification-and-prevention": "bed bug mattress",
+  "fleas-pets-home-integrated-treatment": "flea dog fur",
+  "german-cockroach-the-kitchen-invader": "German cockroach kitchen",
+  "green-pest-control-myths-and-safety": "pest control technician home inspection",
+  "how-to-prevent-cockroaches-summer": "cockroach kitchen at night",
+  "little-fire-ant-stings-and-treatment": "little fire ant colony",
+  "rats-vs-mice-noises-and-health-risks": "rat inside house",
+  "termites-signs-of-damage-and-treatment": "termite damage wood",
+  "venomous-spiders-identification-israel": "brown recluse spider close up",
 };
 
 /** Fallback image served for any article that has no specific mapping. */
 const DEFAULT_ARTICLE_IMAGE = "/images/articles/default-pest-control.svg";
+
+function buildArticleImageUrl(query: string): string {
+  return `/api/article-image?q=${encodeURIComponent(query)}`;
+}
 
 /**
  * Resolves the best available image URL for an article.
@@ -179,12 +170,35 @@ export function getPostImage(
   frontmatter: ArticleFrontmatter,
   slug?: string
 ): string {
-  // 1. Explicit local image path in frontmatter takes highest priority.
-  if (typeof frontmatter.image === "string" && frontmatter.image.trim()) {
+  const explicitQuery = frontmatter.imageQuery?.trim();
+  if (explicitQuery) {
+    return buildArticleImageUrl(explicitQuery);
+  }
+
+  if (slug) {
+    const mappedQuery = ARTICLE_IMAGE_QUERY_BY_SLUG[slug];
+    if (mappedQuery) {
+      return buildArticleImageUrl(mappedQuery);
+    }
+  }
+
+  if (
+    typeof frontmatter.image === "string" &&
+    frontmatter.image.trim() &&
+    !frontmatter.image.startsWith("/images/")
+  ) {
     return frontmatter.image.trim();
   }
 
-  // 2. Topic inference from pestType / imageKeyword / title fields.
+  const queryHint = [frontmatter.imageKeyword, frontmatter.titleLatin]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+  if (/[A-Za-z]/.test(queryHint)) {
+    return buildArticleImageUrl(queryHint);
+  }
+
+  // Topic inference from pestType / imageKeyword / title fields.
   const hint = [
     frontmatter.pestType,
     frontmatter.imageKeyword,
@@ -198,12 +212,7 @@ export function getPostImage(
     if (inferred) return inferred;
   }
 
-  // 3. Slug-based mapping (legacy Wikipedia API routes).
-  if (slug && ARTICLE_IMAGE_BY_SLUG[slug]) {
-    return ARTICLE_IMAGE_BY_SLUG[slug];
-  }
-
-  // 4. Static fallback – always resolves to a real local file.
+  // Static fallback – always resolves to a real local file.
   return DEFAULT_ARTICLE_IMAGE;
 }
 
