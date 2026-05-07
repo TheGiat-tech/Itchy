@@ -48,7 +48,7 @@ function ContactPageContent() {
       >
         <header className="mb-8" dir="rtl">
           <h1 className="text-3xl font-extrabold text-gray-900 mb-2">
-            {isPhotoFlow ? "שלח תמונה לזיהוי" : "דברו עם איצ׳י"}
+            דברו עם איצ׳י
           </h1>
           <p className="text-gray-700">
             {isPhotoFlow

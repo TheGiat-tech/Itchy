@@ -1,18 +1,39 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useSyncExternalStore } from "react";
 import Link from "next/link";
 
 const STORAGE_KEY = "itchy_cookie_consent";
+const CONSENT_EVENT = "itchy-cookie-consent-change";
+
+function subscribe(onStoreChange: () => void) {
+  if (typeof window === "undefined") {
+    return () => {};
+  }
+
+  const handleChange = () => onStoreChange();
+  window.addEventListener("storage", handleChange);
+  window.addEventListener(CONSENT_EVENT, handleChange);
+
+  return () => {
+    window.removeEventListener("storage", handleChange);
+    window.removeEventListener(CONSENT_EVENT, handleChange);
+  };
+}
+
+function getSnapshot() {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  return !localStorage.getItem(STORAGE_KEY);
+}
 
 export default function CookieBanner() {
   const titleId = useId();
   const descriptionId = useId();
   const acceptButtonRef = useRef<HTMLButtonElement>(null);
-  const [visible, setVisible] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return !localStorage.getItem(STORAGE_KEY);
-  });
+  const visible = useSyncExternalStore(subscribe, getSnapshot, () => false);
 
   useEffect(() => {
     if (!visible) return;
@@ -22,7 +43,7 @@ export default function CookieBanner() {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         localStorage.setItem(STORAGE_KEY, "accepted");
-        setVisible(false);
+        window.dispatchEvent(new Event(CONSENT_EVENT));
       }
     };
 
@@ -32,7 +53,7 @@ export default function CookieBanner() {
 
   function accept() {
     localStorage.setItem(STORAGE_KEY, "accepted");
-    setVisible(false);
+    window.dispatchEvent(new Event(CONSENT_EVENT));
   }
 
   if (!visible) return null;
