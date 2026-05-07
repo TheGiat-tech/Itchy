@@ -159,11 +159,15 @@ export default function QuotePage() {
                   {loading ? "שולח..." : "שליחת בקשה להצעת מחיר"}
                 </button>
 
-                <div className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-900">
+                <aside
+                  role="note"
+                  aria-label="הבהרה משפטית לגבי השירות"
+                  className="mt-2 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-900"
+                >
                   הבהרה: אתר איצ׳י (Itchi) משמש כפלטפורמה לשיתוף מידע בלבד. הצעות המחיר והשירותים
                   ניתנים על ידי ספקי שירות חיצוניים (צד שלישי). האתר אינו נושא באחריות לטיב
                   השירות, למחיר או לתוצאות ההדברה.
-                </div>
+                </aside>
               </form>
             )}
           </div>
