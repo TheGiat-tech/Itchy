@@ -26,7 +26,8 @@ export async function submitQuoteRequest(formData: FormData): Promise<QuoteRespo
       INSERT INTO quotes (pest_type, rooms, city, name, phone, message, created_at)
       VALUES (${pestType}, ${rooms}, ${city}, ${name}, ${phone}, ${message}, NOW())
     `;
-  } catch {
+  } catch (error) {
+    console.error("[quote] Failed to insert quote request into DB:", error);
     return { success: false, error: "שגיאה בשמירת הפרטים" };
   }
 
@@ -54,7 +55,8 @@ export async function submitQuoteRequest(formData: FormData): Promise<QuoteRespo
     if (!result.success) {
       return { success: false, error: "הפנייה נשמרה, אך שליחת ההתראה נכשלה" };
     }
-  } catch {
+  } catch (error) {
+    console.error("[quote] Failed to send Web3Forms notification:", error);
     return { success: false, error: "הפנייה נשמרה, אך שליחת ההתראה נכשלה" };
   }
 
