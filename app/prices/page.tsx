@@ -173,10 +173,10 @@ export default function PricesPage() {
 
         <div className="mt-10 flex flex-col items-center gap-4 text-center">
           <p className="text-gray-600 text-lg font-medium">
-            רוצים הצעת מחיר מדויקת? דברו איתנו עכשיו.
+            רוצים הצעת מחיר מדויקת? פנו אל מדביר עכשיו.
           </p>
           <Link
-            href="/contact"
+            href="/quote"
             className="inline-block bg-green-600 hover:bg-green-700 active:bg-green-800 text-white font-bold text-lg px-10 py-4 rounded-2xl shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
           >
             📞 צור קשר לקבלת הצעת מחיר
