@@ -157,11 +157,11 @@ function buildArticleImageUrl(query: string): string {
  * Resolves the best available image URL for an article.
  *
  * Priority:
- *   1. frontmatter.image — explicit path/URL set in the MDX file.
- *   2. ARTICLE_IMAGE_BY_SLUG[slug] — /api/article-image?q=… route that
- *      fetches a real photo from Wikimedia Commons at runtime and proxies
- *      it back to the browser (24-hour cache, CC-licensed).
- *   3. DEFAULT_ARTICLE_IMAGE — generic local pest-control SVG placeholder.
+ *   1. frontmatter.imageQuery — explicit Wikimedia Commons search query.
+ *   2. ARTICLE_IMAGE_QUERY_BY_SLUG[slug] — curated topic query for existing articles.
+ *   3. frontmatter.image / imageKeyword / titleLatin — explicit remote/API image hints.
+ *   4. Local topic illustration inferred from the article text.
+ *   5. DEFAULT_ARTICLE_IMAGE — generic local pest-control SVG placeholder.
  *
  * @param frontmatter  Article frontmatter parsed from the MDX file.
  * @param slug         Article slug (filename without extension).
