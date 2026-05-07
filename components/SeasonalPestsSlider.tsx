@@ -56,9 +56,13 @@ export default function SeasonalPestsSlider() {
 
   const scroll = (dir: "right" | "left") => {
     if (!scrollRef.current) return;
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     scrollRef.current.scrollBy({
       left: dir === "left" ? -SCROLL_AMOUNT : SCROLL_AMOUNT,
-      behavior: "smooth",
+      behavior: reduceMotion ? "auto" : "smooth",
     });
   };
 
@@ -74,8 +78,9 @@ export default function SeasonalPestsSlider() {
 
       <div
         ref={scrollRef}
-        className="flex gap-4 overflow-x-auto scroll-smooth pb-2 px-2 hide-scrollbar"
+        className="flex gap-4 overflow-x-auto pb-2 px-2 hide-scrollbar motion-safe:scroll-smooth"
         style={{ scrollbarWidth: "none" }}
+        aria-label="מזיקים עונתיים ופופולריים"
       >
         {SEASONAL_PESTS.map((pest) => (
           <Link
@@ -90,7 +95,7 @@ export default function SeasonalPestsSlider() {
             <h3 className="font-bold text-gray-800 text-sm leading-snug">
               {pest.title}
             </h3>
-            <p className="text-xs text-gray-400 italic mt-0.5">
+            <p className="mt-0.5 text-xs italic text-gray-600">
               {pest.subtitle}
             </p>
           </Link>

@@ -56,9 +56,13 @@ export default async function ArticlePage({ params }: Props) {
 
   return (
     <>
-      <main className="flex-1 max-w-3xl mx-auto px-4 py-12 w-full" dir="rtl">
+      <main
+        id="main-content"
+        className="flex-1 max-w-3xl mx-auto px-4 py-12 w-full"
+        dir="rtl"
+      >
         {/* Breadcrumb */}
-        <nav className="text-sm text-gray-400 mb-8 flex items-center gap-1">
+        <nav className="mb-8 flex items-center gap-1 text-sm text-gray-600" aria-label="פירורי לחם">
           <Link href="/articles" className="hover:text-green-700 transition-colors">
             מאמרים
           </Link>
@@ -77,12 +81,12 @@ export default async function ArticlePage({ params }: Props) {
             {displayTitle}
           </h1>
           {displayExcerpt && (
-            <p className="text-lg text-gray-500 leading-relaxed">
+            <p className="text-lg text-gray-700 leading-relaxed">
               {displayExcerpt}
             </p>
           )}
           {frontmatter.date && (
-            <p className="text-sm text-gray-400 mt-3">{formatDate(frontmatter.date)}</p>
+            <p className="mt-3 text-sm text-gray-600">{formatDate(frontmatter.date)}</p>
           )}
         </div>
 

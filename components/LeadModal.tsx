@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 interface LeadModalProps {
   isOpen: boolean;
@@ -21,6 +21,8 @@ const PEST_OPTIONS = [
 ];
 
 export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
+  const titleId = useId();
+  const descriptionId = useId();
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -28,6 +30,8 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
   const [city, setCity] = useState("");
   const [phone, setPhone] = useState("");
   const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const handleClose = useCallback(() => {
     setSubmitted(false);
@@ -40,11 +44,44 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
   }, [onClose]);
 
   useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") handleClose();
+    if (!isOpen) return;
+
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleClose();
+        return;
+      }
+
+      if (event.key !== "Tab" || !dialogRef.current) return;
+
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+      );
+
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
-    if (isOpen) document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
+
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", handleKey);
+      previousFocusRef.current?.focus();
+    };
   }, [isOpen, handleClose]);
 
   if (!isOpen) return null;
@@ -90,7 +127,8 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
       onClick={handleBackdropClick}
       aria-modal="true"
       role="dialog"
-      aria-label="בקשת ייעוץ חינם"
+      aria-labelledby={titleId}
+      aria-describedby={descriptionId}
     >
       <div
         ref={dialogRef}
@@ -98,32 +136,33 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
         dir="rtl"
       >
         <button
+          ref={closeButtonRef}
           onClick={handleClose}
-          className="absolute top-4 left-4 text-gray-400 hover:text-gray-600 text-2xl leading-none"
+          className="absolute top-4 left-4 text-gray-600 hover:text-gray-800 text-2xl leading-none"
           aria-label="סגור"
         >
           ×
         </button>
 
         {submitted ? (
-          <div className="text-center py-6">
-            <div className="text-5xl mb-4">✅</div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              הפרטים נשלחו בהצלחה לצוות המדבירים! נחזור אליך בהקדם.
-            </h2>
-            <button
-              onClick={handleClose}
-              className="mt-6 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-colors"
+            <div className="text-center py-6">
+              <div className="text-5xl mb-4">✅</div>
+              <h2 id={titleId} className="text-2xl font-bold text-gray-900 mb-2">
+                הפרטים נשלחו בהצלחה לצוות המדבירים! נחזור אליך בהקדם.
+              </h2>
+              <button
+                onClick={handleClose}
+                className="mt-6 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-colors"
             >
               סגור
             </button>
           </div>
         ) : (
           <>
-            <h2 className="text-2xl font-bold text-gray-900 mb-1">
+            <h2 id={titleId} className="text-2xl font-bold text-gray-900 mb-1">
               קבלו ייעוץ חינם
             </h2>
-            <p className="text-sm text-gray-500 mb-5">
+            <p id={descriptionId} className="mb-5 text-sm text-gray-700">
               מלאו את הפרטים ומדביר מוסמך מהאזור שלך ייצור איתך קשר – ללא
               עלות וללא התחייבות.
             </p>
@@ -165,6 +204,7 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="לדוגמה: תל אביב"
+                  autoComplete="address-level2"
                   required
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-right"
                   dir="rtl"
@@ -184,6 +224,7 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="05XXXXXXXX"
+                  autoComplete="tel"
                   minLength={9}
                   maxLength={10}
                   required
@@ -193,7 +234,7 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
               </div>
 
               {error && (
-                <p className="text-red-600 text-sm">{error}</p>
+                <p className="text-red-600 text-sm" role="alert">{error}</p>
               )}
 
               <button

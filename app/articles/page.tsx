@@ -24,14 +24,18 @@ export default function ArticlesPage() {
 
   return (
     <>
-      <main className="flex-1 max-w-5xl mx-auto px-4 py-12 w-full" dir="rtl">
+      <main
+        id="main-content"
+        className="flex-1 max-w-5xl mx-auto px-4 py-12 w-full"
+        dir="rtl"
+      >
         <h1 className="text-3xl font-extrabold text-gray-900 mb-2">מאמרים</h1>
-        <p className="text-gray-500 mb-10">
+        <p className="mb-10 text-gray-700">
           מדריכים, טיפים ומידע מקצועי על הדברה ומניעת מזיקים.
         </p>
 
         {articles.length === 0 ? (
-          <div className="text-center py-20 text-gray-400">
+          <div className="py-20 text-center text-gray-600">
             <p className="text-4xl mb-4">✍️</p>
             <p>עוד אין מאמרים – בקרוב!</p>
           </div>
@@ -78,7 +82,7 @@ export default function ArticlesPage() {
                     </p>
                   )}
                   {article.frontmatter.date && (
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="mt-1 text-xs text-gray-600">
                       {formatDate(article.frontmatter.date)}
                     </p>
                   )}

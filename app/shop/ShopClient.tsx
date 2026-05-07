@@ -82,6 +82,7 @@ export default function ShopClient() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
+              aria-pressed={activeCategory === cat}
               className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors duration-150 ${
                 activeCategory === cat
                   ? "bg-green-600 text-white border-green-600"
@@ -102,7 +103,7 @@ export default function ShopClient() {
           ))}
         </div>
         {filtered.length === 0 && (
-          <p className="text-center text-gray-400 py-16">
+          <p className="py-16 text-center text-gray-600">
             אין מוצרים בקטגוריה זו כרגע.
           </p>
         )}

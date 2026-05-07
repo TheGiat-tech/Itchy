@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 
 interface ArticleLeadFormProps {
   pestName: string;
 }
 
 export default function ArticleLeadForm({ pestName }: ArticleLeadFormProps) {
+  const nameId = useId();
+  const phoneId = useId();
+  const cityId = useId();
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -65,44 +68,65 @@ export default function ArticleLeadForm({ pestName }: ArticleLeadFormProps) {
       <h3 className="text-xl font-bold text-gray-900 mb-1">
         צריכים עזרה עם {pestName}?
       </h3>
-      <p className="text-sm text-gray-600 mb-5">
+      <p className="text-sm text-gray-700 mb-5">
         השאירו פרטים ומדביר מוסמך מהאזור שלך ייצור איתך קשר – ללא עלות וללא
         התחייבות.
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="שם מלא"
-            required
-            className="px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-400 focus:outline-none bg-white text-right"
-            dir="rtl"
-          />
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="טלפון"
-            required
-            className="px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-400 focus:outline-none bg-white text-right"
-            dir="ltr"
-          />
-          <input
-            type="text"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            placeholder="עיר"
-            required
-            className="px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-400 focus:outline-none bg-white text-right"
-            dir="rtl"
-          />
+          <div>
+            <label htmlFor={nameId} className="mb-1 block text-sm font-medium text-gray-800">
+              שם מלא
+            </label>
+            <input
+              id={nameId}
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="שם מלא"
+              autoComplete="name"
+              required
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-400 focus:outline-none bg-white text-right"
+              dir="rtl"
+            />
+          </div>
+          <div>
+            <label htmlFor={phoneId} className="mb-1 block text-sm font-medium text-gray-800">
+              טלפון
+            </label>
+            <input
+              id={phoneId}
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="טלפון"
+              autoComplete="tel"
+              required
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-400 focus:outline-none bg-white text-right"
+              dir="ltr"
+            />
+          </div>
+          <div>
+            <label htmlFor={cityId} className="mb-1 block text-sm font-medium text-gray-800">
+              עיר
+            </label>
+            <input
+              id={cityId}
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="עיר"
+              autoComplete="address-level2"
+              required
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-400 focus:outline-none bg-white text-right"
+              dir="rtl"
+            />
+          </div>
         </div>
 
         {error && (
-          <p className="text-red-600 text-sm mt-1">{error}</p>
+          <p className="text-red-600 text-sm mt-1" role="alert">{error}</p>
         )}
 
         <button

@@ -51,13 +51,16 @@ export default async function PestPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <main className="flex-1 max-w-3xl mx-auto px-4 py-12 w-full">
+      <main
+        id="main-content"
+        className="flex-1 max-w-3xl mx-auto px-4 py-12 w-full"
+      >
         <div className="mb-8">
           <h1 className="text-4xl font-extrabold text-gray-900">
             {frontmatter.title}
           </h1>
           {frontmatter.titleLatin && (
-            <p className="text-lg text-gray-400 italic mt-1">
+            <p className="mt-1 text-lg italic text-gray-600">
               {frontmatter.titleLatin}
             </p>
           )}

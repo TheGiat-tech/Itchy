@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <Logo theme="dark" />
-            <p className="text-sm text-gray-400 mt-3">
+            <p className="mt-3 text-sm text-gray-200 leading-6">
               אנציקלופדיית המזיקים המובילה בישראל. מידע מקצועי, מדויק ונגיש.
             </p>
           </div>
@@ -59,9 +59,17 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        <div className="border-t border-gray-700 mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+        <div className="border-t border-gray-700 mt-8 pt-6 flex flex-col gap-3 text-xs text-gray-300 sm:flex-row sm:items-center sm:justify-between">
           <span>© איצ&#39;י 2026 – כל הזכויות שמורות</span>
-          <ul className="flex gap-4">
+          <ul className="flex flex-wrap items-center justify-center gap-4">
+            <li>
+              <Link
+                href="/accessibility"
+                className="hover:text-white transition-colors"
+              >
+                הצהרת נגישות
+              </Link>
+            </li>
             <li>
               <Link href="/privacy" className="hover:text-white transition-colors">
                 מדיניות פרטיות

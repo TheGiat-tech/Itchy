@@ -98,7 +98,11 @@ const PRICE_ITEMS = [
 export default function PricesPage() {
   return (
     <>
-      <main className="flex-1 w-full max-w-6xl mx-auto px-4 py-12" dir="rtl">
+      <main
+        id="main-content"
+        className="flex-1 w-full max-w-6xl mx-auto px-4 py-12"
+        dir="rtl"
+      >
         <div className="text-center mb-10">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-3">
             מחירון הדברה
@@ -111,15 +115,21 @@ export default function PricesPage() {
         </div>
 
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+          <p className="px-4 pt-4 text-sm text-gray-700 sm:hidden">
+            ניתן לגלול אופקית כדי לצפות בכל עמודות הטבלה גם במסכים קטנים או בזום מוגדל.
+          </p>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-sm">
+              <caption className="sr-only">
+                טבלת מחירי הדברה משוערים לפי סוג מזיק וגודל דירה.
+              </caption>
               <thead className="bg-green-50 text-gray-800">
                 <tr>
-                  <th className="px-5 py-4 text-right font-bold">סוג המזיק</th>
-                  <th className="px-5 py-4 text-right font-bold">דירת 3 חדרים</th>
-                  <th className="px-5 py-4 text-right font-bold">דירת 4 חדרים</th>
-                  <th className="px-5 py-4 text-right font-bold">דירת 5 חדרים</th>
-                  <th className="px-5 py-4 text-right font-bold">הערה</th>
+                  <th scope="col" className="px-5 py-4 text-right font-bold">סוג המזיק</th>
+                  <th scope="col" className="px-5 py-4 text-right font-bold">דירת 3 חדרים</th>
+                  <th scope="col" className="px-5 py-4 text-right font-bold">דירת 4 חדרים</th>
+                  <th scope="col" className="px-5 py-4 text-right font-bold">דירת 5 חדרים</th>
+                  <th scope="col" className="px-5 py-4 text-right font-bold">הערה</th>
                 </tr>
               </thead>
               <tbody>
@@ -128,9 +138,9 @@ export default function PricesPage() {
                     key={item.pest}
                     className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}
                   >
-                    <td className="px-5 py-4 font-semibold text-gray-900">
+                    <th scope="row" className="px-5 py-4 text-right font-semibold text-gray-900">
                       {item.pest}
-                    </td>
+                    </th>
                     <td className="px-5 py-4 text-green-700 font-semibold whitespace-nowrap">
                       {item.rooms3}
                     </td>
@@ -165,7 +175,7 @@ export default function PricesPage() {
           </p>
         </div>
 
-        <p className="mt-6 text-xs text-gray-400 text-center leading-relaxed">
+        <p className="mt-6 text-center text-xs leading-relaxed text-gray-700">
           * כל המחירים משוערים בלבד. המחיר הסופי נקבע לפי בדיקה מקצועית, סוג
           הנכס, רמת הנגיעות, תנאי הגישה והיקף העבודה. כל המחירים כוללים מע&quot;מ,
           אלא אם צוין אחרת.
@@ -184,57 +194,6 @@ export default function PricesPage() {
         </div>
       </main>
       <Footer />
-    </<div className="mt-8 bg-gray-50 border border-gray-100 rounded-2xl p-6 text-gray-700 leading-relaxed">
-  <h2 className="text-xl font-bold text-gray-900 mb-3">
-    חשוב לדעת
-  </h2>
-
-  <p>
-    המחירון מציג טווחי מחירים ממוצעים בלבד ואינו מהווה הצעת מחיר
-    מחייבת. המחיר הסופי נקבע בהתאם לסוג המזיק, רמת הנגיעות,
-    גודל הנכס, תנאי הגישה והיקף העבודה בפועל.
-  </p>
-
-  <p className="mt-3">
-    במקרים מורכבים כגון טרמיטים, פשפש המיטה, יונים, מכרסמים
-    או נגיעות חריגה — המחיר ייקבע לאחר אבחון מקצועי.
-  </p>
-
-  <p className="mt-3">
-    אין אחריות על מעופפים כגון זבובים, יתושים ודבורים,
-    משום שהם יכולים להיכנס מחדש מבחוץ לאחר הטיפול.
-  </p>
-
-  <p className="mt-3">
-    הרחקת יונים מתומחרת לפי שעת עבודה, סוג הפתרון,
-    תנאי הגישה והיקף ההתקנה.
-  </p>
-
-  <p className="mt-3">
-    אתר איצ&apos;י הינו פלטפורמה להנגשת מידע, השוואת מחירים
-    וחיבור בין גולשים לבין מדבירים ובעלי מקצוע חיצוניים.
-    האתר אינו מספק שירותי הדברה בעצמו ואינו מבצע עבודות
-    הדברה בפועל.
-  </p>
-
-  <p className="mt-3">
-    בעת השארת פרטים באתר, ייתכן שהפרטים יועברו למדבירים,
-    חברות הדברה או בעלי מקצוע צד ג&apos; לצורך יצירת קשר
-    ומתן הצעת מחיר.
-  </p>
-
-  <p className="mt-3">
-    ההתקשרות, השירות, האחריות, התמחור, איכות העבודה,
-    השימוש בחומרים, העמידה בדרישות החוק ורישיון ההדברה —
-    הינם באחריותו הבלעדית של בעל המקצוע המבצע בלבד.
-  </p>
-
-  <p className="mt-3">
-    אתר איצ&apos;י, בעליו ומפעיליו אינם צד להסכם בין הלקוח
-    לבין המדביר או בעל המקצוע, ולא יישאו באחריות לכל נזק,
-    הפסד, טיפול לקוי, שימוש בחומרים, עיכוב, רשלנות או
-    מחלוקת מכל סוג הקשורה לשירות שסופק על ידי צד שלישי.
-  </p>
-</div>
+    </>
   );
 }

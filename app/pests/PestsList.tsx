@@ -29,7 +29,11 @@ export default function PestsList({ pests }: Props) {
   return (
     <>
       <div className="relative w-full max-w-xl mx-auto mb-8">
+        <label htmlFor="pests-search" className="sr-only">
+          חיפוש ברשימת המזיקים
+        </label>
         <input
+          id="pests-search"
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -41,10 +45,10 @@ export default function PestsList({ pests }: Props) {
           🔍
         </span>
       </div>
-      <p className="text-gray-500 mb-8">{filtered.length} מזיקים נמצאו</p>
+      <p className="mb-8 text-gray-700">{filtered.length} מזיקים נמצאו</p>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">
+        <div className="py-20 text-center text-gray-600">
           <p className="text-4xl mb-4">🔍</p>
           <p>לא נמצאו מזיקים תואמים לחיפוש שלך.</p>
         </div>
@@ -74,7 +78,7 @@ export default function PestsList({ pests }: Props) {
                   {pest.frontmatter.title}
                 </h2>
                 {pest.frontmatter.titleLatin && (
-                  <p className="text-sm text-gray-400 italic">
+                  <p className="text-sm text-gray-600 italic">
                     {pest.frontmatter.titleLatin}
                   </p>
                 )}

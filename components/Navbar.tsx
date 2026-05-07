@@ -2,7 +2,7 @@
 
 import Logo from "@/components/Logo";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 const NAV_LINKS = [
   { href: "/pests", label: "מזיקים" },
@@ -14,6 +14,44 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuId = useId();
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuPanelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const focusable = menuPanelRef.current?.querySelectorAll<HTMLElement>(
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+    focusable?.[0]?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        menuButtonRef.current?.focus();
+        return;
+      }
+
+      if (event.key !== "Tab" || !focusable || focusable.length === 0) {
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [menuOpen]);
 
   return (
     <nav className="bg-white shadow-sm border-b border-gray-100 relative">
@@ -52,10 +90,12 @@ export default function Navbar() {
 
         {/* Mobile hamburger button */}
         <button
-          className="md:hidden p-2 text-gray-600 hover:text-green-700 transition-colors"
+          ref={menuButtonRef}
+          className="md:hidden p-2 text-gray-700 hover:text-green-700 transition-colors"
           onClick={() => setMenuOpen((o) => !o)}
           aria-label={menuOpen ? "סגור תפריט" : "פתח תפריט"}
           aria-expanded={menuOpen}
+          aria-controls={menuId}
         >
           {menuOpen ? (
             <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -72,15 +112,20 @@ export default function Navbar() {
       {/* Mobile dropdown menu */}
       {menuOpen && (
         <div
+          id={menuId}
+          ref={menuPanelRef}
           className="md:hidden absolute top-full right-0 left-0 bg-white border-b border-gray-100 shadow-lg z-50"
           dir="rtl"
+          role="dialog"
+          aria-label="תפריט ניווט"
+          aria-modal="true"
         >
           <div className="flex flex-col px-4 py-3 gap-1">
             {NAV_LINKS.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
-                className="py-3 px-2 text-gray-700 hover:text-green-700 font-medium border-b border-gray-100 last:border-0 transition-colors"
+                className="py-3 px-2 text-gray-800 hover:text-green-700 font-medium border-b border-gray-100 last:border-0 transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
                 {label}

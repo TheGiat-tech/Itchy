@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface SearchBarProps {
@@ -11,6 +11,7 @@ export default function SearchBar({
   placeholder = "איזה מזיק מופיע אצלך?",
 }: SearchBarProps) {
   const [query, setQuery] = useState("");
+  const inputId = useId();
   const router = useRouter();
 
   const handleSearch = (e: React.FormEvent) => {
@@ -22,12 +23,17 @@ export default function SearchBar({
 
   return (
     <form onSubmit={handleSearch} className="w-full max-w-2xl mx-auto">
+      <label htmlFor={inputId} className="sr-only">
+        חיפוש מזיקים
+      </label>
       <div className="flex gap-2">
         <input
+          id={inputId}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={placeholder}
+          autoComplete="off"
           className="flex-1 px-5 py-4 text-lg rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none shadow-sm text-right"
           dir="rtl"
         />

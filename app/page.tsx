@@ -13,12 +13,12 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         <section className="bg-gradient-to-b from-green-50 to-white py-20 px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
             אנציקלופדיית המזיקים של ישראל
           </h1>
-          <p className="text-lg text-gray-500 mb-8 max-w-xl mx-auto">
+          <p className="mb-8 max-w-xl mx-auto text-lg text-gray-700">
             זהה כל מזיק, הבן את מחזור החיים שלו, ומצא את הפתרון הנכון.
           </p>
           <SearchBar placeholder="איזה מזיק מטריד אותך? חפש כאן..." />
