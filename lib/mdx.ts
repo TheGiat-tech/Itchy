@@ -72,6 +72,7 @@ export interface ArticleFrontmatter {
   cover_image?: string;
   // Kept for backward compatibility with existing frontmatter files.
   imageKeyword?: string;
+  imageQuery?: string;
   // Alt text for the article image (used in <img alt="…">).
   imageAlt?: string;
   titleLatin?: string;
@@ -130,47 +131,47 @@ export function resolveLocalImage(hint: string): string | null {
 }
 
 /**
- * Slug → image URL using the /api/pest-image route (Wikipedia pageimages API).
- * Wikipedia always serves a curated article thumbnail, which is more reliable
- * than searching Wikimedia Commons for matching JPEG files.
+ * Maps article slug → English Wikipedia page title.
+ * The /api/pest-image route uses the Wikipedia pageimages API to fetch a
+ * curated high-quality thumbnail, which is far more reliable than searching
+ * Wikimedia Commons for matching JPEG files.
  *
  * When adding a new article, add a slug → Wikipedia article-name entry here.
  */
-const ARTICLE_IMAGE_BY_SLUG: Record<string, string> = {
-  "ants-in-kitchen-eliminating-the-nest":
-    "/api/pest-image?name=Formicidae",
-  "bed-bugs-identification-and-prevention":
-    "/api/pest-image?name=Cimex+lectularius",
-  "fleas-pets-home-integrated-treatment":
-    "/api/pest-image?name=Ctenocephalides+felis",
-  "german-cockroach-the-kitchen-invader":
-    "/api/pest-image?name=Blattella+germanica",
-  "green-pest-control-myths-and-safety":
-    "/api/pest-image?name=Pest+control",
-  "how-to-prevent-cockroaches-summer":
-    "/api/pest-image?name=Cockroach",
-  "little-fire-ant-stings-and-treatment":
-    "/api/pest-image?name=Wasmannia+auropunctata",
-  "rats-vs-mice-noises-and-health-risks":
-    "/api/pest-image?name=Rattus+rattus",
-  "termites-signs-of-damage-and-treatment":
-    "/api/pest-image?name=Termite",
-  "venomous-spiders-identification-israel":
-    "/api/pest-image?name=Loxosceles+rufescens",
+const ARTICLE_WIKI_PAGE_BY_SLUG: Record<string, string> = {
+  "ants-in-kitchen-eliminating-the-nest":     "Formicidae",
+  "article-2026-05-06-i2xzrw":               "Rattus rattus",
+  "article-2026-05-06-s1t0u4":               "Cockroach",
+  "article-2026-05-07-5ncibd":               "Cimex lectularius",
+  "bed-bugs-identification-and-prevention":   "Cimex lectularius",
+  "fleas-pets-home-integrated-treatment":     "Ctenocephalides felis",
+  "german-cockroach-the-kitchen-invader":     "Blattella germanica",
+  "green-pest-control-myths-and-safety":      "Pest control",
+  "how-to-prevent-cockroaches-summer":        "Cockroach",
+  "little-fire-ant-stings-and-treatment":     "Wasmannia auropunctata",
+  "rats-vs-mice-noises-and-health-risks":     "Rattus rattus",
+  "termites-signs-of-damage-and-treatment":   "Termite",
+  "venomous-spiders-identification-israel":   "Loxosceles rufescens",
 };
 
-/** Fallback image served for any article that has no specific mapping. */
-const DEFAULT_ARTICLE_IMAGE = "/images/articles/default-pest-control.svg";
+/**
+ * Returns a URL pointing to the /api/pest-image proxy, which fetches the
+ * Wikipedia page-image thumbnail for the given English article name.
+ */
+function buildPestImageUrl(wikiPage: string): string {
+  return `/api/pest-image?name=${encodeURIComponent(wikiPage)}`;
+}
 
 /**
  * Resolves the best available image URL for an article.
  *
  * Priority:
- *   1. frontmatter.image — explicit path/URL set in the MDX file.
- *   2. ARTICLE_IMAGE_BY_SLUG[slug] — /api/article-image?q=… route that
- *      fetches a real photo from Wikimedia Commons at runtime and proxies
- *      it back to the browser (24-hour cache, CC-licensed).
- *   3. DEFAULT_ARTICLE_IMAGE — generic local pest-control SVG placeholder.
+ *   1. ARTICLE_WIKI_PAGE_BY_SLUG[slug] — curated Wikipedia page; returns a
+ *      real photo via the /api/pest-image proxy (24-hour cache).
+ *   2. frontmatter.titleLatin — explicit scientific name → Wikipedia thumbnail.
+ *   3. frontmatter.imageKeyword (English) → Wikipedia thumbnail.
+ *   4. frontmatter.imageQuery — falls back to Wikimedia Commons text search.
+ *   5. Generic "Pest control" Wikipedia thumbnail as the last resort.
  *
  * @param frontmatter  Article frontmatter parsed from the MDX file.
  * @param slug         Article slug (filename without extension).
@@ -179,32 +180,31 @@ export function getPostImage(
   frontmatter: ArticleFrontmatter,
   slug?: string
 ): string {
-  // 1. Explicit local image path in frontmatter takes highest priority.
-  if (typeof frontmatter.image === "string" && frontmatter.image.trim()) {
-    return frontmatter.image.trim();
+  // 1. Slug → curated Wikipedia page (most reliable – always returns a photo).
+  if (slug && ARTICLE_WIKI_PAGE_BY_SLUG[slug]) {
+    return buildPestImageUrl(ARTICLE_WIKI_PAGE_BY_SLUG[slug]);
   }
 
-  // 2. Topic inference from pestType / imageKeyword / title fields.
-  const hint = [
-    frontmatter.pestType,
-    frontmatter.imageKeyword,
-    frontmatter.titleHebrew,
-    frontmatter.title,
-  ]
-    .filter(Boolean)
-    .join(" ");
-  if (hint) {
-    const inferred = resolveLocalImage(hint);
-    if (inferred) return inferred;
+  // 2. Explicit Latin/scientific name in frontmatter.
+  const latin = frontmatter.titleLatin?.trim();
+  if (latin) {
+    return buildPestImageUrl(latin);
   }
 
-  // 3. Slug-based mapping (legacy Wikipedia API routes).
-  if (slug && ARTICLE_IMAGE_BY_SLUG[slug]) {
-    return ARTICLE_IMAGE_BY_SLUG[slug];
+  // 3. English imageKeyword → Wikipedia page thumbnail.
+  const keyword = frontmatter.imageKeyword?.trim();
+  if (keyword && /[A-Za-z]/.test(keyword)) {
+    return buildPestImageUrl(keyword);
   }
 
-  // 4. Static fallback – always resolves to a real local file.
-  return DEFAULT_ARTICLE_IMAGE;
+  // 4. Explicit Wikimedia Commons search query (least reliable, use as fallback).
+  const explicitQuery = frontmatter.imageQuery?.trim();
+  if (explicitQuery) {
+    return `/api/article-image?q=${encodeURIComponent(explicitQuery)}`;
+  }
+
+  // 5. Generic last-resort – always returns a real photo.
+  return buildPestImageUrl("Pest control");
 }
 
 /** @deprecated Use getPostImage instead. */

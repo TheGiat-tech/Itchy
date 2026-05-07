@@ -55,7 +55,7 @@ export default function CookieBanner() {
             אנחנו משתמשים בעוגיות (Cookies) כדי להעניק לך את חוויית הגלישה הטובה
             ביותר, לנתח את התנועה באתר ולהתאים עבורך פרסומות רלוונטיות. המשך
             הגלישה באתר מהווה הסכמה לשימוש בעוגיות בהתאם ל
-            <Link href="/privacy" className="underline hover:text-white mx-1">
+            <Link href="/privacy" className="mx-1 underline hover:text-white">
               מדיניות הפרטיות
             </Link>
             שלנו.
