@@ -15,7 +15,7 @@ const REPO_ROOT = path.resolve(__dirname, "..");
 const ARTICLES_DIR = path.join(REPO_ROOT, "content", "articles");
 const GENERATED_IMAGES_DIR = path.join(REPO_ROOT, "public", "images", "articles", "generated");
 
-const CTA = "<a>📍 ליצירת קשר וייעוץ בנושא מזיקים עם הצוות של איצ'י - לחצו כאן</a>";
+const CTA = "<a href=\"/contact\">📍 ליצירת קשר וייעוץ בנושא מזיקים עם הצוות של איצ'י - לחצו כאן</a>";
 
 /**
  * Topic rules → local SVG path + default alt text.
@@ -68,6 +68,11 @@ function injectImageFields(content, overrideImage, overrideAlt) {
   if (overrideImage) {
     image = overrideImage;
     alt = overrideAlt ?? DEFAULT_ALT;
+  } else if (imageKeywordMatch?.[1]) {
+    // Use the free Wikimedia Commons API proxy for a real photo based on article topic
+    const keyword = imageKeywordMatch[1].trim();
+    image = `/api/article-image?q=${encodeURIComponent(keyword)}`;
+    alt = keyword;
   } else {
     ({ image, alt } = pickLocalImage(hint));
   }
@@ -220,20 +225,9 @@ imageKeyword: "two or three English words describing the pest and treatment"
 pestType: "סוג המזיק בעברית"
 ---
 
-בחר את שדה image מתוך הרשימה המותרת בלבד:
-- נמלים רגילות / ants → /images/articles/ants-kitchen.svg
-- נמלת אש / fire ant → /images/articles/fire-ant-colony.svg
-- פשפש המיטה / bed bugs → /images/articles/bed-bugs-mattress.svg
-- פרעושים / fleas → /images/articles/flea-dog-fur.svg
-- תיקן גרמני / german cockroach → /images/articles/german-cockroach.svg
-- ג'וק / תיקן כללי / cockroach → /images/articles/cockroach-kitchen.svg
-- עכבר / חולדה / מכרסמים / rat / mouse → /images/articles/rat-house.svg
-- טרמיטים / termites → /images/articles/termite-damage.svg
-- עכביש / spider → /images/articles/brown-recluse-spider.svg
-- מדביר / technician → /images/articles/pest-control-technician.svg
-- הדברה כללית / מניעה / general → /images/articles/default-pest-control.svg
+בחר imageKeyword: שלושה מילים באנגלית המתארות את נושא המאמר ושישמשו לחיפוש תמונה רלוונטית (לדוגמה: "cockroach kitchen infestation" או "bed bugs mattress pest").
 
-חובה: אל תמציא כתובות URL חיצוניות. image חייב להיות אחד מהנתיבים שלמעלה בלבד.
+חובה: אל תמציא כתובות URL חיצוניות. image בפרונטמאטר יוחלף אוטומטית — אל תמלא אותו.
 
 מבנה חובה של המאמר (לפי הסדר):
 
@@ -246,7 +240,7 @@ pestType: "סוג המזיק בעברית"
 7. **מתי לפנות לאיש מקצוע**: כתוב פסקה קצרה ובהירה שמסבירה מתי הטיפול העצמי לא מספיק.
 8. **CTA**: בסוף המאמר הוסף בדיוק את השורה הבאה, ואל תשנה אותה:
 
-<a>📍 ליצירת קשר וייעוץ בנושא מזיקים עם הצוות של איצ'י - לחצו כאן</a>
+<a href="/contact">📍 ליצירת קשר וייעוץ בנושא מזיקים עם הצוות של איצ'י - לחצו כאן</a>
 
 הנחיות סגנון:
 
@@ -254,7 +248,9 @@ pestType: "סוג המזיק בעברית"
 - השתמש בפסקאות ובסיפור, לא ברשימות תבליטים ארוכות
 - השתמש בכותרות ## ו-### מעשיות ו-SEO-ידידותיות
 - הדגש משפטים חשובים עם **bold** במשורה
-- הוסף אמוג'ים רלוונטיים: 🐜 🛡️ 🏠 ⚠️ ✅ 🔍
+- **חובה: כל כותרת ## חייבת להכיל 1-2 אמוג'ים רלוונטיים** (לדוגמה: ## למה הג'וקים חוזרים? 🪳🏠)
+- **חובה: כל כותרת ### חייבת להכיל אמוג'י אחד לפחות** (לדוגמה: ### 🌡️ טיפול בחום)
+- הוסף אמוג'ים גם בגוף המאמר בפסקאות — מינימום 10 אמוג'ים בכל המאמר: 🐜 🛡️ 🏠 ⚠️ ✅ 🔍 🐀 🕷️ 🪲 🌿 🚫 💡
 - אל תזכיר גיאת הדברות, גבעת הדברות, נועם גיאת, שם המייסד, או שותפויות עסקיות
 - אל תזכיר שמות של חברות הדברה ספציפיות אחרות
 - ניתן להזכיר את Itchi (האתר/המותג) באופן טבעי וקל, לא יותר מפעם אחת
