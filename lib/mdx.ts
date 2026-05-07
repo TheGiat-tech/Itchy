@@ -130,38 +130,48 @@ export function resolveLocalImage(hint: string): string | null {
   return null;
 }
 
-const ARTICLE_IMAGE_QUERY_BY_SLUG: Record<string, string> = {
-  "ants-in-kitchen-eliminating-the-nest": "ants kitchen counter",
-  "article-2026-05-06-i2xzrw": "mouse in house",
-  "article-2026-05-06-s1t0u4": "cockroach kitchen infestation",
-  "article-2026-05-07-5ncibd": "bed bug mattress infestation",
-  "bed-bugs-identification-and-prevention": "bed bug mattress",
-  "fleas-pets-home-integrated-treatment": "flea dog fur",
-  "german-cockroach-the-kitchen-invader": "German cockroach kitchen",
-  "green-pest-control-myths-and-safety": "pest control technician home inspection",
-  "how-to-prevent-cockroaches-summer": "cockroach kitchen at night",
-  "little-fire-ant-stings-and-treatment": "little fire ant colony",
-  "rats-vs-mice-noises-and-health-risks": "rat inside house",
-  "termites-signs-of-damage-and-treatment": "termite damage wood",
-  "venomous-spiders-identification-israel": "brown recluse spider close up",
+/**
+ * Maps article slug → English Wikipedia page title.
+ * The /api/pest-image route uses the Wikipedia pageimages API to fetch a
+ * curated high-quality thumbnail, which is far more reliable than searching
+ * Wikimedia Commons for matching JPEG files.
+ *
+ * When adding a new article, add a slug → Wikipedia article-name entry here.
+ */
+const ARTICLE_WIKI_PAGE_BY_SLUG: Record<string, string> = {
+  "ants-in-kitchen-eliminating-the-nest":     "Formicidae",
+  "article-2026-05-06-i2xzrw":               "Rattus rattus",
+  "article-2026-05-06-s1t0u4":               "Cockroach",
+  "article-2026-05-07-5ncibd":               "Cimex lectularius",
+  "bed-bugs-identification-and-prevention":   "Cimex lectularius",
+  "fleas-pets-home-integrated-treatment":     "Ctenocephalides felis",
+  "german-cockroach-the-kitchen-invader":     "Blattella germanica",
+  "green-pest-control-myths-and-safety":      "Pest control",
+  "how-to-prevent-cockroaches-summer":        "Cockroach",
+  "little-fire-ant-stings-and-treatment":     "Wasmannia auropunctata",
+  "rats-vs-mice-noises-and-health-risks":     "Rattus rattus",
+  "termites-signs-of-damage-and-treatment":   "Termite",
+  "venomous-spiders-identification-israel":   "Loxosceles rufescens",
 };
 
-/** Fallback image served for any article that has no specific mapping. */
-const DEFAULT_ARTICLE_IMAGE = "/images/articles/default-pest-control.svg";
-
-function buildArticleImageUrl(query: string): string {
-  return `/api/article-image?q=${encodeURIComponent(query)}`;
+/**
+ * Returns a URL pointing to the /api/pest-image proxy, which fetches the
+ * Wikipedia page-image thumbnail for the given English article name.
+ */
+function buildPestImageUrl(wikiPage: string): string {
+  return `/api/pest-image?name=${encodeURIComponent(wikiPage)}`;
 }
 
 /**
  * Resolves the best available image URL for an article.
  *
  * Priority:
- *   1. frontmatter.imageQuery — explicit Wikimedia Commons search query.
- *   2. ARTICLE_IMAGE_QUERY_BY_SLUG[slug] — curated topic query for existing articles.
- *   3. frontmatter.image / imageKeyword / titleLatin — explicit remote/API image hints.
- *   4. Local topic illustration inferred from the article text.
- *   5. DEFAULT_ARTICLE_IMAGE — generic local pest-control SVG placeholder.
+ *   1. ARTICLE_WIKI_PAGE_BY_SLUG[slug] — curated Wikipedia page; returns a
+ *      real photo via the /api/pest-image proxy (24-hour cache).
+ *   2. frontmatter.titleLatin — explicit scientific name → Wikipedia thumbnail.
+ *   3. frontmatter.imageKeyword (English) → Wikipedia thumbnail.
+ *   4. frontmatter.imageQuery — falls back to Wikimedia Commons text search.
+ *   5. Generic "Pest control" Wikipedia thumbnail as the last resort.
  *
  * @param frontmatter  Article frontmatter parsed from the MDX file.
  * @param slug         Article slug (filename without extension).
@@ -170,50 +180,31 @@ export function getPostImage(
   frontmatter: ArticleFrontmatter,
   slug?: string
 ): string {
+  // 1. Slug → curated Wikipedia page (most reliable – always returns a photo).
+  if (slug && ARTICLE_WIKI_PAGE_BY_SLUG[slug]) {
+    return buildPestImageUrl(ARTICLE_WIKI_PAGE_BY_SLUG[slug]);
+  }
+
+  // 2. Explicit Latin/scientific name in frontmatter.
+  const latin = frontmatter.titleLatin?.trim();
+  if (latin) {
+    return buildPestImageUrl(latin);
+  }
+
+  // 3. English imageKeyword → Wikipedia page thumbnail.
+  const keyword = frontmatter.imageKeyword?.trim();
+  if (keyword && /[A-Za-z]/.test(keyword)) {
+    return buildPestImageUrl(keyword);
+  }
+
+  // 4. Explicit Wikimedia Commons search query (least reliable, use as fallback).
   const explicitQuery = frontmatter.imageQuery?.trim();
   if (explicitQuery) {
-    return buildArticleImageUrl(explicitQuery);
+    return `/api/article-image?q=${encodeURIComponent(explicitQuery)}`;
   }
 
-  if (slug) {
-    const mappedQuery = ARTICLE_IMAGE_QUERY_BY_SLUG[slug];
-    if (mappedQuery) {
-      return buildArticleImageUrl(mappedQuery);
-    }
-  }
-
-  if (
-    typeof frontmatter.image === "string" &&
-    frontmatter.image.trim() &&
-    !frontmatter.image.startsWith("/images/")
-  ) {
-    return frontmatter.image.trim();
-  }
-
-  const queryHint = [frontmatter.imageKeyword, frontmatter.titleLatin]
-    .filter(Boolean)
-    .join(" ")
-    .trim();
-  if (/[A-Za-z]/.test(queryHint)) {
-    return buildArticleImageUrl(queryHint);
-  }
-
-  // Topic inference from pestType / imageKeyword / title fields.
-  const hint = [
-    frontmatter.pestType,
-    frontmatter.imageKeyword,
-    frontmatter.titleHebrew,
-    frontmatter.title,
-  ]
-    .filter(Boolean)
-    .join(" ");
-  if (hint) {
-    const inferred = resolveLocalImage(hint);
-    if (inferred) return inferred;
-  }
-
-  // Static fallback – always resolves to a real local file.
-  return DEFAULT_ARTICLE_IMAGE;
+  // 5. Generic last-resort – always returns a real photo.
+  return buildPestImageUrl("Pest control");
 }
 
 /** @deprecated Use getPostImage instead. */
