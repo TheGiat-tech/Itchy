@@ -82,14 +82,14 @@ export default function ShopClient() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors duration-150 ${
-                activeCategory === cat
-                  ? "bg-green-600 text-white border-green-600"
-                  : "bg-white text-gray-600 border-gray-200 hover:border-green-400 hover:text-green-700"
-              }`}
-            >
-              {cat}
-            </button>
+                className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 ${
+                  activeCategory === cat
+                    ? "bg-green-600 text-white border-green-600"
+                    : "bg-white text-gray-600 border-gray-200 hover:border-green-400 hover:text-green-700"
+                }`}
+              >
+                {cat}
+              </button>
           ))}
         </div>
       </section>
@@ -102,7 +102,7 @@ export default function ShopClient() {
           ))}
         </div>
         {filtered.length === 0 && (
-          <p className="text-center text-gray-400 py-16">
+          <p className="text-center text-gray-600 py-16">
             אין מוצרים בקטגוריה זו כרגע.
           </p>
         )}

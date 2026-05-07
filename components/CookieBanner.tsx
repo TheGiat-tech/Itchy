@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 const STORAGE_KEY = "itchy_cookie_consent";
@@ -9,7 +9,11 @@ export default function CookieBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    setVisible(!localStorage.getItem(STORAGE_KEY));
+    const shouldShow = !localStorage.getItem(STORAGE_KEY);
+    if (shouldShow) {
+      const id = requestAnimationFrame(() => setVisible(true));
+      return () => cancelAnimationFrame(id);
+    }
   }, []);
 
   function accept() {
@@ -39,13 +43,13 @@ export default function CookieBanner() {
         <div className="flex gap-3 shrink-0">
           <button
             onClick={accept}
-            className="bg-green-600 hover:bg-green-500 text-white px-5 py-2 rounded-lg font-semibold transition-colors"
+            className="bg-green-600 hover:bg-green-500 text-white px-5 py-2 rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
           >
             אישור והמשך
           </button>
           <Link
             href="/privacy"
-            className="border border-gray-500 hover:border-gray-300 text-gray-300 hover:text-white px-4 py-2 rounded-lg transition-colors"
+            className="border border-gray-500 hover:border-gray-300 text-gray-300 hover:text-white px-4 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
           >
             מידע נוסף
           </Link>

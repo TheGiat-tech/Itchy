@@ -39,7 +39,7 @@ export default function RelatedPests({
               {pest.frontmatter.title}
             </h4>
             {pest.frontmatter.titleLatin && (
-              <p className="text-xs text-gray-400 italic mt-0.5">
+              <p className="text-xs text-gray-600 italic mt-0.5">
                 {pest.frontmatter.titleLatin}
               </p>
             )}

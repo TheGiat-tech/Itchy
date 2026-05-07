@@ -27,12 +27,15 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
   const [pestType, setPestType] = useState("");
   const [city, setCity] = useState("");
   const [phone, setPhone] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const dialogRef = useRef<HTMLDivElement>(null);
+  const firstFocusableRef = useRef<HTMLButtonElement>(null);
 
   const handleClose = useCallback(() => {
     setSubmitted(false);
     setLoading(false);
     setError("");
+    setFieldErrors({});
     setPestType("");
     setCity("");
     setPhone("");
@@ -42,9 +45,28 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") handleClose();
+      if (e.key !== "Tab" || !dialogRef.current) return;
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
-    if (isOpen) document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
+    if (isOpen) {
+      document.addEventListener("keydown", handleKey);
+      requestAnimationFrame(() => firstFocusableRef.current?.focus());
+    }
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+    };
   }, [isOpen, handleClose]);
 
   if (!isOpen) return null;
@@ -53,6 +75,16 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setFieldErrors({});
+    const errors: Record<string, string> = {};
+    if (!pestType) errors.pestType = "נא לבחור סוג מזיק.";
+    if (!city.trim()) errors.city = "נא להזין עיר.";
+    if (!/^0\d{8,9}$/.test(phone.trim())) errors.phone = "נא להזין מספר טלפון תקין.";
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -99,8 +131,9 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
       >
         <button
           onClick={handleClose}
-          className="absolute top-4 left-4 text-gray-400 hover:text-gray-600 text-2xl leading-none"
+          className="absolute top-4 left-4 text-gray-600 hover:text-gray-800 text-2xl leading-none focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
           aria-label="סגור"
+          ref={firstFocusableRef}
         >
           ×
         </button>
@@ -141,7 +174,10 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
                   value={pestType}
                   onChange={(e) => setPestType(e.target.value)}
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none bg-white text-gray-800"
+                  aria-required="true"
+                  aria-invalid={fieldErrors.pestType ? "true" : "false"}
+                  aria-describedby={fieldErrors.pestType ? "modal-pest-error" : undefined}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 bg-white text-gray-800"
                 >
                   <option value="">בחרו מזיק...</option>
                   {PEST_OPTIONS.map((opt) => (
@@ -150,6 +186,9 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
                     </option>
                   ))}
                 </select>
+                {fieldErrors.pestType && (
+                  <p id="modal-pest-error" className="mt-1 text-sm text-red-700">{fieldErrors.pestType}</p>
+                )}
               </div>
 
               <div>
@@ -166,9 +205,15 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="לדוגמה: תל אביב"
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-right"
+                  aria-required="true"
+                  aria-invalid={fieldErrors.city ? "true" : "false"}
+                  aria-describedby={fieldErrors.city ? "modal-city-error" : undefined}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 text-right"
                   dir="rtl"
                 />
+                {fieldErrors.city && (
+                  <p id="modal-city-error" className="mt-1 text-sm text-red-700">{fieldErrors.city}</p>
+                )}
               </div>
 
               <div>
@@ -187,9 +232,15 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
                   minLength={9}
                   maxLength={10}
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-green-500 focus:outline-none text-right"
+                  aria-required="true"
+                  aria-invalid={fieldErrors.phone ? "true" : "false"}
+                  aria-describedby={fieldErrors.phone ? "modal-phone-error" : undefined}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 text-right"
                   dir="ltr"
                 />
+                {fieldErrors.phone && (
+                  <p id="modal-phone-error" className="mt-1 text-sm text-red-700">{fieldErrors.phone}</p>
+                )}
               </div>
 
               {error && (
@@ -199,7 +250,8 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white font-bold rounded-xl transition-colors shadow-sm text-lg"
+                className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white font-bold rounded-xl transition-colors shadow-sm text-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
+                aria-label="שלח פנייה"
               >
                 {loading ? "שולח..." : "שלח בקשה"}
               </button>

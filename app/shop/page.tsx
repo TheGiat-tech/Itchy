@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function ShopPage() {
   return (
     <>
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         {/* Hero header */}
         <section className="bg-gradient-to-b from-green-50 to-white py-14 px-4 text-center">
           <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">

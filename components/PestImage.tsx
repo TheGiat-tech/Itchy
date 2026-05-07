@@ -65,7 +65,7 @@ export default async function PestImage({ scientificName, altText, imageOverride
           referrerPolicy="no-referrer"
           className="w-full h-auto object-cover"
         />
-        <p className="border-t border-gray-100 bg-gray-50 py-2 text-center text-xs text-gray-400">
+        <p className="border-t border-gray-100 bg-gray-50 py-2 text-center text-xs text-gray-600">
           מקור התמונה: {captionSource}
         </p>
       </div>
@@ -84,7 +84,7 @@ export default async function PestImage({ scientificName, altText, imageOverride
         dir="rtl"
       >
         <span className="text-5xl">🔍</span>
-        <p className="text-sm text-gray-400">לא נמצאה תמונה למזיק זה</p>
+        <p className="text-sm text-gray-600">לא נמצאה תמונה למזיק זה</p>
       </div>
     );
   }
@@ -101,7 +101,7 @@ export default async function PestImage({ scientificName, altText, imageOverride
         loading="lazy"
         className="w-full h-auto object-cover"
       />
-      <p className="border-t border-gray-100 bg-gray-50 py-2 text-center text-xs text-gray-400">
+      <p className="border-t border-gray-100 bg-gray-50 py-2 text-center text-xs text-gray-600">
         מקור התמונה: {captionSource}
       </p>
     </div>
