@@ -2,6 +2,7 @@
 
 import { Suspense, useId, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { submitContactForm } from "@/app/actions/contact";
 import Footer from "@/components/Footer";
 
 function ContactPageContent() {
@@ -22,29 +23,15 @@ function ContactPageContent() {
 
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
-
-    if (!accessKey) {
-      setError("שגיאת הגדרות: חסר מפתח Web3Forms");
-      setLoading(false);
-      return;
-    }
-
-    formData.append("access_key", accessKey);
-    formData.append("subject", "פנייה חדשה מאתר איצ׳י");
 
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        body: formData,
-      });
-      const result = await response.json();
+      const result = await submitContactForm(formData);
 
-      if (response.ok && result.success) {
+      if (result.success) {
         setSubmitted(true);
         form.reset();
       } else {
-        throw new Error(result.message || "שגיאה בשליחה");
+        throw new Error(result.error || "שגיאה בשליחה");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "שגיאה בתקשורת, נסה שנית");
@@ -86,7 +73,13 @@ function ContactPageContent() {
             className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 space-y-5"
             dir="rtl"
           >
-            <input type="checkbox" name="botcheck" className="hidden" />
+            <input
+              type="checkbox"
+              name="botcheck"
+              className="hidden"
+              tabIndex={-1}
+              aria-hidden="true"
+            />
 
             {error && (
               <div

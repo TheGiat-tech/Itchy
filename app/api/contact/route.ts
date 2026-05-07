@@ -19,8 +19,8 @@ export async function POST(req: NextRequest) {
     if (process.env.POSTGRES_URL) {
       try {
         await sql`
-          INSERT INTO leads (name, phone, message, image_url, created_at)
-          VALUES (${name || null}, ${phone}, ${fullMessage || null}, ${null}, NOW())
+          INSERT INTO leads (name, phone, message, created_at)
+          VALUES (${name || null}, ${phone}, ${fullMessage || null}, NOW())
         `;
       } catch (dbErr) {
         console.error("[api/contact] DB insert failed:", dbErr);
