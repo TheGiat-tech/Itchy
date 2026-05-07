@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import type { Pest } from "@/lib/mdx";
@@ -13,6 +13,7 @@ export default function PestsList({ pests }: Props) {
   const searchParams = useSearchParams();
   const category = searchParams.get("category") ?? "";
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
+  const searchId = useId();
 
   const q = query.toLowerCase();
 
@@ -29,23 +30,25 @@ export default function PestsList({ pests }: Props) {
   return (
     <>
       <div className="relative w-full max-w-xl mx-auto mb-8">
+        <label htmlFor={searchId} className="sr-only">חיפוש מזיק</label>
         <input
+          id={searchId}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="חפש מזיק (למשל: עקרב, תיקן, Camponotus...)"
           dir="rtl"
-          className="w-full rounded-full border border-gray-200 bg-white py-3 pr-5 pl-12 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+          className="w-full rounded-full border border-gray-200 bg-white py-3 pr-5 pl-12 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:border-transparent transition"
         />
-        <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+        <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" aria-hidden="true">
           🔍
         </span>
       </div>
       <p className="text-gray-500 mb-8">{filtered.length} מזיקים נמצאו</p>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">
-          <p className="text-4xl mb-4">🔍</p>
+        <div className="text-center py-20 text-gray-600">
+          <p className="text-4xl mb-4" aria-hidden="true">🔍</p>
           <p>לא נמצאו מזיקים תואמים לחיפוש שלך.</p>
         </div>
       ) : (
@@ -62,19 +65,19 @@ export default function PestsList({ pests }: Props) {
             >
               {thumbSrc && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={thumbSrc}
-                  alt={pest.frontmatter.title}
-                  loading="lazy"
-                  className="w-full h-40 object-cover"
-                />
+                 <img
+                   src={thumbSrc}
+                   alt={`תמונה של ${pest.frontmatter.title}`}
+                   loading="lazy"
+                   className="w-full h-40 object-cover"
+                 />
               )}
               <div className="p-5 flex flex-col flex-1">
                 <h2 className="font-bold text-gray-800 text-lg group-hover:text-green-700 transition-colors">
                   {pest.frontmatter.title}
                 </h2>
                 {pest.frontmatter.titleLatin && (
-                  <p className="text-sm text-gray-400 italic">
+                  <p className="text-sm text-gray-600 italic">
                     {pest.frontmatter.titleLatin}
                   </p>
                 )}

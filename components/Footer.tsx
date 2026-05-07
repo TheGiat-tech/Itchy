@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <Logo theme="dark" />
-            <p className="text-sm text-gray-400 mt-3">
+            <p className="text-sm text-gray-300 mt-3">
               אנציקלופדיית המזיקים המובילה בישראל. מידע מקצועי, מדויק ונגיש.
             </p>
           </div>
@@ -67,14 +67,19 @@ export default function Footer() {
                 מדיניות פרטיות
               </Link>
             </li>
-            <li>
-              <Link href="/terms" className="hover:text-white transition-colors">
-                תנאי שימוש
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </div>
+             <li>
+               <Link href="/terms" className="hover:text-white transition-colors">
+                 תנאי שימוש
+               </Link>
+             </li>
+             <li>
+               <Link href="/accessibility" className="hover:text-white transition-colors">
+                 הצהרת נגישות
+               </Link>
+             </li>
+           </ul>
+         </div>
+       </div>
     </footer>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 
 interface ArticleLeadFormProps {
   pestName: string;
@@ -13,11 +13,23 @@ export default function ArticleLeadForm({ pestName }: ArticleLeadFormProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [city, setCity] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const formId = useId();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setFieldErrors({});
+    const errors: Record<string, string> = {};
+    if (!name.trim()) errors.name = "נא להזין שם מלא.";
+    if (!/^0\d{8,9}$/.test(phone.trim())) errors.phone = "נא להזין מספר טלפון תקין.";
+    if (!city.trim()) errors.city = "נא להזין עיר.";
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setLoading(false);
+      return;
+    }
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -49,7 +61,7 @@ export default function ArticleLeadForm({ pestName }: ArticleLeadFormProps) {
         className="mt-12 bg-green-50 border border-green-100 rounded-2xl p-6 text-center"
         dir="rtl"
       >
-        <div className="text-4xl mb-3">✅</div>
+        <div className="text-4xl mb-3" aria-hidden="true">✅</div>
         <h3 className="text-xl font-bold text-gray-900 mb-1">
           הפרטים נשלחו בהצלחה לצוות המדבירים! נחזור אליך בהקדם.
         </h3>
@@ -72,34 +84,56 @@ export default function ArticleLeadForm({ pestName }: ArticleLeadFormProps) {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <label htmlFor={`${formId}-name`} className="sr-only">שם מלא</label>
           <input
+            id={`${formId}-name`}
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="שם מלא"
             required
-            className="px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-400 focus:outline-none bg-white text-right"
+            aria-required="true"
+            aria-invalid={fieldErrors.name ? "true" : "false"}
+            aria-describedby={fieldErrors.name ? `${formId}-name-error` : undefined}
+            className="px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 bg-white text-right"
             dir="rtl"
           />
+          <label htmlFor={`${formId}-phone`} className="sr-only">מספר טלפון</label>
           <input
+            id={`${formId}-phone`}
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="טלפון"
             required
-            className="px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-400 focus:outline-none bg-white text-right"
+            aria-required="true"
+            aria-invalid={fieldErrors.phone ? "true" : "false"}
+            aria-describedby={fieldErrors.phone ? `${formId}-phone-error` : undefined}
+            className="px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 bg-white text-right"
             dir="ltr"
           />
+          <label htmlFor={`${formId}-city`} className="sr-only">עיר</label>
           <input
+            id={`${formId}-city`}
             type="text"
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="עיר"
             required
-            className="px-4 py-3 border border-gray-200 rounded-xl focus:border-amber-400 focus:outline-none bg-white text-right"
+            aria-required="true"
+            aria-invalid={fieldErrors.city ? "true" : "false"}
+            aria-describedby={fieldErrors.city ? `${formId}-city-error` : undefined}
+            className="px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 bg-white text-right"
             dir="rtl"
           />
         </div>
+        {(fieldErrors.name || fieldErrors.phone || fieldErrors.city) && (
+          <div className="space-y-1">
+            {fieldErrors.name && <p id={`${formId}-name-error`} className="text-red-700 text-sm">{fieldErrors.name}</p>}
+            {fieldErrors.phone && <p id={`${formId}-phone-error`} className="text-red-700 text-sm">{fieldErrors.phone}</p>}
+            {fieldErrors.city && <p id={`${formId}-city-error`} className="text-red-700 text-sm">{fieldErrors.city}</p>}
+          </div>
+        )}
 
         {error && (
           <p className="text-red-600 text-sm mt-1">{error}</p>
@@ -108,7 +142,8 @@ export default function ArticleLeadForm({ pestName }: ArticleLeadFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full sm:w-auto sm:self-start px-8 py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white font-bold rounded-xl transition-colors shadow-sm text-base"
+          className="w-full sm:w-auto sm:self-start px-8 py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white font-bold rounded-xl transition-colors shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2"
+          aria-label="שלח פנייה"
         >
           {loading ? "שולח..." : "שלח בקשת ייעוץ חינם"}
         </button>

@@ -99,7 +99,7 @@ export default async function PestHeader({ pest }: { pest: PestData }) {
           <p className="text-base text-gray-500 mt-0.5">{pest.titleEnglish}</p>
         )}
         {pest.titleLatin && (
-          <p className="text-lg text-gray-400 italic mt-1">{pest.titleLatin}</p>
+          <p className="text-lg text-gray-600 italic mt-1">{pest.titleLatin}</p>
         )}
       </div>
 
@@ -112,7 +112,7 @@ export default async function PestHeader({ pest }: { pest: PestData }) {
             loading="lazy"
             className="w-full h-auto object-cover"
           />
-          <p className="border-t border-gray-100 bg-gray-50 py-2 text-center text-xs text-gray-400">
+          <p className="border-t border-gray-100 bg-gray-50 py-2 text-center text-xs text-gray-600">
             מקור התמונה: {captionSource}
           </p>
         </div>
@@ -121,7 +121,7 @@ export default async function PestHeader({ pest }: { pest: PestData }) {
           className={`${containerClassName} flex flex-col items-center justify-center gap-2 bg-gray-50 py-12`}
         >
           <span className="text-5xl">🔍</span>
-          <p className="text-sm text-gray-400">לא נמצאה תמונה למזיק זה</p>
+          <p className="text-sm text-gray-600">לא נמצאה תמונה למזיק זה</p>
         </div>
       )}
     </div>

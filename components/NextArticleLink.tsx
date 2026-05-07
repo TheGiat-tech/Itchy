@@ -17,7 +17,7 @@ export default function NextArticleLink({ currentSlug }: NextArticleLinkProps) {
 
   return (
     <div className="mt-8 pt-6 border-t border-gray-100" dir="rtl">
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+      <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-2">
         המשך קריאה
       </p>
       <Link
@@ -30,7 +30,7 @@ export default function NextArticleLink({ currentSlug }: NextArticleLinkProps) {
             {nextPest.frontmatter.title}
           </h4>
           {nextPest.frontmatter.titleLatin && (
-            <p className="text-xs text-gray-400 italic mt-0.5">
+            <p className="text-xs text-gray-600 italic mt-0.5">
               {nextPest.frontmatter.titleLatin}
             </p>
           )}

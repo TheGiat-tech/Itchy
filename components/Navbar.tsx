@@ -2,7 +2,7 @@
 
 import Logo from "@/components/Logo";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const NAV_LINKS = [
   { href: "/pests", label: "מזיקים" },
@@ -14,6 +14,40 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (!menuOpen) return;
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+        toggleRef.current?.focus();
+        return;
+      }
+      if (e.key !== "Tab" || !menuRef.current) return;
+      const focusable = menuRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKey);
+    if (menuOpen && menuRef.current) {
+      const firstLink = menuRef.current.querySelector<HTMLElement>('a,button,[tabindex]:not([tabindex="-1"])');
+      firstLink?.focus();
+    }
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [menuOpen]);
 
   return (
     <nav className="bg-white shadow-sm border-b border-gray-100 relative">
@@ -52,10 +86,12 @@ export default function Navbar() {
 
         {/* Mobile hamburger button */}
         <button
+          ref={toggleRef}
           className="md:hidden p-2 text-gray-600 hover:text-green-700 transition-colors"
           onClick={() => setMenuOpen((o) => !o)}
           aria-label={menuOpen ? "סגור תפריט" : "פתח תפריט"}
           aria-expanded={menuOpen}
+          aria-controls="mobile-nav-menu"
         >
           {menuOpen ? (
             <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -72,6 +108,8 @@ export default function Navbar() {
       {/* Mobile dropdown menu */}
       {menuOpen && (
         <div
+          id="mobile-nav-menu"
+          ref={menuRef}
           className="md:hidden absolute top-full right-0 left-0 bg-white border-b border-gray-100 shadow-lg z-50"
           dir="rtl"
         >
