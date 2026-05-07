@@ -13,6 +13,7 @@ export default function FeedbackButton({ pestTitle }: { pestTitle: string }) {
   useEffect(() => {
     if (!open) return;
 
+    const triggerElement = triggerRef.current;
     textareaRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -46,7 +47,7 @@ export default function FeedbackButton({ pestTitle }: { pestTitle: string }) {
     return () => {
       document.body.style.overflow = "";
       document.removeEventListener("keydown", handleKeyDown);
-      triggerRef.current?.focus();
+      triggerElement?.focus();
     };
   }, [open]);
 
