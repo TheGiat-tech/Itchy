@@ -166,12 +166,15 @@ function buildPestImageUrl(wikiPage: string): string {
  * Resolves the best available image URL for an article.
  *
  * Priority:
- *   1. ARTICLE_WIKI_PAGE_BY_SLUG[slug] — curated Wikipedia page; returns a
+ *   0. frontmatter.imageOverride — explicit override always wins.
+ *   1. frontmatter.image — direct image URL injected by the article bot
+ *      (may be an external https:// URL from Pexels/Pixabay or a local path).
+ *   2. ARTICLE_WIKI_PAGE_BY_SLUG[slug] — curated Wikipedia page; returns a
  *      real photo via the /api/pest-image proxy (24-hour cache).
- *   2. frontmatter.titleLatin — explicit scientific name → Wikipedia thumbnail.
- *   3. frontmatter.imageKeyword (English) → Wikipedia thumbnail.
- *   4. frontmatter.imageQuery — falls back to Wikimedia Commons text search.
- *   5. Generic "Pest control" Wikipedia thumbnail as the last resort.
+ *   3. frontmatter.titleLatin — explicit scientific name → Wikipedia thumbnail.
+ *   4. frontmatter.imageKeyword (English) → Wikipedia thumbnail.
+ *   5. frontmatter.imageQuery — falls back to Wikimedia Commons text search.
+ *   6. Generic "Pest control" Wikipedia thumbnail as the last resort.
  *
  * @param frontmatter  Article frontmatter parsed from the MDX file.
  * @param slug         Article slug (filename without extension).
@@ -180,30 +183,40 @@ export function getPostImage(
   frontmatter: ArticleFrontmatter,
   slug?: string
 ): string {
-  // 1. Slug → curated Wikipedia page (most reliable – always returns a photo).
+  // 0. Explicit imageOverride always takes priority.
+  const override = frontmatter.imageOverride?.trim();
+  if (override) return override;
+
+  // 1. Direct image URL set by the article bot (Pexels/Pixabay or local SVG).
+  const directImage = frontmatter.image?.trim();
+  if (directImage && (directImage.startsWith("https://") || directImage.startsWith("http://") || directImage.startsWith("/"))) {
+    return directImage;
+  }
+
+  // 2. Slug → curated Wikipedia page (most reliable – always returns a photo).
   if (slug && ARTICLE_WIKI_PAGE_BY_SLUG[slug]) {
     return buildPestImageUrl(ARTICLE_WIKI_PAGE_BY_SLUG[slug]);
   }
 
-  // 2. Explicit Latin/scientific name in frontmatter.
+  // 3. Explicit Latin/scientific name in frontmatter.
   const latin = frontmatter.titleLatin?.trim();
   if (latin) {
     return buildPestImageUrl(latin);
   }
 
-  // 3. English imageKeyword → Wikipedia page thumbnail.
+  // 4. English imageKeyword → Wikipedia page thumbnail.
   const keyword = frontmatter.imageKeyword?.trim();
   if (keyword && /[A-Za-z]/.test(keyword)) {
     return buildPestImageUrl(keyword);
   }
 
-  // 4. Explicit Wikimedia Commons search query (least reliable, use as fallback).
+  // 5. Explicit Wikimedia Commons search query (least reliable, use as fallback).
   const explicitQuery = frontmatter.imageQuery?.trim();
   if (explicitQuery) {
     return `/api/article-image?q=${encodeURIComponent(explicitQuery)}`;
   }
 
-  // 5. Generic last-resort – always returns a real photo.
+  // 6. Generic last-resort – always returns a real photo.
   return buildPestImageUrl("Pest control");
 }
 

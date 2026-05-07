@@ -28,6 +28,8 @@ jobs:
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           GENERATE_ARTICLE_IMAGES: ${{ vars.GENERATE_ARTICLE_IMAGES }}
           GEMINI_IMAGE_MODEL: ${{ vars.GEMINI_IMAGE_MODEL }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
         run: node scripts/daily-bot.mjs
 
       - name: Commit and push generated article

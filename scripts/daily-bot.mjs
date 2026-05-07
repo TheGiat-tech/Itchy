@@ -13,7 +13,6 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..");
 const ARTICLES_DIR = path.join(REPO_ROOT, "content", "articles");
-const GENERATED_IMAGES_DIR = path.join(REPO_ROOT, "public", "images", "articles", "generated");
 
 const CTA = "<a href=\"/contact\">📍 ליצירת קשר וייעוץ בנושא מזיקים עם הצוות של איצ'י - לחצו כאן</a>";
 
@@ -43,50 +42,194 @@ function pickLocalImage(hint) {
   return { image: DEFAULT_IMAGE, alt: DEFAULT_ALT };
 }
 
+// ---------------------------------------------------------------------------
+// Emoji cleanup
+// ---------------------------------------------------------------------------
+
 /**
- * Parses the generated MDX content, determines the correct local image from
- * the article topic, and injects/replaces `image:` + `imageAlt:` in the
- * frontmatter block so the final file always has a real local image path.
+ * Strips all emoji characters from a string using Unicode property escapes.
+ * Also removes variation selectors, ZWJ, and skin-tone modifiers.
  */
-function injectImageFields(content, overrideImage, overrideAlt) {
+function stripEmojis(text) {
+  if (!text) return text;
+  return text
+    .replace(/\p{Extended_Pictographic}/gu, "")
+    .replace(/[\uFE00-\uFE0F\u20E3\u200D]/gu, "")
+    .replace(/[\u{1F3FB}-\u{1F3FF}]/gu, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+/**
+ * Strips emojis from the article content:
+ *   - frontmatter fields: titleHebrew and subtitle
+ *   - all markdown headings (lines starting with #)
+ *   - all body text lines that are not HTML tags (preserves the CTA anchor)
+ */
+function cleanupArticleContent(content) {
+  // Clean specific frontmatter fields
+  content = content.replace(
+    /(^titleHebrew:\s*)(["']?)(.+?)\2(\s*)$/m,
+    (_, key, q, val, tail) => `${key}${q}${stripEmojis(val)}${q}${tail}`
+  );
+  content = content.replace(
+    /(^subtitle:\s*)(["']?)(.+?)\2(\s*)$/m,
+    (_, key, q, val, tail) => `${key}${q}${stripEmojis(val)}${q}${tail}`
+  );
+
+  // Split off body (after closing ---) to clean headings and paragraph text
+  const fmEnd = content.indexOf("\n---\n");
+  if (fmEnd === -1) return content;
+
+  const frontmatter = content.slice(0, fmEnd + 5); // up to and including "\n---\n"
+  const body = content.slice(fmEnd + 5);
+
+  const cleanedBody = body
+    .split("\n")
+    .map((line) => {
+      // Preserve HTML lines (e.g., the CTA <a href="/contact">...)
+      if (/^\s*</.test(line)) return line;
+      return stripEmojis(line);
+    })
+    .join("\n");
+
+  return frontmatter + cleanedBody;
+}
+
+// ---------------------------------------------------------------------------
+// Image fetching — Pexels → Pixabay → local fallback
+// ---------------------------------------------------------------------------
+
+async function fetchPexelsImage(query) {
+  const apiKey = process.env.PEXELS_API_KEY;
+  if (!apiKey) return null;
+
+  const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&orientation=landscape&per_page=5`;
+  const response = await fetch(url, { headers: { Authorization: apiKey } });
+  if (!response.ok) {
+    throw new Error(`Pexels API error: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  const photo = data?.photos?.[0];
+  if (!photo) return null;
+
+  return {
+    image: photo.src.large2x || photo.src.large || photo.src.landscape,
+    imageAlt: photo.alt || query,
+    imageCredit: photo.photographer,
+    imageCreditUrl: photo.photographer_url,
+    imageProvider: "Pexels",
+  };
+}
+
+async function fetchPixabayImage(query) {
+  const apiKey = process.env.PIXABAY_API_KEY;
+  if (!apiKey) return null;
+
+  const url = `https://pixabay.com/api/?key=${encodeURIComponent(apiKey)}&q=${encodeURIComponent(query)}&image_type=photo&orientation=horizontal&safesearch=true&per_page=5`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Pixabay API error: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  const hit = data?.hits?.[0];
+  if (!hit) return null;
+
+  return {
+    image: hit.largeImageURL || hit.webformatURL,
+    imageAlt: hit.tags || query,
+    imageCredit: hit.user,
+    imageCreditUrl: hit.pageURL,
+    imageProvider: "Pixabay",
+  };
+}
+
+/**
+ * Attempts to find a stock image for the article using Pexels first, then
+ * Pixabay. Falls back to a local SVG if both APIs fail or return no result.
+ * Never throws — the article must always be saved even if the image API fails.
+ */
+async function findArticleImage(query) {
+  const hint = query || "";
+
+  if (process.env.PEXELS_API_KEY) {
+    try {
+      const result = await fetchPexelsImage(hint);
+      if (result?.image) {
+        console.log(`✅ Image provider: Pexels — ${result.image}`);
+        return result;
+      }
+      console.warn("⚠️  Pexels returned no images for query:", hint);
+    } catch (err) {
+      console.warn(`⚠️  Pexels failed: ${err.message}`);
+    }
+  } else {
+    console.log("ℹ️  PEXELS_API_KEY not set, skipping Pexels.");
+  }
+
+  if (process.env.PIXABAY_API_KEY) {
+    try {
+      const result = await fetchPixabayImage(hint);
+      if (result?.image) {
+        console.log(`✅ Image provider: Pixabay — ${result.image}`);
+        return result;
+      }
+      console.warn("⚠️  Pixabay returned no images for query:", hint);
+    } catch (err) {
+      console.warn(`⚠️  Pixabay failed: ${err.message}`);
+    }
+  } else {
+    console.log("ℹ️  PIXABAY_API_KEY not set, skipping Pixabay.");
+  }
+
+  const local = pickLocalImage(hint);
+  console.log(`⚠️  Both APIs failed or unavailable. Using local fallback: ${local.image}`);
+  return {
+    image: local.image,
+    imageAlt: local.alt,
+    imageCredit: null,
+    imageCreditUrl: null,
+    imageProvider: "Local",
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Frontmatter image injection
+// ---------------------------------------------------------------------------
+
+/**
+ * Parses the generated MDX content and injects/replaces image-related fields
+ * in the frontmatter block using the provided imageData object.
+ */
+function injectImageFields(content, imageData) {
   const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!fmMatch) return content;
 
   const fmBlock = fmMatch[1];
-
-  const pestTypeMatch = fmBlock.match(/^pestType:\s*["']?(.+?)["']?\s*$/m);
-  const imageKeywordMatch = fmBlock.match(/^imageKeyword:\s*["']?(.+?)["']?\s*$/m);
-  const titleHebrewMatch = fmBlock.match(/^titleHebrew:\s*["']?(.+?)["']?\s*$/m);
-
-  const hint = [
-    pestTypeMatch?.[1] ?? "",
-    imageKeywordMatch?.[1] ?? "",
-    titleHebrewMatch?.[1] ?? "",
-  ].join(" ");
-
-  let image, alt;
-  if (overrideImage) {
-    image = overrideImage;
-    alt = overrideAlt ?? DEFAULT_ALT;
-  } else if (imageKeywordMatch?.[1]) {
-    // Use the free Wikimedia Commons API proxy for a real photo based on article topic.
-    // The /api/article-image route already falls back to the default SVG on any API error.
-    const keyword = imageKeywordMatch[1].trim();
-    image = `/api/article-image?q=${encodeURIComponent(keyword)}`;
-    alt = `${keyword} pest control`;
-  } else {
-    ({ image, alt } = pickLocalImage(hint));
-  }
+  const { image, imageAlt, imageCredit, imageCreditUrl, imageProvider } = imageData;
 
   const cleanedFm = fmBlock
     .replace(/^image:.*$/m, "")
     .replace(/^imageAlt:.*$/m, "")
+    .replace(/^imageProvider:.*$/m, "")
+    .replace(/^imageCredit:.*$/m, "")
+    .replace(/^imageCreditUrl:.*$/m, "")
     .replace(/\n{3,}/g, "\n\n")
     .trimEnd();
 
-  const newFmBlock = `${cleanedFm}\nimage: "${image}"\nimageAlt: "${alt}"`;
+  let newFmBlock = `${cleanedFm}\nimage: "${image}"\nimageAlt: "${imageAlt}"`;
+  if (imageProvider) newFmBlock += `\nimageProvider: "${imageProvider}"`;
+  if (imageCredit) newFmBlock += `\nimageCredit: "${imageCredit}"`;
+  if (imageCreditUrl) newFmBlock += `\nimageCreditUrl: "${imageCreditUrl}"`;
+
   return content.replace(fmMatch[0], `---\n${newFmBlock}\n---`);
 }
+
+// ---------------------------------------------------------------------------
+// Utilities
+// ---------------------------------------------------------------------------
 
 function today() {
   return new Date().toISOString().split("T")[0];
@@ -106,6 +249,13 @@ function removeBrandName(text) {
   );
 }
 
+function extractImageKeyword(content) {
+  const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!fmMatch) return "";
+  const kw = fmMatch[1].match(/^imageKeyword:\s*["']?(.+?)["']?\s*$/m)?.[1];
+  return kw?.trim() ?? "";
+}
+
 function validateArticle(content) {
   const errors = [];
   if (!content.includes("---")) errors.push("Missing frontmatter (---)");
@@ -114,11 +264,51 @@ function validateArticle(content) {
   if (!content.includes("imageAlt:")) errors.push("Missing imageAlt in frontmatter");
   if (!content.includes("pestType:")) errors.push("Missing pestType in frontmatter");
   if (!content.includes(CTA)) errors.push("Missing final CTA");
+
+  const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (fmMatch) {
+    const fm = fmMatch[1];
+    const titleHebrew = fm.match(/^titleHebrew:\s*["']?(.+?)["']?\s*$/m)?.[1] ?? "";
+    const subtitle = fm.match(/^subtitle:\s*["']?(.+?)["']?\s*$/m)?.[1] ?? "";
+    if (/\p{Extended_Pictographic}/u.test(titleHebrew)) {
+      errors.push("Emoji found in titleHebrew after cleanup");
+    }
+    if (/\p{Extended_Pictographic}/u.test(subtitle)) {
+      errors.push("Emoji found in subtitle after cleanup");
+    }
+
+    // image must be a URL path, not just the keyword text
+    const imageVal = fm.match(/^image:\s*["']?(.+?)["']?\s*$/m)?.[1] ?? "";
+    if (imageVal && !imageVal.startsWith("/") && !imageVal.startsWith("http")) {
+      errors.push(`image field is not a valid URL: "${imageVal}"`);
+    }
+    if (!imageVal) {
+      errors.push("image field is empty");
+    }
+
+    const imageAltVal = fm.match(/^imageAlt:\s*["']?(.+?)["']?\s*$/m)?.[1] ?? "";
+    if (!imageAltVal) {
+      errors.push("imageAlt field is empty");
+    }
+  }
+
+  // No emojis in markdown headings
+  const headings = content.match(/^#{1,6} .+$/gm) ?? [];
+  const headingWithEmoji = headings.find((h) => /\p{Extended_Pictographic}/u.test(h));
+  if (headingWithEmoji) {
+    errors.push(`Emoji found in heading after cleanup: "${headingWithEmoji.slice(0, 50)}"`);
+  }
+
+  // No forbidden branding
+  if (/גיאת הדברות|גבעת הדברות|גיאט הדברות/i.test(content)) {
+    errors.push("Forbidden branding detected in article");
+  }
+
   return errors;
 }
 
 // ---------------------------------------------------------------------------
-// Gemini model priority list — no gemini-2.0-flash
+// Gemini model priority list
 // ---------------------------------------------------------------------------
 
 const MODEL_PRIORITY = [
@@ -217,18 +407,16 @@ async function generateArticle(apiKey, modelName) {
 הפלט חייב להיות MDX נקי ללא תגיות קוד, עם frontmatter בדיוק בפורמט:
 
 ---
-titleHebrew: "כותרת חזקה בעברית עם אמוג'י רלוונטי"
+titleHebrew: "כותרת חזקה ומקצועית בעברית"
 subtitle: "כותרת משנה מושכת שמסבירה את ערך המאמר"
 date: "${today()}"
-image: "/images/articles/FILENAME.svg"
-imageAlt: "short relevant English description of the image"
 imageKeyword: "two or three English words describing the pest and treatment"
 pestType: "סוג המזיק בעברית"
 ---
 
 בחר imageKeyword: שלושה מילים באנגלית המתארות את נושא המאמר ושישמשו לחיפוש תמונה רלוונטית (לדוגמה: "cockroach kitchen infestation" או "bed bugs mattress pest").
 
-חובה: אל תמציא כתובות URL חיצוניות. image בפרונטמאטר יוחלף אוטומטית — אל תמלא אותו.
+חובה: אל תמציא כתובות URL חיצוניות. שדות image ו-imageAlt בפרונטמאטר יוזרקו אוטומטית — אל תמלא אותם.
 
 מבנה חובה של המאמר (לפי הסדר):
 
@@ -246,15 +434,15 @@ pestType: "סוג המזיק בעברית"
 הנחיות סגנון:
 
 - כתוב בעברית טבעית, אנושית וקריאה — כמו כתבה טובה, לא מדריך טכני
+- שמור על טון מקצועי ורציני — אין ילדותיות, אין התרגשות מופרזת
 - השתמש בפסקאות ובסיפור, לא ברשימות תבליטים ארוכות
-- השתמש בכותרות ## ו-### מעשיות ו-SEO-ידידותיות
+- השתמש בכותרות ## ו-### מעשיות ו-SEO-ידידותיות — ללא אמוג'ים
 - הדגש משפטים חשובים עם **bold** במשורה
-- **חובה: כל כותרת ## חייבת להכיל 1-2 אמוג'ים רלוונטיים** (לדוגמה: ## למה הג'וקים חוזרים? 🪳🏠)
-- **חובה: כל כותרת ### חייבת להכיל אמוג'י אחד לפחות** (לדוגמה: ### 🌡️ טיפול בחום)
-- הוסף אמוג'ים גם בגוף המאמר בפסקאות — מינימום 10 אמוג'ים בכל המאמר: 🐜 🛡️ 🏠 ⚠️ ✅ 🔍 🐀 🕷️ 🪲 🌿 🚫 💡
-- אל תזכיר גיאת הדברות, גבעת הדברות, נועם גיאת, שם המייסד, או שותפויות עסקיות
+- **אסור לחלוטין: אל תוסיף אמוג'ים בשום מקום במאמר** — לא בכותרות, לא בפסקאות, לא ב-frontmatter
+- titleHebrew ו-subtitle חייבים להיות נקיים לחלוטין מאמוג'ים
+- אל תזכיר גיאת הדברות, גבעת הדברות, נועם גיאט, שם המייסד, או שותפויות עסקיות
 - אל תזכיר שמות של חברות הדברה ספציפיות אחרות
-- ניתן להזכיר את Itchi (האתר/המותג) באופן טבעי וקל, לא יותר מפעם אחת
+- ניתן להזכיר את הצוות של איצ'י באופן טבעי, לא יותר מפעם אחת
 - אל תכלול תגיות קוד כגון: \`\`\` או \`\`\`mdx
 `.trim();
 
@@ -266,64 +454,6 @@ pestType: "סוג המזיק בעברית"
   }
 
   return text;
-}
-
-// ---------------------------------------------------------------------------
-// Optional image generation
-// ---------------------------------------------------------------------------
-
-function extractTopicHint(content) {
-  const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  if (!fmMatch) return "";
-  const fm = fmMatch[1];
-  const get = (key) =>
-    fm.match(new RegExp(`^${key}:\\s*["']?(.+?)["']?\\s*$`, "m"))?.[1] ?? "";
-  return [get("pestType"), get("imageKeyword"), get("titleHebrew")].join(" ");
-}
-
-/**
- * Attempt to generate an image via the Gemini image model.
- * Returns the saved public path on success, or null on any failure.
- */
-async function tryGenerateImage(apiKey, imageModel, slug, topicHint) {
-  try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: imageModel });
-
-    const imagePrompt =
-      `Professional realistic article hero image for a pest control website, ` +
-      `showing ${topicHint || "pest control"}, clean modern Israeli home context, ` +
-      `natural light, realistic details, no text, no logos, no gore, 16:9 aspect ratio.`;
-
-    console.log(`🖼️  Generating image with model: ${imageModel}`);
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: imagePrompt }] }],
-      generationConfig: { responseMimeType: "image/png" },
-    });
-
-    const parts = result.response?.candidates?.[0]?.content?.parts ?? [];
-    const imagePart = parts.find((p) => p.inlineData?.mimeType?.startsWith("image/"));
-    if (!imagePart?.inlineData?.data) {
-      console.warn("⚠️  Image generation returned no image data.");
-      return null;
-    }
-
-    if (!fs.existsSync(GENERATED_IMAGES_DIR)) {
-      fs.mkdirSync(GENERATED_IMAGES_DIR, { recursive: true });
-    }
-
-    const timestamp = Date.now();
-    const filename = `article-${timestamp}-${slug}.png`;
-    const filePath = path.join(GENERATED_IMAGES_DIR, filename);
-    fs.writeFileSync(filePath, Buffer.from(imagePart.inlineData.data, "base64"));
-
-    const publicPath = `/images/articles/generated/${filename}`;
-    console.log(`✅ Generated image saved: ${publicPath}`);
-    return publicPath;
-  } catch (err) {
-    console.warn(`⚠️  Image generation failed (${err.message}). Using local fallback image.`);
-    return null;
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -341,12 +471,8 @@ async function main() {
 
   const envModel = process.env.GEMINI_MODEL || "";
   console.log(`🧠 GEMINI_MODEL env: ${envModel || "(not set, using priority list)"}`);
-
-  const generateImages =
-    (process.env.GENERATE_ARTICLE_IMAGES ?? "").toLowerCase() === "true";
-  const imageModel = process.env.GEMINI_IMAGE_MODEL || "gemini-2.5-flash-image";
-  console.log(`🖼️  Image generation enabled: ${generateImages}`);
-  if (generateImages) console.log(`🖼️  Image model: ${imageModel}`);
+  console.log(`🖼️  PEXELS_API_KEY present: ${Boolean(process.env.PEXELS_API_KEY)}`);
+  console.log(`🖼️  PIXABAY_API_KEY present: ${Boolean(process.env.PIXABAY_API_KEY)}`);
 
   if (!fs.existsSync(ARTICLES_DIR)) {
     fs.mkdirSync(ARTICLES_DIR, { recursive: true });
@@ -364,29 +490,13 @@ async function main() {
 
   mdxContent = stripCodeFences(mdxContent);
   mdxContent = removeBrandName(mdxContent);
+  mdxContent = cleanupArticleContent(mdxContent);
 
-  const topicHint = extractTopicHint(mdxContent);
-  const localMatch = pickLocalImage(topicHint);
-  const hasGoodLocalImage = localMatch.image !== DEFAULT_IMAGE;
-  console.log(
-    `🗂️  Local image match: ${localMatch.image} (${hasGoodLocalImage ? "topic-specific" : "fallback"})`
-  );
+  const imageKeyword = extractImageKeyword(mdxContent);
+  console.log(`🔍 imageKeyword: ${imageKeyword || "(not found)"}`);
 
-  let generatedImagePath = null;
-  if (!hasGoodLocalImage && generateImages) {
-    const imgSlug = Math.random().toString(36).slice(2, 8);
-    generatedImagePath = await tryGenerateImage(apiKey, imageModel, imgSlug, topicHint);
-  }
-
-  if (generatedImagePath) {
-    mdxContent = injectImageFields(
-      mdxContent,
-      generatedImagePath,
-      topicHint ? `${topicHint} pest control` : DEFAULT_ALT
-    );
-  } else {
-    mdxContent = injectImageFields(mdxContent);
-  }
+  const imageData = await findArticleImage(imageKeyword);
+  mdxContent = injectImageFields(mdxContent, imageData);
 
   const validationErrors = validateArticle(mdxContent);
   if (validationErrors.length > 0) {
@@ -407,3 +517,4 @@ async function main() {
 }
 
 main();
+
