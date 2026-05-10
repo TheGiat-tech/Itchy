@@ -38,10 +38,22 @@ const categories = [
     description: "עש בגדים, חיפושיות מזווה וחרקי רכוש",
   },
   {
-    id: "spiders",
+    id: "arachnids",
     label: "עכבישים ועקרבים",
     emoji: "🕷️",
     description: "ששן חום, אלמנה שחורה, עקרב צהוב ועוד",
+  },
+  {
+    id: "wasps",
+    label: "צרעות ודבורי בר",
+    emoji: "🐝",
+    description: "צרעה גרמנית, צרעת הכוורת, צרעת הנייר ועוד",
+  },
+  {
+    id: "garden-pests",
+    label: "מזיקי גינה",
+    emoji: "🌿",
+    description: "נדל ארסי, צרצר, ג'וק חומיני, חשופית ועוד",
   },
 ];
 
