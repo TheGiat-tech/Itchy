@@ -123,8 +123,12 @@ function needsRealImage(imageValue) {
   return false;
 }
 
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function getFrontmatterField(fmBlock, field) {
-  const match = fmBlock.match(new RegExp(`^${field}:\\s*["']?(.+?)["']?\\s*$`, "m"));
+  const match = fmBlock.match(new RegExp(`^${escapeRegex(field)}:\\s*["']?(.+?)["']?\\s*$`, "m"));
   return match?.[1]?.trim() ?? null;
 }
 
