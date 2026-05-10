@@ -23,6 +23,8 @@ const ALLOWED_ORIGINS = [
   "https://static.inaturalist.org",
 ];
 
+const INATURALIST_API = "https://api.inaturalist.org/v1/taxa";
+
 function sanitizeName(raw: string | null): string {
   if (!raw) return "";
   // Allow only characters valid in Latin scientific names and common Unicode
@@ -68,6 +70,31 @@ async function fetchWikipediaThumb(name: string): Promise<string | null> {
   return thumbUrl;
 }
 
+/**
+ * Query the iNaturalist API for a thumbnail matching `name`.
+ * Returns the medium_url or null.
+ */
+async function fetchINaturalistThumb(name: string): Promise<string | null> {
+  try {
+    const url = new URL(INATURALIST_API);
+    url.searchParams.set("q", name);
+    url.searchParams.set("is_active", "true");
+
+    const res = await fetch(url.toString(), {
+      headers: { "User-Agent": USER_AGENT },
+      next: { revalidate: CACHE_SECONDS },
+    });
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    const thumbUrl: string | null = data?.results?.[0]?.default_photo?.medium_url ?? null;
+    if (!thumbUrl || !isAllowedUrl(thumbUrl)) return null;
+    return thumbUrl;
+  } catch {
+    return null;
+  }
+}
+
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const rawName = req.nextUrl.searchParams.get("name");
   const name = sanitizeName(rawName);
@@ -77,7 +104,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const thumbUrl = await fetchWikipediaThumb(name);
+    const thumbUrl = await fetchWikipediaThumb(name) ?? await fetchINaturalistThumb(name);
 
     if (!thumbUrl) {
       return NextResponse.redirect(new URL(FALLBACK_IMAGE, req.url));
