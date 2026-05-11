@@ -24,10 +24,19 @@ export default function AffiliateProductCard({
   badges,
 }: AffiliateProduct) {
   const productBadges = badges ?? (badge ? [badge] : []);
+  const hasBestSeller = productBadges.includes("Best Seller");
+  const secondaryBadges = productBadges.filter(
+    (badgeText) => badgeText !== "Best Seller",
+  );
 
   return (
     <article className="group flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 overflow-hidden">
       <div className="relative aspect-square w-full bg-gray-50 overflow-hidden">
+        {hasBestSeller && (
+          <span className="absolute top-4 -left-10 z-10 w-36 -rotate-45 bg-amber-500 py-1 text-center text-[11px] font-extrabold uppercase tracking-[0.18em] text-white shadow-md">
+            Best Seller
+          </span>
+        )}
         <Image
           src={imageUrl}
           alt={title}
@@ -35,9 +44,9 @@ export default function AffiliateProductCard({
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-contain p-4 group-hover:scale-105 transition-transform duration-200"
         />
-        {productBadges.length > 0 && (
+        {secondaryBadges.length > 0 && (
           <div className="absolute top-2 right-2 flex flex-col items-end gap-1 max-w-[150px]">
-            {productBadges.map((badgeText) => (
+            {secondaryBadges.map((badgeText) => (
               <span
                 key={badgeText}
                 className="bg-green-100 text-green-800 text-[10px] font-semibold px-2 py-1 rounded-full leading-tight text-center"
