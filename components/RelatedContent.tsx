@@ -31,19 +31,45 @@ function normalize(value?: string): string {
   return (value ?? "").toLowerCase().trim();
 }
 
+function getTerms(input: string): string[] {
+  return input
+    .split(/\s+/)
+    .map((term) => term.trim())
+    .filter((term) => term.length >= 2);
+}
+
+function includesAnyTerm(text: string, terms: string[]): boolean {
+  return terms.some((term) => text.includes(term));
+}
+
 function getScore(input: {
   articleCategory: string;
   articlePestType: string;
   contextCategory: string;
-  contextPestType: string;
-  contextTitle: string;
+  contextPestTypeTerms: string[];
+  contextTitleTerms: string[];
   articleText: string;
 }): number {
   let score = 0;
   if (input.contextCategory && input.articleCategory === input.contextCategory) score += 4;
-  if (input.contextPestType && input.articlePestType === input.contextPestType) score += 4;
-  if (input.contextPestType && input.articleText.includes(input.contextPestType)) score += 2;
-  if (input.contextTitle && input.articleText.includes(input.contextTitle)) score += 1;
+  if (
+    input.contextPestTypeTerms.length > 0 &&
+    includesAnyTerm(input.articlePestType, input.contextPestTypeTerms)
+  ) {
+    score += 4;
+  }
+  if (
+    input.contextPestTypeTerms.length > 0 &&
+    includesAnyTerm(input.articleText, input.contextPestTypeTerms)
+  ) {
+    score += 2;
+  }
+  if (
+    input.contextTitleTerms.length > 0 &&
+    includesAnyTerm(input.articleText, input.contextTitleTerms)
+  ) {
+    score += 1;
+  }
   return score;
 }
 
@@ -64,8 +90,8 @@ function compareRelated(
 export default function RelatedContent({ currentSlug, category, pestType, title }: Props) {
   const allArticles = getAllArticles();
   const contextCategory = normalize(category);
-  const contextPestType = normalize(pestType);
-  const contextTitle = normalize(title);
+  const contextPestTypeTerms = getTerms(normalize(pestType));
+  const contextTitleTerms = getTerms(normalize(title));
   const contextForHub = `${category ?? ""} ${pestType ?? ""} ${title ?? ""}`;
   const hubLink = getPestHubLink(contextForHub);
 
@@ -74,9 +100,15 @@ export default function RelatedContent({ currentSlug, category, pestType, title 
     .map((article) => {
       const articleCategory = normalize(article.frontmatter.category);
       const articlePestType = normalize(article.frontmatter.pestType);
-      const articleText = normalize(
-        `${article.frontmatter.titleHebrew ?? ""} ${article.frontmatter.title ?? ""} ${article.frontmatter.subtitle ?? ""} ${article.frontmatter.excerpt ?? ""} ${article.frontmatter.description ?? ""} ${article.frontmatter.pestType ?? ""}`
-      );
+      const articleTextFields = [
+        article.frontmatter.titleHebrew,
+        article.frontmatter.title,
+        article.frontmatter.subtitle,
+        article.frontmatter.excerpt,
+        article.frontmatter.description,
+        article.frontmatter.pestType,
+      ];
+      const articleText = normalize(articleTextFields.filter(Boolean).join(" "));
 
       return {
         article,
@@ -84,8 +116,8 @@ export default function RelatedContent({ currentSlug, category, pestType, title 
           articleCategory,
           articlePestType,
           contextCategory,
-          contextPestType,
-          contextTitle,
+          contextPestTypeTerms,
+          contextTitleTerms,
           articleText,
         }),
       };

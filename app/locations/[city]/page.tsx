@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Footer from "@/components/Footer";
 import ArticleFooterCTA from "@/components/ArticleFooterCTA";
 import SchemaMarkup, { type SchemaFaqItem } from "@/components/SchemaMarkup";
@@ -17,9 +18,9 @@ const TOP_CITIES = [
   "beer-sheva",
 ];
 
-function decodeCitySlug(rawCity: string): string {
+function decodeCitySlug(rawCity: string): string | null {
   const decoded = decodeURIComponent(rawCity).replace(/-/g, " ").trim();
-  if (!decoded) return "העיר שלכם";
+  if (!decoded) return null;
   return decoded;
 }
 
@@ -51,6 +52,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { city } = await params;
   const cityName = decodeCitySlug(city);
+  if (!cityName) return {};
   const title = `הדברה ב${cityName} - השוואת הצעות מחיר ממדבירים מוסמכים`;
   const description = normalizeDescription(
     `מחפשים הדברה ב${cityName}? השוו הצעות מחיר ממדבירים מוסמכים, קבלו מידע מקצועי, ובחרו בין פתרון עצמי לרכישת מוצרים לבין הזמנת מדביר.`
@@ -75,6 +77,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function LocationPage({ params }: Props) {
   const { city } = await params;
   const cityName = decodeCitySlug(city);
+  if (!cityName) notFound();
   const faqItems = getLocalFaq(cityName);
 
   return (

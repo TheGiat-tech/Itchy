@@ -25,7 +25,10 @@ interface SchemaMarkupProps {
 }
 
 function sanitizeJsonLd(schema: JsonLdObject): string {
-  return JSON.stringify(schema).replace(/</g, "\\u003c");
+  return JSON.stringify(schema)
+    .replace(/&/g, "\\u0026")
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e");
 }
 
 export default function SchemaMarkup({

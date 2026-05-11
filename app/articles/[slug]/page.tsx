@@ -9,6 +9,8 @@ import SchemaMarkup, { type SchemaFaqItem } from "@/components/SchemaMarkup";
 import LegalDisclaimer from "@/components/LegalDisclaimer";
 import { getArticleBySlug, getAllArticleSlugs, getPostImage } from "@/lib/mdx";
 
+const DEFAULT_AUTHOR = "מערכת איצ'י";
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
@@ -127,7 +129,7 @@ export default async function ArticlePage({ params }: Props) {
           image: displayImage,
           datePublished,
           dateModified,
-          authorName: "מערכת איצ'י",
+          authorName: DEFAULT_AUTHOR,
         }}
         faqItems={faqItems}
       />
@@ -158,7 +160,7 @@ export default async function ArticlePage({ params }: Props) {
           )}
           <div className="mt-3 flex flex-col gap-1 text-sm text-gray-600">
             {dateModified && <p>עודכן לאחרונה: {formatDate(dateModified)}</p>}
-            <p>מאת: מערכת איצ&apos;י</p>
+            <p>מאת: {DEFAULT_AUTHOR}</p>
           </div>
         </div>
 
