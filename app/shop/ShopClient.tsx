@@ -238,7 +238,7 @@ const shopProducts: AffiliateProduct[] = [
     price: 29,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/2dc37d69f74bf116238677b069139ded.png?v=1670859114&width=1206",
-    category: "ציוד מקצועי ותרסיסים מיוחדים",
+    category: "תיקנים (ג'וקים)",
     affiliateUrl: "https://affiracle.com/s/qaJrIA",
     description:
       "מרסס פלסטיק PP קשיח בקיבולת 1.5 ליטר, קל לנשיאה ולשימוש לטיפול בצמחים, מזיקים ועשבייה.",
@@ -264,7 +264,7 @@ const shopProducts: AffiliateProduct[] = [
     price: 49,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/files/16_5e1524f1-3dd0-4770-80d6-d7b178f23cde.png?v=1755540301&width=1206",
-    category: "ציוד מקצועי ותרסיסים מיוחדים",
+    category: "תיקנים (ג'וקים)",
     affiliateUrl: "https://affiracle.com/s/QoKHI2",
     description:
       "מלכודות דבק חזקות לתיקן אמריקאי/גרמני עם פיתיון מוכן לשימוש, ללא רעלים ובטוח לבית.",
