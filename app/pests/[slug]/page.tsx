@@ -8,6 +8,7 @@ import ArticleLeadForm from "@/components/ArticleLeadForm";
 import PestImage from "@/components/PestImage";
 import RelatedPests from "@/components/RelatedPests";
 import NextArticleLink from "@/components/NextArticleLink";
+import SchemaMarkup from "@/components/SchemaMarkup";
 import { getPestBySlug, getAllPestSlugs } from "@/lib/mdx";
 import { generatePestJsonLd } from "@/lib/jsonld";
 
@@ -24,15 +25,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const pest = getPestBySlug(slug);
   if (!pest) return {};
   const { frontmatter } = pest;
+  const rawDescription =
+    frontmatter.description ??
+    `מידע מקיף על ${frontmatter.title} – זיהוי, מחזור חיים, ובית גידול.`;
+  const metaDescription = rawDescription.slice(0, 160);
+  const ogImage = frontmatter.imageOverride
+    ? frontmatter.imageOverride
+    : frontmatter.titleLatin
+      ? `/api/pest-image?name=${encodeURIComponent(frontmatter.titleLatin)}`
+      : undefined;
+
   return {
     title: frontmatter.title,
-    description:
-      frontmatter.description ??
-      `מידע מקיף על ${frontmatter.title} – זיהוי, מחזור חיים, ובית גידול.`,
+    description: metaDescription,
+    alternates: {
+      canonical: `/pests/${slug}`,
+    },
     openGraph: {
-      title: `${frontmatter.title} | Itchy`,
-      description: frontmatter.description,
+      title: frontmatter.title,
+      description: metaDescription,
       locale: "he_IL",
+      url: `/pests/${slug}`,
+      type: "article",
+      images: ogImage ? [{ url: ogImage }] : undefined,
     },
   };
 }
@@ -47,9 +62,8 @@ export default async function PestPage({ params }: Props) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      <SchemaMarkup
+        additionalSchemas={[jsonLd]}
       />
       <main id="main-content" className="flex-1 max-w-3xl mx-auto px-4 py-12 w-full">
         <div className="mb-8">

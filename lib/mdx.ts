@@ -58,8 +58,10 @@ export interface ArticleFrontmatter {
   excerpt?: string;
   description?: string;
   date?: string;
+  updatedAt?: string;
   category?: string;
   pestType?: string;
+  tags?: string[];
   // Direct image URL fields (priority order is defined in IMAGE_FIELDS below)
   imageOverride?: string;
   image?: string;
