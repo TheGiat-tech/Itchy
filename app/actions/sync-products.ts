@@ -132,18 +132,26 @@ export async function syncProductsFromStore(): Promise<SyncProductsResult> {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15_000);
+      let response: Response;
 
-      const response = await fetch(product.store_url, {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (compatible; ItchyBot/1.0; +https://itchy.co.il)",
-        },
-        cache: "no-store",
-        signal: controller.signal,
-      }).finally(() => clearTimeout(timeoutId));
+      try {
+        response = await fetch(product.store_url, {
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (compatible; ItchyBot/1.0; +https://itchy.co.il)",
+          },
+          cache: "no-store",
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       if (!response.ok) {
-        return { success: false, error: `${product.slug}: Failed to fetch (${response.status})` };
+        return {
+          success: false,
+          error: `${product.slug}: Failed to fetch (${response.status} ${response.statusText})`,
+        };
       }
 
       const html = await response.text();
@@ -172,10 +180,7 @@ export async function syncProductsFromStore(): Promise<SyncProductsResult> {
   let updated = 0;
 
   for (const result of results) {
-    if (result.status !== "fulfilled") {
-      errors.push(result.reason instanceof Error ? result.reason.message : String(result.reason));
-      continue;
-    }
+    if (result.status !== "fulfilled") continue;
 
     if (result.value.success) {
       updated += 1;
