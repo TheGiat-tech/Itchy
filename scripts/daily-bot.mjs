@@ -14,25 +14,25 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..");
 const ARTICLES_DIR = path.join(REPO_ROOT, "content", "articles");
 
-const CTA = "<a href=\"/contact\">📍 ליצירת קשר וייעוץ בנושא מזיקים עם הצוות של איצ'י - לחצו כאן</a>";
+const CTA = "<a href=\"/quote\">📍 קבלו הצעת מחיר ממדביר מוסמך - ללא עלות וללא התחייבות</a>";
 
 /**
- * Topic rules → local SVG path + default alt text.
+ * Topic rules → photorealistic image API URL + default alt text.
  * Must mirror the TOPIC_IMAGE_RULES in lib/mdx.ts.
  */
 const TOPIC_IMAGE_RULES = [
-  { pattern: /fire.?ant|wasmannia|נמלה.*(אש|אדומ)|נמלת.*(אש|אדומ)/i, image: "/images/articles/fire-ant-colony.svg", alt: "fire ant colony" },
-  { pattern: /ant|נמל/i, image: "/images/articles/ants-kitchen.svg", alt: "ants in kitchen" },
-  { pattern: /bed.?bug|cimex|פשפש/i, image: "/images/articles/bed-bugs-mattress.svg", alt: "bed bugs on mattress" },
-  { pattern: /flea|פרעוש/i, image: "/images/articles/flea-dog-fur.svg", alt: "flea on dog fur" },
-  { pattern: /german.?cockroach|blattella/i, image: "/images/articles/german-cockroach.svg", alt: "german cockroach" },
-  { pattern: /cockroach|roach|תיקן|ג['"']?וק/i, image: "/images/articles/cockroach-kitchen.svg", alt: "cockroach in kitchen" },
-  { pattern: /rat|mouse|mice|rodent|חולד|עכבר|מכרסם/i, image: "/images/articles/rat-house.svg", alt: "rat in house" },
-  { pattern: /termite|טרמיט/i, image: "/images/articles/termite-damage.svg", alt: "termite damage" },
-  { pattern: /spider|עכביש/i, image: "/images/articles/brown-recluse-spider.svg", alt: "brown recluse spider" },
-  { pattern: /technician|מדביר/i, image: "/images/articles/pest-control-technician.svg", alt: "pest control technician" },
+  { pattern: /fire.?ant|wasmannia|נמלה.*(אש|אדומ)|נמלת.*(אש|אדומ)/i, image: "/api/pest-image?name=Wasmannia+auropunctata", alt: "fire ant colony" },
+  { pattern: /ant|נמל/i, image: "/api/pest-image?name=Formicidae", alt: "ants in kitchen" },
+  { pattern: /bed.?bug|cimex|פשפש/i, image: "/api/pest-image?name=Cimex+lectularius", alt: "bed bugs on mattress" },
+  { pattern: /flea|פרעוש/i, image: "/api/pest-image?name=Ctenocephalides+felis", alt: "flea on dog fur" },
+  { pattern: /german.?cockroach|blattella/i, image: "/api/pest-image?name=Blattella+germanica", alt: "german cockroach" },
+  { pattern: /cockroach|roach|תיקן|ג['"']?וק/i, image: "/api/pest-image?name=Blattodea", alt: "cockroach in kitchen" },
+  { pattern: /rat|mouse|mice|rodent|חולד|עכבר|מכרסם/i, image: "/api/pest-image?name=Rattus+rattus", alt: "rat in house" },
+  { pattern: /termite|טרמיט/i, image: "/api/pest-image?name=Termite", alt: "termite damage" },
+  { pattern: /spider|עכביש/i, image: "/api/pest-image?name=Loxosceles+rufescens", alt: "brown recluse spider" },
+  { pattern: /technician|מדביר/i, image: "/api/pest-image?name=Pest+control", alt: "pest control technician" },
 ];
-const DEFAULT_IMAGE = "/images/articles/default-pest-control.svg";
+const DEFAULT_IMAGE = "/api/pest-image?name=Pest+control";
 const DEFAULT_ALT = "pest control";
 
 function pickLocalImage(hint) {
@@ -148,7 +148,7 @@ async function fetchPixabayImage(query) {
 
 /**
  * Attempts to find a stock image for the article using Pexels first, then
- * Pixabay. Falls back to a local SVG if both APIs fail or return no result.
+  * Pixabay. Falls back to a photorealistic API URL if both APIs fail or return no result.
  * Never throws — the article must always be saved even if the image API fails.
  */
 async function findArticleImage(query) {
@@ -245,7 +245,7 @@ function stripCodeFences(text) {
 function removeBrandName(text) {
   return text.replace(
     /גיאת הדברות|גבעת הדברות|גיאט הדברות|Giat Pest Control|Giat Hadbarot|Giat Extermination/g,
-    "הצוות של איצ'י"
+    "חברות הדברה מורשות"
   );
 }
 
@@ -429,7 +429,7 @@ pestType: "סוג המזיק בעברית"
 7. **מתי לפנות לאיש מקצוע**: כתוב פסקה קצרה ובהירה שמסבירה מתי הטיפול העצמי לא מספיק.
 8. **CTA**: בסוף המאמר הוסף בדיוק את השורה הבאה, ואל תשנה אותה:
 
-<a href="/contact">📍 ליצירת קשר וייעוץ בנושא מזיקים עם הצוות של איצ'י - לחצו כאן</a>
+<a href="/quote">📍 קבלו הצעת מחיר ממדביר מוסמך - ללא עלות וללא התחייבות</a>
 
 הנחיות סגנון:
 
@@ -442,7 +442,7 @@ pestType: "סוג המזיק בעברית"
 - titleHebrew ו-subtitle חייבים להיות נקיים לחלוטין מאמוג'ים
 - אל תזכיר גיאת הדברות, גבעת הדברות, נועם גיאט, שם המייסד, או שותפויות עסקיות
 - אל תזכיר שמות של חברות הדברה ספציפיות אחרות
-- ניתן להזכיר את הצוות של איצ'י באופן טבעי, לא יותר מפעם אחת
+- ניתן להזכיר חברות הדברה מורשות באופן טבעי, לא יותר מפעם אחת
 - אל תכלול תגיות קוד כגון: \`\`\` או \`\`\`mdx
 `.trim();
 
@@ -517,4 +517,3 @@ async function main() {
 }
 
 main();
-

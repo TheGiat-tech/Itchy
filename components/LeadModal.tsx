@@ -142,7 +142,7 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
           <div className="text-center py-6">
             <div className="text-5xl mb-4">✅</div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              הפרטים נשלחו בהצלחה לצוות המדבירים! נחזור אליך בהקדם.
+              הפרטים נשלחו בהצלחה לחברות הדברה מורשות! נחזור אליך בהקדם.
             </h2>
             <button
               onClick={handleClose}

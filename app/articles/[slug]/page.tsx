@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Footer from "@/components/Footer";
+import ArticleFooterCTA from "@/components/ArticleFooterCTA";
 import { getArticleBySlug, getAllArticleSlugs, getPostImage } from "@/lib/mdx";
 
 interface Props {
@@ -103,6 +104,8 @@ export default async function ArticlePage({ params }: Props) {
         <article className="prose prose-lg prose-green max-w-none text-right" dir="rtl">
           <MDXRemote source={content} />
         </article>
+
+        <ArticleFooterCTA />
 
         {/* Back link */}
         <div className="mt-12 pt-6 border-t border-gray-100">
