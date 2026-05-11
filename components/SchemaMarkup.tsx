@@ -1,4 +1,4 @@
-type JsonLdValue = string | number | boolean | null | JsonLdObject | JsonLdValue[];
+type JsonLdValue = string | number | boolean | null | undefined | JsonLdObject | JsonLdValue[];
 type JsonLdObject = { [key: string]: JsonLdValue };
 
 export interface SchemaArticleInput {
