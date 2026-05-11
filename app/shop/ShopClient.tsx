@@ -5,73 +5,96 @@ import AffiliateProductCard, {
   type AffiliateProduct,
 } from "@/components/AffiliateProductCard";
 
-const CATEGORIES = ["הכל", "חרקים", "מכרסמים", "גינה"] as const;
+const CATEGORIES = ["הכל", "הדברה לבית", "הדברה לגינה", "ציוד מקצועי"] as const;
 type Category = (typeof CATEGORIES)[number];
 
-const mockProducts: AffiliateProduct[] = [
+const shopProducts: AffiliateProduct[] = [
   {
-    id: "1",
-    title: "תרסיס K300 – קוטל חרקים מקצועי",
-    price: 49,
-    imageUrl: "/images/placeholder-product.png",
-    category: "חרקים",
-    affiliateUrl: "https://ksp.co.il/web/item/12345?appkey=YOUR_ID",
-    merchantName: "KSP",
-  },
-  {
-    id: "2",
-    title: "מלכודת דבק לעכברים – אריזת 6 יחידות",
-    price: 29,
-    imageUrl: "/images/placeholder-product.png",
-    category: "מכרסמים",
-    affiliateUrl: "https://ksp.co.il/web/item/12346?appkey=YOUR_ID",
-    merchantName: "KSP",
-  },
-  {
-    id: "3",
-    title: "קטלן יתושים חשמלי UV – לשימוש בית ובגינה",
-    price: 119,
-    imageUrl: "/images/placeholder-product.png",
-    category: "חרקים",
-    affiliateUrl: "https://ksp.co.il/web/item/12347?appkey=YOUR_ID",
-    merchantName: "KSP",
-  },
-  {
-    id: "4",
-    title: "ראטיסיד – פיתיון לחולדות ועכברים",
-    price: 39,
-    imageUrl: "/images/placeholder-product.png",
-    category: "מכרסמים",
-    affiliateUrl: "https://ksp.co.il/web/item/12348?appkey=YOUR_ID",
-    merchantName: "KSP",
-  },
-  {
-    id: "5",
-    title: "ריסוס אורגני לגינה נגד כנימות ועש",
+    id: "home-1",
+    title: "ג׳ל פיתיון נגד תיקנים ונמלים",
     price: 59,
-    imageUrl: "/images/placeholder-product.png",
-    category: "גינה",
-    affiliateUrl: "https://ksp.co.il/web/item/12349?appkey=YOUR_ID",
-    merchantName: "KSP",
+    imageUrl: "/images/shop/home-pest-control.svg",
+    category: "הדברה לבית",
+    affiliateUrl: "https://www.tzur-market.co.il/products/cockroach-ant-bait-gel",
   },
   {
-    id: "6",
-    title: "מלכודת נדבקת לג׳וקים ועקרבים",
-    price: 24,
-    imageUrl: "/images/placeholder-product.png",
-    category: "חרקים",
-    affiliateUrl: "https://ksp.co.il/web/item/12350?appkey=YOUR_ID",
-    merchantName: "KSP",
+    id: "home-2",
+    title: "מלכודות דבק לעכברים – מארז 10 יחידות",
+    price: 45,
+    imageUrl: "/images/shop/home-pest-control.svg",
+    category: "הדברה לבית",
+    affiliateUrl: "https://www.tzur-market.co.il/products/mouse-glue-traps-10",
+  },
+  {
+    id: "home-3",
+    title: "תרסיס הדברה ביתי מוכן לשימוש",
+    price: 39,
+    imageUrl: "/images/shop/home-pest-control.svg",
+    category: "הדברה לבית",
+    affiliateUrl: "https://www.tzur-market.co.il/products/home-insect-spray",
+  },
+  {
+    id: "garden-1",
+    title: "תרכיז הדברה לגינה נגד כנימות ועש",
+    price: 74,
+    imageUrl: "/images/shop/garden-pest-control.svg",
+    category: "הדברה לגינה",
+    affiliateUrl: "https://www.tzur-market.co.il/products/garden-insect-concentrate",
+  },
+  {
+    id: "garden-2",
+    title: "דשן-דוחה מזיקים לצמחי נוי ועציצים",
+    price: 52,
+    imageUrl: "/images/shop/garden-pest-control.svg",
+    category: "הדברה לגינה",
+    affiliateUrl: "https://www.tzur-market.co.il/products/ornamental-pest-repellent",
+  },
+  {
+    id: "garden-3",
+    title: "גרגרי הדברה לשבילים ומדשאות",
+    price: 67,
+    imageUrl: "/images/shop/garden-pest-control.svg",
+    category: "הדברה לגינה",
+    affiliateUrl: "https://www.tzur-market.co.il/products/lawn-pest-control-granules",
+  },
+  {
+    id: "pro-1",
+    title: "מרסס לחץ מקצועי 8 ליטר",
+    price: 189,
+    imageUrl: "/images/shop/professional-equipment.svg",
+    category: "ציוד מקצועי",
+    affiliateUrl: "https://www.tzur-market.co.il/products/pro-pressure-sprayer-8l",
+  },
+  {
+    id: "pro-2",
+    title: "ערכת מגן להדברה – מסכה, כפפות ומשקף",
+    price: 129,
+    imageUrl: "/images/shop/professional-equipment.svg",
+    category: "ציוד מקצועי",
+    affiliateUrl: "https://www.tzur-market.co.il/products/pest-control-protection-kit",
+  },
+  {
+    id: "pro-3",
+    title: "מד ריכוז מקצועי לערבוב תמיסות",
+    price: 96,
+    imageUrl: "/images/shop/professional-equipment.svg",
+    category: "ציוד מקצועי",
+    affiliateUrl: "https://www.tzur-market.co.il/products/pro-mixing-measure",
   },
 ];
 
 export default function ShopClient() {
   const [activeCategory, setActiveCategory] = useState<Category>("הכל");
 
-  const filtered =
+  const visibleCategories =
     activeCategory === "הכל"
-      ? mockProducts
-      : mockProducts.filter((p) => p.category === activeCategory);
+      ? CATEGORIES.filter((category): category is Exclude<Category, "הכל"> => category !== "הכל")
+      : [activeCategory];
+
+  const groupedProducts = visibleCategories.map((category) => ({
+    category,
+    products: shopProducts.filter((product) => product.category === category),
+  }));
 
   return (
     <>
@@ -94,18 +117,31 @@ export default function ShopClient() {
         </div>
       </section>
 
-      {/* Product grid */}
+      {/* Product sections */}
       <section className="max-w-6xl mx-auto px-4 py-8 pb-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filtered.map((product) => (
-            <AffiliateProductCard key={product.id} {...product} />
+        <div className="space-y-10">
+          {groupedProducts.map(({ category, products }) => (
+            <section key={category}>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
+                {category}
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {products.map((product) => (
+                  <AffiliateProductCard key={product.id} {...product} />
+                ))}
+              </div>
+            </section>
           ))}
         </div>
-        {filtered.length === 0 && (
+        {groupedProducts.every((group) => group.products.length === 0) && (
           <p className="text-center text-gray-600 py-16">
             אין מוצרים בקטגוריה זו כרגע.
           </p>
         )}
+        <p className="text-xs text-gray-500 mt-10 text-center">
+          חלק מהקישורים בחנות הם קישורי שותפים (Affiliate). אתר איצ&apos;י עשוי
+          לקבל עמלה על רכישות שיבוצעו דרכם, ללא עלות נוספת עבורכם
+        </p>
       </section>
     </>
   );

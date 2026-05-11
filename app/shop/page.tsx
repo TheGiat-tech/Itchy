@@ -5,7 +5,7 @@ import ShopClient from "./ShopClient";
 export const metadata: Metadata = {
   title: "חנות מוצרי הדברה",
   description:
-    "כל הפתרונות המקצועיים להרחקת מזיקים, ישירות מהספקים המובילים בישראל.",
+    "מוצרים נבחרים להדברה לבית, לגינה ולמקצוענים - בקנייה ישירה מצור מרקט.",
 };
 
 export default function ShopPage() {
@@ -18,8 +18,8 @@ export default function ShopPage() {
             חנות מוצרי הדברה
           </h1>
           <p className="text-base text-gray-500 max-w-xl mx-auto">
-            כל הפתרונות המקצועיים להרחקת מזיקים, ישירות מהספקים המובילים
-            בישראל.
+            מוצרים נבחרים להדברה לבית, לגינה ולמקצוענים — בקנייה ישירה מצור
+            מרקט.
           </p>
         </section>
 

@@ -7,7 +7,6 @@ export interface AffiliateProduct {
   imageUrl: string;
   category: string;
   affiliateUrl: string;
-  merchantName: string;
 }
 
 export default function AffiliateProductCard({
@@ -15,7 +14,6 @@ export default function AffiliateProductCard({
   price,
   imageUrl,
   affiliateUrl,
-  merchantName,
 }: AffiliateProduct) {
   return (
     <article className="group flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 overflow-hidden">
@@ -44,7 +42,7 @@ export default function AffiliateProductCard({
           rel="noopener noreferrer sponsored"
           className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white text-sm font-bold py-2.5 px-4 rounded-xl transition-colors duration-150"
         >
-          לרכישה ב-{merchantName}
+          קנייה בצור מרקט
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
