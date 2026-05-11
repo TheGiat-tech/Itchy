@@ -2,11 +2,12 @@ import Image from "next/image";
 
 export interface AffiliateProduct {
   id: string;
-  title: string;
+  name: string;
+  slug: string;
   price: number;
   imageUrl: string;
-  category: string;
-  affiliateUrl: string;
+  storeUrl: string;
+  isInStock: boolean;
   description?: string;
   itchiTip?: string;
   badge?: string;
@@ -14,10 +15,11 @@ export interface AffiliateProduct {
 }
 
 export default function AffiliateProductCard({
-  title,
+  name,
   price,
   imageUrl,
-  affiliateUrl,
+  storeUrl,
+  isInStock,
   description,
   itchiTip,
   badge,
@@ -56,11 +58,16 @@ export default function AffiliateProductCard({
             ))}
           </div>
         )}
+        {!isInStock && (
+          <span className="absolute bottom-2 right-2 bg-red-100 text-red-700 text-xs font-bold px-2.5 py-1 rounded-full">
+            Out of Stock
+          </span>
+        )}
       </div>
 
       <div className="flex flex-col flex-1 p-4 gap-3">
         <h3 className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2">
-          {title}
+          {name}
         </h3>
 
         {description && (
@@ -82,28 +89,38 @@ export default function AffiliateProductCard({
           ₪{price.toLocaleString("he-IL")}
         </p>
 
-        <a
-          href={affiliateUrl}
-          target="_blank"
-          rel="noopener noreferrer sponsored"
-          className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white text-sm font-bold py-2.5 px-4 rounded-xl transition-colors duration-150"
-        >
-          קנייה בצור מרקט
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="w-4 h-4 flex-shrink-0 rotate-[225deg]"
-            aria-hidden="true"
+        {isInStock ? (
+          <a
+            href={storeUrl}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white text-sm font-bold py-2.5 px-4 rounded-xl transition-colors duration-150"
           >
-            <line x1="7" y1="17" x2="17" y2="7" />
-            <polyline points="7 7 17 7 17 17" />
-          </svg>
-        </a>
+            קנייה בצור מרקט
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-4 h-4 flex-shrink-0 rotate-[225deg]"
+              aria-hidden="true"
+            >
+              <line x1="7" y1="17" x2="17" y2="7" />
+              <polyline points="7 7 17 7 17 17" />
+            </svg>
+          </a>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="flex items-center justify-center bg-gray-300 text-gray-600 text-sm font-bold py-2.5 px-4 rounded-xl cursor-not-allowed"
+          >
+            אזל מהמלאי
+          </button>
+        )}
       </div>
     </article>
   );

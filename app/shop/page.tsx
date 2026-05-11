@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import ShopClient from "./ShopClient";
+import { sql } from "@vercel/postgres";
+import { ensureProductsTable, type ProductRow } from "@/lib/products-db";
 
 export const metadata: Metadata = {
   title: "חנות מוצרי הדברה",
@@ -8,7 +10,25 @@ export const metadata: Metadata = {
     "מוצרים נבחרים להדברה לבית, לגינה ולמקצוענים - בקנייה ישירה מצור מרקט.",
 };
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  await ensureProductsTable();
+
+  const { rows } = await sql<ProductRow>`
+    SELECT id, name, slug, price, store_url, image_url, is_in_stock, last_updated
+    FROM products
+    ORDER BY name ASC
+  `;
+
+  const products = rows.map((product) => ({
+    id: String(product.id),
+    name: product.name,
+    slug: product.slug,
+    price: Number(product.price),
+    storeUrl: product.store_url,
+    imageUrl: product.image_url,
+    isInStock: product.is_in_stock,
+  }));
+
   return (
     <>
       <main id="main-content" className="flex-1">
@@ -23,7 +43,7 @@ export default function ShopPage() {
           </p>
         </section>
 
-        <ShopClient />
+        <ShopClient products={products} />
       </main>
       <Footer />
     </>

@@ -13,6 +13,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@vercel/blob": "^2.3.3",
     "@vercel/postgres": "^0.10.0",
+    "cheerio": "^1.2.0",
     "gray-matter": "^4.0.3",
     "next": "16.2.4",
     "next-mdx-remote": "^6.0.0",

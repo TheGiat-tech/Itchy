@@ -1,0 +1,164 @@
+"use server";
+
+import { load } from "cheerio";
+import { sql } from "@vercel/postgres";
+import { seedProductsTable, type ProductRow } from "@/lib/products-db";
+
+type SyncProductsResult = {
+  success: boolean;
+  updated: number;
+  failed: number;
+  errors: string[];
+};
+
+function parsePrice(rawValue: string) {
+  const normalized = rawValue
+    .replace(/[^\d.,]/g, "")
+    .replace(/,/g, "")
+    .trim();
+
+  const parsed = Number.parseFloat(normalized);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function readJsonLdBlocks(html: string) {
+  const $ = load(html);
+  const values: Record<string, unknown>[] = [];
+
+  $('script[type="application/ld+json"]').each((_, element) => {
+    const rawJson = $(element).text().trim();
+    if (!rawJson) return;
+
+    try {
+      const parsed = JSON.parse(rawJson) as unknown;
+      if (Array.isArray(parsed)) {
+        parsed.forEach((item) => {
+          if (item && typeof item === "object") {
+            values.push(item as Record<string, unknown>);
+          }
+        });
+      } else if (parsed && typeof parsed === "object") {
+        values.push(parsed as Record<string, unknown>);
+      }
+    } catch {
+      return;
+    }
+  });
+
+  return values;
+}
+
+function extractPriceAndStock(html: string) {
+  const $ = load(html);
+
+  const metaPrice =
+    $('meta[property="product:price:amount"]').attr("content") ??
+    $('meta[name="twitter:data1"]').attr("content");
+
+  if (metaPrice) {
+    const price = parsePrice(metaPrice);
+    if (price !== null) {
+      const availabilityMeta = $('meta[property="product:availability"]').attr(
+        "content",
+      );
+      const isInStock =
+        availabilityMeta?.toLowerCase() !== "out of stock" &&
+        availabilityMeta?.toLowerCase() !== "out_of_stock";
+      return { price, isInStock };
+    }
+  }
+
+  for (const block of readJsonLdBlocks(html)) {
+    const offers = block.offers;
+    const offerData = Array.isArray(offers) ? offers[0] : offers;
+    if (!offerData || typeof offerData !== "object") continue;
+
+    const priceValue = (offerData as Record<string, unknown>).price;
+    const availability = (offerData as Record<string, unknown>).availability;
+
+    if (typeof priceValue === "string" || typeof priceValue === "number") {
+      const price = parsePrice(String(priceValue));
+      if (price === null) continue;
+
+      const availabilityText =
+        typeof availability === "string" ? availability.toLowerCase() : "";
+      const isInStock = !availabilityText.includes("outofstock");
+      return { price, isInStock };
+    }
+  }
+
+  const fallbackPrice =
+    $('[data-product-price]').first().text() ||
+    $(".price-item--regular").first().text() ||
+    $(".price .money").first().text();
+  const parsedFallbackPrice = fallbackPrice ? parsePrice(fallbackPrice) : null;
+  const pageText = $("body").text().toLowerCase();
+  const isInStock =
+    !pageText.includes("out of stock") &&
+    !pageText.includes("sold out") &&
+    !pageText.includes("אזל");
+
+  if (parsedFallbackPrice === null) {
+    return null;
+  }
+
+  return { price: parsedFallbackPrice, isInStock };
+}
+
+export async function syncProductsFromStore(): Promise<SyncProductsResult> {
+  await seedProductsTable();
+
+  const { rows } = await sql<ProductRow>`
+    SELECT id, name, slug, price, store_url, image_url, is_in_stock, last_updated
+    FROM products
+    ORDER BY id ASC
+  `;
+
+  const errors: string[] = [];
+  let updated = 0;
+
+  for (const product of rows) {
+    try {
+      const response = await fetch(product.store_url, {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (compatible; ItchyBot/1.0; +https://itchy.co.il)",
+        },
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        errors.push(`${product.slug}: Failed to fetch (${response.status})`);
+        continue;
+      }
+
+      const html = await response.text();
+      const parsed = extractPriceAndStock(html);
+
+      if (!parsed) {
+        errors.push(`${product.slug}: Could not parse price`);
+        continue;
+      }
+
+      await sql`
+        UPDATE products
+        SET price = ${parsed.price},
+            is_in_stock = ${parsed.isInStock},
+            last_updated = NOW()
+        WHERE id = ${product.id}
+      `;
+
+      updated += 1;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      errors.push(`${product.slug}: ${errorMessage}`);
+    }
+  }
+
+  return {
+    success: errors.length === 0,
+    updated,
+    failed: errors.length,
+    errors,
+  };
+}
