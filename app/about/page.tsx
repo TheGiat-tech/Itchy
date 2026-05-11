@@ -34,14 +34,6 @@ export default function AboutPage() {
             </Link>
             .
           </p>
-          <h2>השתתפות הקהילה</h2>
-          <p>
-            אנו מאמינים בכוח הקהילה. תמונות שתשלחו מהשטח עוזרות לשפר את
-            האנציקלופדיה ולסייע לאחרים לזהות מזיקים.{" "}
-            <Link href="/contact?type=photo" className="text-green-700 hover:underline">
-              שלח תמונה עכשיו →
-            </Link>
-          </p>
         </div>
       </main>
       <Footer />

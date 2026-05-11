@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Footer from "@/components/Footer";
-import GalleryPlaceholder from "@/components/GalleryPlaceholder";
 import FeedbackButton from "@/components/FeedbackButton";
 import ArticleLeadForm from "@/components/ArticleLeadForm";
 import PestImage from "@/components/PestImage";
@@ -109,8 +108,6 @@ export default async function PestPage({ params }: Props) {
         <article className="prose prose-lg prose-green max-w-none text-right" dir="rtl">
           <MDXRemote source={content} />
         </article>
-
-        <GalleryPlaceholder pestName={frontmatter.title} />
 
         <ArticleLeadForm pestName={frontmatter.title} />
 
