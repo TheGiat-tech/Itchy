@@ -12,10 +12,23 @@ type SyncProductsResult = {
 };
 
 function parsePrice(rawValue: string) {
-  const normalized = rawValue
-    .replace(/[^\d.,]/g, "")
-    .replace(/,/g, "")
-    .trim();
+  const cleaned = rawValue.replace(/[^\d.,]/g, "").trim();
+  if (!cleaned) return null;
+
+  const commaIndex = cleaned.lastIndexOf(",");
+  const dotIndex = cleaned.lastIndexOf(".");
+  let normalized = cleaned;
+
+  if (commaIndex > -1 && dotIndex > -1) {
+    normalized =
+      commaIndex > dotIndex
+        ? cleaned.replace(/\./g, "").replace(",", ".")
+        : cleaned.replace(/,/g, "");
+  } else if (commaIndex > -1) {
+    normalized = /,\d{1,2}$/.test(cleaned)
+      ? cleaned.replace(/\./g, "").replace(",", ".")
+      : cleaned.replace(/,/g, "");
+  }
 
   const parsed = Number.parseFloat(normalized);
   return Number.isFinite(parsed) ? parsed : null;
@@ -115,29 +128,29 @@ export async function syncProductsFromStore(): Promise<SyncProductsResult> {
   `;
 
   const errors: string[] = [];
-  let updated = 0;
-
-  for (const product of rows) {
+  const syncTasks = rows.map(async (product) => {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15_000);
+
       const response = await fetch(product.store_url, {
         headers: {
           "User-Agent":
             "Mozilla/5.0 (compatible; ItchyBot/1.0; +https://itchy.co.il)",
         },
         cache: "no-store",
-      });
+        signal: controller.signal,
+      }).finally(() => clearTimeout(timeoutId));
 
       if (!response.ok) {
-        errors.push(`${product.slug}: Failed to fetch (${response.status})`);
-        continue;
+        return { success: false, error: `${product.slug}: Failed to fetch (${response.status})` };
       }
 
       const html = await response.text();
       const parsed = extractPriceAndStock(html);
 
       if (!parsed) {
-        errors.push(`${product.slug}: Could not parse price`);
-        continue;
+        return { success: false, error: `${product.slug}: Could not parse price` };
       }
 
       await sql`
@@ -148,11 +161,28 @@ export async function syncProductsFromStore(): Promise<SyncProductsResult> {
         WHERE id = ${product.id}
       `;
 
-      updated += 1;
+      return { success: true };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
-      errors.push(`${product.slug}: ${errorMessage}`);
+      return { success: false, error: `${product.slug}: ${errorMessage}` };
     }
+  });
+
+  const results = await Promise.allSettled(syncTasks);
+  let updated = 0;
+
+  for (const result of results) {
+    if (result.status !== "fulfilled") {
+      errors.push(result.reason instanceof Error ? result.reason.message : String(result.reason));
+      continue;
+    }
+
+    if (result.value.success) {
+      updated += 1;
+      continue;
+    }
+
+    errors.push(result.value.error ?? "Unknown sync error");
   }
 
   return {
