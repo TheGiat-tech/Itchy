@@ -19,7 +19,13 @@ const TOP_CITIES = [
 ];
 
 function decodeCitySlug(rawCity: string): string | null {
-  const decoded = decodeURIComponent(rawCity).replace(/-/g, " ").trim();
+  let decoded = "";
+  try {
+    decoded = decodeURIComponent(rawCity);
+  } catch {
+    return null;
+  }
+  decoded = decoded.replace(/-/g, " ").trim();
   if (!decoded) return null;
   return decoded;
 }

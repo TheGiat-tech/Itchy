@@ -141,7 +141,10 @@ export default function RelatedContent({ currentSlug, category, pestType, title 
       )}
 
       {related.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div
+          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+          aria-label="רשימת מאמרים קשורים"
+        >
           {related.map((article) => {
             const articleTitle = article.frontmatter.titleHebrew || article.frontmatter.title || "";
             const articleExcerpt = article.frontmatter.excerpt || article.frontmatter.subtitle || article.frontmatter.description;

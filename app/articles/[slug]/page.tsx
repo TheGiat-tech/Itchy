@@ -68,14 +68,20 @@ function extractFaqFromContent(content: string): SchemaFaqItem[] {
   const lines = content.split("\n");
   const faqSectionIndex = lines.findIndex((line) => /^##\s*(שאלות נפוצות|faq)\s*$/i.test(line.trim()));
   if (faqSectionIndex === -1) return [];
+  const nextSectionIndex = lines.findIndex(
+    (line, index) => index > faqSectionIndex && /^##\s+/.test(line.trim())
+  );
+  const faqSectionLines = lines.slice(
+    faqSectionIndex + 1,
+    nextSectionIndex === -1 ? undefined : nextSectionIndex
+  );
 
   const faqItems: SchemaFaqItem[] = [];
   let currentQuestion = "";
   let currentAnswerLines: string[] = [];
 
-  for (let i = faqSectionIndex + 1; i < lines.length; i += 1) {
-    const line = lines[i].trim();
-    if (/^##\s+/.test(line)) break;
+  for (const rawLine of faqSectionLines) {
+    const line = rawLine.trim();
 
     const questionMatch = line.match(/^###\s+(.+\?)\s*$/);
     if (questionMatch) {
