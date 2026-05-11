@@ -10,6 +10,8 @@ export const metadata: Metadata = {
     "מוצרים נבחרים להדברה לבית, לגינה ולמקצוענים - בקנייה ישירה מצור מרקט.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function ShopPage() {
   await ensureProductsTable();
 
