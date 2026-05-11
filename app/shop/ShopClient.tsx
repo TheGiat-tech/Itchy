@@ -225,7 +225,7 @@ const shopProducts: AffiliateProduct[] = [
     price: 79,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/ab788b5616d1f3182b6eca317e2de430.jpg?v=1671028410&width=1206",
-    category: "ציוד מקצועי ותרסיסים מיוחדים",
+    category: "תיקנים (ג'וקים)",
     affiliateUrl: "https://affiracle.com/s/H5sUf7",
     description:
       "מרסס EVIKA 5 ליטר מפלסטיק מחוזק, צינור 1.2 מטר, דיזה מתכווננת ולחץ עבודה 2.5 בר.",
