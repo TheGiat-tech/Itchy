@@ -5,7 +5,15 @@ import AffiliateProductCard, {
   type AffiliateProduct,
 } from "@/components/AffiliateProductCard";
 
-const CATEGORIES = ["הכל", "נמלים ונמלת האש", "הדברה לבית", "הדברה לגינה", "ציוד מקצועי"] as const;
+const CATEGORIES = [
+  "הכל",
+  "נמלים ונמלת האש",
+  "תיקנים (ג'וקים)",
+  "הדברה ירוקה ואלקטרונית",
+  "הדברה לבית",
+  "הדברה לגינה",
+  "ציוד מקצועי",
+] as const;
 const SHOP_CATEGORIES = CATEGORIES.filter((category) => category !== "הכל");
 type Category = (typeof CATEGORIES)[number];
 
@@ -22,7 +30,7 @@ const shopProducts: AffiliateProduct[] = [
       "פתרון מקצועי ללא ריח לכל סוגי הנמלים. מחסל את המלכה ומשמיד את הקן מהשורש.",
     itchiTip:
       "הפתרון הכי טוב למטבח ולבית – שמים טיפה בפינה והנמלים עושות את שאר העבודה.",
-    badge: "מאושר המשרד להגנת הסביבה",
+    badges: ["Best Seller", "מאושר המשרד להגנת הסביבה"],
   },
   {
     id: "ants-2",
@@ -51,6 +59,46 @@ const shopProducts: AffiliateProduct[] = [
     itchiTip:
       "מעולה לריסוס ישיר על קנים וליצירת מחסום סביב פתחי הכניסה לבית.",
     badge: "מאושר המשרד להגנת הסביבה",
+  },
+  {
+    id: "cockroaches-1",
+    title: "טורפדו ג'ל נגד תיקנים (15 גרם)",
+    price: 89,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/products/67c1102072cd47f13ae46b88f117ebfb.jpg?v=1670853741&width=1206",
+    category: "תיקנים (ג'וקים)",
+    affiliateUrl: "https://affiracle.com/s/Vgd9Xz",
+    description:
+      "פיתיון ג'ל מתקדם לקטילת תיקן גרמני ואמריקאי. ללא ריח, משמיד את המושבה מהשורש.",
+    itchiTip:
+      "הנשק הסודי נגד התיקן הגרמני הקטן במטבח. טיפה אחת מחסלת אלפי ג'וקים בלי לרסס רעל באוויר.",
+    badges: ["Best Seller", "מאושר המשרד להגנת הסביבה"],
+  },
+  {
+    id: "cockroaches-2",
+    title: 'תרסיס קילר (750 סמ"ק)',
+    price: 49,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/files/b18bbcc8cff9b0479b5ad2ba1162cf2a.jpg?v=1756117262&width=1206",
+    category: "תיקנים (ג'וקים)",
+    affiliateUrl: "https://affiracle.com/s/qac48J",
+    description:
+      "תרסיס הדברה עוצמתי לשימוש ביתי ומסחרי. תוצאות מיידיות נגד תיקנים, נמלים ומזיקים נפוצים.",
+    itchiTip:
+      "העזרה הראשונה שחובה להחזיק בארון מתחת לכיור. למקרים שבהם צריך מענה מהיר ומיידי.",
+  },
+  {
+    id: "green-1",
+    title: "מרחיק מזיקים אלקטרוני SAKAL",
+    price: 89,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/products/6f56a13d102714f39ea5e16bb8f2e197.jpg?v=1670853086&width=1206",
+    category: "הדברה ירוקה ואלקטרונית",
+    affiliateUrl: "https://affiracle.com/s/LfwF4V",
+    description:
+      "הדברה ירוקה בטכנולוגיית גלים אולטרסוניים. מכסה עד 100 מ\"ר ללא שימוש בכימיקלים.",
+    itchiTip:
+      "פתרון מושלם לחדרי ילדים ומשרדים. פשוט מחברים לשקע ויוצרים מעטפת הגנה שקטה ממזיקים.",
   },
   {
     id: "home-1",
