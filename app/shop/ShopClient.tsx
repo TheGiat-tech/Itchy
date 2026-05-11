@@ -9,11 +9,11 @@ const CATEGORIES = [
   "הכל",
   "נמלים ונמלת האש",
   "תיקנים (ג'וקים)",
-  "הדברה אלקטרונית וידידותית",
+  "יתושים ומעופפים",
+  "עש ומזיקי בד",
+  "פתרונות ידידותיים ואלקטרוניים",
   "מכרסמים (עכברים וחולדות)",
-  "הדברה לבית",
-  "הדברה לגינה",
-  "ציוד מקצועי",
+  "ציוד מקצועי ותרסיסים מיוחדים",
 ] as const;
 const SHOP_CATEGORIES = CATEGORIES.filter((category) => category !== "הכל");
 type Category = (typeof CATEGORIES)[number];
@@ -94,12 +94,91 @@ const shopProducts: AffiliateProduct[] = [
     price: 89,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/6f56a13d102714f39ea5e16bb8f2e197.jpg?v=1670853086&width=1206",
-    category: "הדברה אלקטרונית וידידותית",
+    category: "פתרונות ידידותיים ואלקטרוניים",
     affiliateUrl: "https://affiracle.com/s/LfwF4V",
     description:
       "הדברה אלקטרונית בטכנולוגיית גלים אולטרסוניים. מכסה עד 100 מ״ר ללא שימוש בכימיקלים.",
     itchiTip:
       "פתרון מושלם לחדרי ילדים ומשרדים. פשוט מחברים לשקע ויוצרים מעטפת הגנה שקטה ממזיקים.",
+  },
+  {
+    id: "flying-1",
+    title: "קטלן סופה ליתושים ומעופפים (7W)",
+    price: 249,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/products/63d629c50d62933786448beec7af0a31.jpg?v=1670853476&width=1206",
+    category: "יתושים ומעופפים",
+    affiliateUrl: "https://affiracle.com/s/BFhVQ9",
+    description:
+      "קטלן UV עם מפוח שואב, יניקה שקטה וחזקה ומגירת איסוף נשלפת לניקוי מהיר.",
+    itchiTip:
+      "השיטה השקטה והחזקה ביותר – הוא פשוט שואב אותם פנימה.",
+  },
+  {
+    id: "flying-2",
+    title: "קטלן STOPPER LED (14W)",
+    price: 189,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/files/7291044110210.webp?v=1773829662&width=1206",
+    category: "יתושים ומעופפים",
+    affiliateUrl: "https://affiracle.com/s/7WxuSr",
+    description:
+      "קטלן STOPPER LED עם תאורת UV, מגש מתפרק ושרשרת תלייה לחללים גדולים ועמוסים.",
+    itchiTip:
+      "אידיאלי למסעדות, חצרות ובתים גדולים. עוצמתי ועמיד מאוד.",
+  },
+  {
+    id: "flying-3",
+    title: "קוטל יתושים נייד USB",
+    price: 59,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/products/f4ced7270f583ebff5264a82e98d0f4b.jpg?v=1670859054&width=1206",
+    category: "יתושים ומעופפים",
+    affiliateUrl: "https://affiracle.com/s/9KvjDf",
+    description:
+      "קוטל יתושים נייד 5W עם טעינת USB וסוללה ל-6–8 שעות, מתאים לבית, טיולים וחופשות.",
+    itchiTip:
+      "החבר הכי טוב שלכם במילואים, בקמפינג או בחדר הילדים.",
+  },
+  {
+    id: "flying-4",
+    title: 'אנטיפליי רימי - תרסיס (750 מ״ל)',
+    price: 69,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/files/50aad069ee299a4afcb5ad11ab996215_10252fe2-7987-46b0-89f8-1496c1256ada.jpg?v=1756026266&width=1206",
+    category: "יתושים ומעופפים",
+    affiliateUrl: "https://affiracle.com/s/6QIUiw",
+    description:
+      "תרסיס אנטיפליי מוכן לשימוש עם קטילה מידית לזבובים, יתושים, ברחשים, צרעות וזחלי עש.",
+    itchiTip:
+      "יעיל מאוד לעונה החמה – מתאים גם לבית וגם לחצר עם תוצאה מיידית בריסוס ישיר.",
+  },
+  {
+    id: "moths-1",
+    title: "3 מארזים מלכודות עש המזון (18 יח')",
+    price: 59,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/files/d51a6c4d23526a7d5eaeb07e326dd941.png?v=1733153264&width=1206",
+    category: "עש ומזיקי בד",
+    affiliateUrl: "https://affiracle.com/s/5QjmkS",
+    description:
+      "מארז 18 מלכודות דבק עם פרומון ייעודי לעש המזון, ללא רעלים ולשימוש בטוח במטבח ובמזווה.",
+    itchiTip:
+      "מלכודות ירוקות וללא רעלים עם יעילות ממושכת של כ-45 ימים לכל מלכודת.",
+    badges: ["Best Seller", "ללא רעלים"],
+  },
+  {
+    id: "moths-2",
+    title: "4 מארזים מלכודות עש הבגדים (8 יח')",
+    price: 101,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/files/2_84f83fb1-7ca1-41f3-af80-fd1f6f30f9bf.png?v=1753697972&width=1206",
+    category: "עש ומזיקי בד",
+    affiliateUrl: "https://affiracle.com/s/nc0od0",
+    description:
+      "מלכודות דבק פרומון לעש הבגדים במארז 8 יחידות, מתקפלות למשולש וללא רעלים לשימוש ביתי.",
+    itchiTip:
+      "פתרון נקי לארונות וטקסטיל – מחליפים כל כ-3 חודשים או כשמתמלא.",
   },
   {
     id: "rodents-1",
@@ -141,76 +220,56 @@ const shopProducts: AffiliateProduct[] = [
       "הפתרון המושלם למגירות מטבח וארונות חשמל. טכנולוגיית סאונד שמרחיקה מכרסמים בלי ללכלך ובלי רעלים.",
   },
   {
-    id: "home-1",
-    title: "ג׳ל פיתיון נגד תיקנים ונמלים",
-    price: 59,
-    imageUrl: "/images/shop/home-pest-control.svg",
-    category: "הדברה לבית",
-    affiliateUrl: "https://www.tzur-market.co.il/products/cockroach-ant-bait-gel",
+    id: "special-1",
+    title: 'מרסס ידני מקצועי (5 ליטר)',
+    price: 79,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/products/ab788b5616d1f3182b6eca317e2de430.jpg?v=1671028410&width=1206",
+    category: "ציוד מקצועי ותרסיסים מיוחדים",
+    affiliateUrl: "https://affiracle.com/s/H5sUf7",
+    description:
+      "מרסס EVIKA 5 ליטר מפלסטיק מחוזק, צינור 1.2 מטר, דיזה מתכווננת ולחץ עבודה 2.5 בר.",
+    itchiTip:
+      "מרסס עמיד ונוח לעבודות ריסוס גדולות בחצר ובבית.",
   },
   {
-    id: "home-2",
-    title: "מלכודות דבק לעכברים – מארז 10 יחידות",
-    price: 45,
-    imageUrl: "/images/shop/home-pest-control.svg",
-    category: "הדברה לבית",
-    affiliateUrl: "https://www.tzur-market.co.il/products/mouse-glue-traps-10",
+    id: "special-4",
+    title: "מרסס הדברה לצמחים (1.5 ליטר)",
+    price: 29,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/products/2dc37d69f74bf116238677b069139ded.png?v=1670859114&width=1206",
+    category: "ציוד מקצועי ותרסיסים מיוחדים",
+    affiliateUrl: "https://affiracle.com/s/qaJrIA",
+    description:
+      "מרסס פלסטיק PP קשיח בקיבולת 1.5 ליטר, קל לנשיאה ולשימוש לטיפול בצמחים, מזיקים ועשבייה.",
+    itchiTip:
+      "פתרון זול ואמין לריסוס נקודתי בבית ובגינה בלי לסחוב ציוד כבד.",
   },
   {
-    id: "home-3",
-    title: "תרסיס הדברה ביתי מוכן לשימוש",
+    id: "special-2",
+    title: 'דזיטול לקרדית האבק (300 מ״ל)',
     price: 39,
-    imageUrl: "/images/shop/home-pest-control.svg",
-    category: "הדברה לבית",
-    affiliateUrl: "https://www.tzur-market.co.il/products/home-insect-spray",
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/files/7290109923932_S1_15-1.png?v=1756734374&width=1206",
+    category: "ציוד מקצועי ותרסיסים מיוחדים",
+    affiliateUrl: "https://affiracle.com/s/suNGTv",
+    description:
+      "ספריי דזיטול ייעודי לקרדית האבק ופשפשים עם חדירה לעומק סיבי הבד במזרנים ושטיחים.",
+    itchiTip:
+      "חובה לכל מי שסובל מאלרגיות – מחסל את הקרדית במזרנים ושטיחים.",
   },
   {
-    id: "garden-1",
-    title: "תרכיז הדברה לגינה נגד כנימות ועש",
-    price: 74,
-    imageUrl: "/images/shop/garden-pest-control.svg",
-    category: "הדברה לגינה",
-    affiliateUrl: "https://www.tzur-market.co.il/products/garden-insect-concentrate",
-  },
-  {
-    id: "garden-2",
-    title: "דשן-דוחה מזיקים לצמחי נוי ועציצים",
-    price: 52,
-    imageUrl: "/images/shop/garden-pest-control.svg",
-    category: "הדברה לגינה",
-    affiliateUrl: "https://www.tzur-market.co.il/products/ornamental-pest-repellent",
-  },
-  {
-    id: "garden-3",
-    title: "גרגרי הדברה לשבילים ומדשאות",
-    price: 67,
-    imageUrl: "/images/shop/garden-pest-control.svg",
-    category: "הדברה לגינה",
-    affiliateUrl: "https://www.tzur-market.co.il/products/lawn-pest-control-granules",
-  },
-  {
-    id: "pro-1",
-    title: "מרסס לחץ מקצועי 8 ליטר",
-    price: 189,
-    imageUrl: "/images/shop/professional-equipment.svg",
-    category: "ציוד מקצועי",
-    affiliateUrl: "https://www.tzur-market.co.il/products/pro-pressure-sprayer-8l",
-  },
-  {
-    id: "pro-2",
-    title: "ערכת מגן להדברה – מסכה, כפפות ומשקף",
-    price: 129,
-    imageUrl: "/images/shop/professional-equipment.svg",
-    category: "ציוד מקצועי",
-    affiliateUrl: "https://www.tzur-market.co.il/products/pest-control-protection-kit",
-  },
-  {
-    id: "pro-3",
-    title: "מד ריכוז מקצועי לערבוב תמיסות",
-    price: 96,
-    imageUrl: "/images/shop/professional-equipment.svg",
-    category: "ציוד מקצועי",
-    affiliateUrl: "https://www.tzur-market.co.il/products/pro-mixing-measure",
+    id: "special-3",
+    title: "מלכודות דבק לתיקנים (10 יח' + פיתיון)",
+    price: 49,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/files/16_5e1524f1-3dd0-4770-80d6-d7b178f23cde.png?v=1755540301&width=1206",
+    category: "תיקנים (ג'וקים)",
+    affiliateUrl: "https://affiracle.com/s/QoKHI2",
+    description:
+      "מלכודות דבק חזקות לתיקן אמריקאי/גרמני עם פיתיון מוכן לשימוש, ללא רעלים ובטוח לבית.",
+    itchiTip:
+      "מתקפל לצורת בית קטן ללכידה היגיינית ומהירה בלי ריסוס ובלי מגע ישיר.",
   },
 ];
 
