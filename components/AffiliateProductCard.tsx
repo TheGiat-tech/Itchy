@@ -59,7 +59,10 @@ export default function AffiliateProductCard({
           </div>
         )}
         {!isInStock && (
-          <span className="absolute bottom-2 right-2 bg-red-100 text-red-700 text-xs font-bold px-2.5 py-1 rounded-full">
+          <span
+            aria-label="Product is currently out of stock"
+            className="absolute bottom-2 right-2 bg-red-100 text-red-700 text-xs font-bold px-2.5 py-1 rounded-full"
+          >
             Out of Stock
           </span>
         )}
@@ -118,7 +121,7 @@ export default function AffiliateProductCard({
             disabled
             className="flex items-center justify-center bg-gray-300 text-gray-600 text-sm font-bold py-2.5 px-4 rounded-xl cursor-not-allowed"
           >
-            אזל מהמלאי
+            Out of Stock
           </button>
         )}
       </div>

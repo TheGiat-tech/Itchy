@@ -168,15 +168,17 @@ export async function ensureProductsTable() {
 export async function seedProductsTable() {
   await ensureProductsTable();
 
-  for (const product of seedProducts) {
-    await sql`
-      INSERT INTO products (name, slug, price, store_url, image_url, is_in_stock, last_updated)
-      VALUES (${product.name}, ${product.slug}, ${product.price}, ${product.store_url}, ${product.image_url}, TRUE, NOW())
-      ON CONFLICT (slug)
-      DO UPDATE SET
-        name = EXCLUDED.name,
-        store_url = EXCLUDED.store_url,
-        image_url = EXCLUDED.image_url
-    `;
-  }
+  await Promise.all(
+    seedProducts.map((product) =>
+      sql`
+        INSERT INTO products (name, slug, price, store_url, image_url, is_in_stock, last_updated)
+        VALUES (${product.name}, ${product.slug}, ${product.price}, ${product.store_url}, ${product.image_url}, TRUE, NOW())
+        ON CONFLICT (slug)
+        DO UPDATE SET
+          name = EXCLUDED.name,
+          store_url = EXCLUDED.store_url,
+          image_url = EXCLUDED.image_url
+      `,
+    ),
+  );
 }

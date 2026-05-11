@@ -10,6 +10,7 @@ type SyncProductsResult = {
   failed: number;
   errors: string[];
 };
+const SYNC_CONCURRENCY = 4;
 
 function parsePrice(rawValue: string) {
   const cleaned = rawValue.replace(/[^\d.,]/g, "").trim();
@@ -128,7 +129,7 @@ export async function syncProductsFromStore(): Promise<SyncProductsResult> {
   `;
 
   const errors: string[] = [];
-  const syncTasks = rows.map(async (product) => {
+  const syncProduct = async (product: ProductRow) => {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15_000);
@@ -174,9 +175,15 @@ export async function syncProductsFromStore(): Promise<SyncProductsResult> {
       const errorMessage = error instanceof Error ? error.message : String(error);
       return { success: false, error: `${product.slug}: ${errorMessage}` };
     }
-  });
+  };
 
-  const results = await Promise.allSettled(syncTasks);
+  const results: PromiseSettledResult<{ success: boolean; error?: string }>[] = [];
+
+  for (let i = 0; i < rows.length; i += SYNC_CONCURRENCY) {
+    const batch = rows.slice(i, i + SYNC_CONCURRENCY);
+    const batchResults = await Promise.allSettled(batch.map(syncProduct));
+    results.push(...batchResults);
+  }
   let updated = 0;
 
   for (const result of results) {
