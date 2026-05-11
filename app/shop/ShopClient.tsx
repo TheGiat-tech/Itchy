@@ -103,14 +103,14 @@ const shopProducts: AffiliateProduct[] = [
   },
   {
     id: "flying-1",
-    title: "קטלן סופה (7W)",
+    title: "קטלן סופה ליתושים ומעופפים (7W)",
     price: 249,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/63d629c50d62933786448beec7af0a31.jpg?v=1670853476&width=1206",
     category: "יתושים ומעופפים",
     affiliateUrl: "https://affiracle.com/s/BFhVQ9",
     description:
-      "קטלן יתושים שקט ועוצמתי עם מנגנון שאיבה פנימי, אידיאלי לשימוש ביתי שוטף.",
+      "קטלן UV עם מפוח שואב, יניקה שקטה וחזקה ומגירת איסוף נשלפת לניקוי מהיר.",
     itchiTip:
       "השיטה השקטה והחזקה ביותר – הוא פשוט שואב אותם פנימה.",
   },
@@ -123,7 +123,7 @@ const shopProducts: AffiliateProduct[] = [
     category: "יתושים ומעופפים",
     affiliateUrl: "https://affiracle.com/s/7WxuSr",
     description:
-      "קטלן LED חזק ועמיד לחללים גדולים, למסעדות, לחצרות ולבתים עם עומס מעופפים.",
+      "קטלן STOPPER LED עם תאורת UV, מגש מתפרק ושרשרת תלייה לחללים גדולים ועמוסים.",
     itchiTip:
       "אידיאלי למסעדות, חצרות ובתים גדולים. עוצמתי ועמיד מאוד.",
   },
@@ -136,7 +136,7 @@ const shopProducts: AffiliateProduct[] = [
     category: "יתושים ומעופפים",
     affiliateUrl: "https://affiracle.com/s/9KvjDf",
     description:
-      "פתרון קומפקטי ונייד ליתושים עם חיבור USB, נוח לנסיעות, לקמפינג ולחדרים קטנים.",
+      "קוטל יתושים נייד 5W עם טעינת USB וסוללה ל-6–8 שעות, מתאים לבית, טיולים וחופשות.",
     itchiTip:
       "החבר הכי טוב שלכם במילואים, בקמפינג או בחדר הילדים.",
   },
@@ -228,9 +228,22 @@ const shopProducts: AffiliateProduct[] = [
     category: "ציוד מקצועי ותרסיסים מיוחדים",
     affiliateUrl: "https://affiracle.com/s/H5sUf7",
     description:
-      "מרסס ידני מקצועי ועמיד לעבודות ריסוס רחבות בבית, בגינה ובשטחים חיצוניים.",
+      "מרסס EVIKA 5 ליטר מפלסטיק מחוזק, צינור 1.2 מטר, דיזה מתכווננת ולחץ עבודה 2.5 בר.",
     itchiTip:
       "מרסס עמיד ונוח לעבודות ריסוס גדולות בחצר ובבית.",
+  },
+  {
+    id: "special-4",
+    title: "מרסס הדברה לצמחים (1.5 ליטר)",
+    price: 29,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/products/2dc37d69f74bf116238677b069139ded.png?v=1670859114&width=1206",
+    category: "ציוד מקצועי ותרסיסים מיוחדים",
+    affiliateUrl: "https://affiracle.com/s/qaJrIA",
+    description:
+      "מרסס פלסטיק PP קשיח בקיבולת 1.5 ליטר, קל לנשיאה ולשימוש לטיפול בצמחים, מזיקים ועשבייה.",
+    itchiTip:
+      "פתרון זול ואמין לריסוס נקודתי בבית ובגינה בלי לסחוב ציוד כבד.",
   },
   {
     id: "special-2",
@@ -241,7 +254,7 @@ const shopProducts: AffiliateProduct[] = [
     category: "ציוד מקצועי ותרסיסים מיוחדים",
     affiliateUrl: "https://affiracle.com/s/suNGTv",
     description:
-      "תרסיס ייעודי לקרדית האבק במזרנים, שטיחים ובדים להפחתת עומס אלרגני בבית.",
+      "ספריי דזיטול ייעודי לקרדית האבק ופשפשים עם חדירה לעומק סיבי הבד במזרנים ושטיחים.",
     itchiTip:
       "חובה לכל מי שסובל מאלרגיות – מחסל את הקרדית במזרנים ושטיחים.",
   },
