@@ -99,7 +99,7 @@ const TOPIC_IMAGE_RULES: Array<{ pattern: RegExp; image: string }> = [
   },
   {
     pattern: /cockroach|roach|תיקן|ג['"]?וק/i,
-    image: "/api/pest-image?name=Cockroach",
+    image: "/api/pest-image?name=Blattodea",
   },
   {
     pattern: /rat|mouse|mice|rodent|חולד|עכבר|מכרסם/i,
