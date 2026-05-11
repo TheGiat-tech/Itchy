@@ -192,7 +192,7 @@ export function getPostImage(
   const override = frontmatter.imageOverride?.trim();
   if (override) return override;
 
-  // 1. Direct image URL set by the article bot (Pexels/Pixabay or local SVG).
+  // 1. Direct image URL set by the article bot (stock provider or API path).
   const directImage = frontmatter.image?.trim();
   if (directImage && (directImage.startsWith("https://") || directImage.startsWith("http://") || directImage.startsWith("/"))) {
     return directImage;
