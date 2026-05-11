@@ -67,7 +67,7 @@ const shopProducts: AffiliateProduct[] = [
     price: 89,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/67c1102072cd47f13ae46b88f117ebfb.jpg?v=1670853741&width=1206",
-    category: "ציוד מקצועי ותרסיסים מיוחדים",
+    category: "תיקנים (ג'וקים)",
     affiliateUrl: "https://affiracle.com/s/Vgd9Xz",
     description:
       "פיתיון ג'ל מתקדם לקטילת תיקן גרמני ואמריקאי. ללא ריח, משמיד את המושבה מהשורש.",
@@ -81,7 +81,7 @@ const shopProducts: AffiliateProduct[] = [
     price: 49,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/files/b18bbcc8cff9b0479b5ad2ba1162cf2a.jpg?v=1756117262&width=1206",
-    category: "ציוד מקצועי ותרסיסים מיוחדים",
+    category: "תיקנים (ג'וקים)",
     affiliateUrl: "https://affiracle.com/s/qac48J",
     description:
       "תרסיס הדברה עוצמתי לשימוש ביתי ומסחרי. תוצאות מיידיות נגד תיקנים, נמלים ומזיקים נפוצים.",
