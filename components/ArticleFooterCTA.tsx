@@ -6,7 +6,7 @@ export default function ArticleFooterCTA() {
       <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50 p-6">
         <h2 className="text-xl font-bold text-emerald-900 mb-2">הדברה עצמית</h2>
         <p className="text-gray-700 mb-4">
-          רוצים לפתור את הבעיה לבד? ריכזנו עבורכם את חומרי ההדברה והציוד המקצועי ביותר לטיפול עצמי, ללא צורך במדביר.
+          רוצים לפתור את הבעיה לבד? ריכזנו עבורכם את חומרי ההדברה והציוד המקצועי לטיפול עצמי, ללא צורך במדביר.
         </p>
         <Link
           href="/shop"
