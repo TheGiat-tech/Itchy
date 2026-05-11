@@ -142,7 +142,7 @@ const shopProducts: AffiliateProduct[] = [
   },
   {
     id: "flying-4",
-    title: 'תרסיס אנטיפליי (750 מ"ל)',
+    title: 'תרסיס אנטיפליי (750 מ״ל)',
     price: 69,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/files/50aad069ee299a4afcb5ad11ab996215_10252fe2-7987-46b0-89f8-1496c1256ada.jpg?v=1756026266&width=1206",
@@ -234,7 +234,7 @@ const shopProducts: AffiliateProduct[] = [
   },
   {
     id: "special-2",
-    title: 'דזיטול לקרדית האבק (300 מ"ל)',
+    title: 'דזיטול לקרדית האבק (300 מ״ל)',
     price: 39,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/files/7290109923932_S1_15-1.png?v=1756734374&width=1206",
