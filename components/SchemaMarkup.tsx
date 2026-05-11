@@ -36,6 +36,11 @@ export default function SchemaMarkup({
   const schemas: JsonLdObject[] = [];
 
   if (article) {
+    const publisherName =
+      article.publisherName && article.publisherName.trim()
+        ? article.publisherName
+        : "Itchy";
+
     schemas.push({
       "@context": "https://schema.org",
       "@type": "Article",
@@ -50,7 +55,7 @@ export default function SchemaMarkup({
       },
       publisher: {
         "@type": "Organization",
-        name: article.publisherName ?? "Itchy",
+        name: publisherName,
         url: "https://itchy.co.il",
       },
       mainEntityOfPage: {

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Footer from "@/components/Footer";
 import ArticleFooterCTA from "@/components/ArticleFooterCTA";
 import SchemaMarkup, { type SchemaFaqItem } from "@/components/SchemaMarkup";
+import LegalDisclaimer from "@/components/LegalDisclaimer";
 
 interface Props {
   params: Promise<{ city: string }>;
@@ -105,10 +106,7 @@ export default async function LocationPage({ params }: Props) {
 
         <ArticleFooterCTA cityName={cityName} />
 
-        <p className="mt-8 text-sm text-gray-600 leading-relaxed">
-          המידע מוגש כהמלצה בלבד. איצ&apos;י היא פלטפורמת מידע ואינה מספקת שירותי הדברה בעצמה. כל שירותי
-          ההדברה מבוצעים על ידי קבלנים מוסמכים עצמאיים.
-        </p>
+        <LegalDisclaimer className="mt-8 text-sm text-gray-600 leading-relaxed" />
       </main>
       <Footer />
     </>

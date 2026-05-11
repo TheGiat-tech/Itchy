@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import ArticleFooterCTA from "@/components/ArticleFooterCTA";
 import RelatedContent from "@/components/RelatedContent";
 import SchemaMarkup, { type SchemaFaqItem } from "@/components/SchemaMarkup";
+import LegalDisclaimer from "@/components/LegalDisclaimer";
 import { getArticleBySlug, getAllArticleSlugs, getPostImage } from "@/lib/mdx";
 
 interface Props {
@@ -56,14 +57,14 @@ function formatDate(dateStr?: string): string {
 function stripMarkdown(value: string): string {
   return value
     .replace(/\[(.*?)\]\(.*?\)/g, "$1")
-    .replace(/[*_`>#-]/g, " ")
+    .replace(/[*_`>#]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
 
 function extractFaqFromContent(content: string): SchemaFaqItem[] {
   const lines = content.split("\n");
-  const faqSectionIndex = lines.findIndex((line) => /^##\s*(שאלות נפוצות|faq)\b/i.test(line.trim()));
+  const faqSectionIndex = lines.findIndex((line) => /^##\s*(שאלות נפוצות|faq)\s*$/i.test(line.trim()));
   if (faqSectionIndex === -1) return [];
 
   const faqItems: SchemaFaqItem[] = [];
@@ -189,8 +190,7 @@ export default async function ArticlePage({ params }: Props) {
         <ArticleFooterCTA />
 
         <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 leading-relaxed">
-          המידע מוגש כהמלצה בלבד. איצ&apos;י היא פלטפורמת מידע ואינה מספקת שירותי הדברה בעצמה. כל שירותי ההדברה
-          מבוצעים על ידי קבלנים מוסמכים עצמאיים.
+          <LegalDisclaimer />
         </div>
 
         {/* Back link */}

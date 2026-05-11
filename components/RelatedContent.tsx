@@ -47,6 +47,20 @@ function getScore(input: {
   return score;
 }
 
+function getDateValue(date?: string): number {
+  if (!date) return 0;
+  const value = new Date(date).getTime();
+  return Number.isNaN(value) ? 0 : value;
+}
+
+function compareRelated(
+  a: { score: number; article: ReturnType<typeof getAllArticles>[number] },
+  b: { score: number; article: ReturnType<typeof getAllArticles>[number] }
+): number {
+  if (b.score !== a.score) return b.score - a.score;
+  return getDateValue(b.article.frontmatter.date) - getDateValue(a.article.frontmatter.date);
+}
+
 export default function RelatedContent({ currentSlug, category, pestType, title }: Props) {
   const allArticles = getAllArticles();
   const contextCategory = normalize(category);
@@ -76,7 +90,7 @@ export default function RelatedContent({ currentSlug, category, pestType, title 
         }),
       };
     })
-    .sort((a, b) => b.score - a.score || b.article.frontmatter.date?.localeCompare(a.article.frontmatter.date ?? "") || 0)
+    .sort(compareRelated)
     .slice(0, 3)
     .map(({ article }) => article);
 
