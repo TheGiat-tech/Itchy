@@ -62,7 +62,7 @@ export default function AffiliateProductCard({
 
         {itchiTip && (
           <p className="text-xs text-green-800 italic bg-green-50 border border-green-200 rounded-lg px-2.5 py-2 leading-relaxed">
-            <span className="ml-1" aria-hidden="true">
+            <span className="mr-1" aria-hidden="true">
               🌿
             </span>
             {itchiTip}
