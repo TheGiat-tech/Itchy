@@ -79,43 +79,43 @@ export interface ArticleFrontmatter {
 }
 
 /**
- * Keyword rules → local SVG image path.
+ * Keyword rules → photorealistic image API URL.
  * Checked in declaration order; the first matching rule wins.
  */
 const TOPIC_IMAGE_RULES: Array<{ pattern: RegExp; image: string }> = [
   {
     pattern: /fire.?ant|wasmannia|נמלה.*(אש|אדומ)|נמלת.*(אש|אדומ)/i,
-    image: "/images/articles/fire-ant-colony.svg",
+    image: "/api/pest-image?name=Wasmannia+auropunctata",
   },
-  { pattern: /ant|נמל/i, image: "/images/articles/ants-kitchen.svg" },
+  { pattern: /ant|נמל/i, image: "/api/pest-image?name=Formicidae" },
   {
     pattern: /bed.?bug|cimex|פשפש/i,
-    image: "/images/articles/bed-bugs-mattress.svg",
+    image: "/api/pest-image?name=Cimex+lectularius",
   },
-  { pattern: /flea|פרעוש/i, image: "/images/articles/flea-dog-fur.svg" },
+  { pattern: /flea|פרעוש/i, image: "/api/pest-image?name=Ctenocephalides+felis" },
   {
     pattern: /german.?cockroach|blattella/i,
-    image: "/images/articles/german-cockroach.svg",
+    image: "/api/pest-image?name=Blattella+germanica",
   },
   {
     pattern: /cockroach|roach|תיקן|ג['"]?וק/i,
-    image: "/images/articles/cockroach-kitchen.svg",
+    image: "/api/pest-image?name=Cockroach",
   },
   {
     pattern: /rat|mouse|mice|rodent|חולד|עכבר|מכרסם/i,
-    image: "/images/articles/rat-house.svg",
+    image: "/api/pest-image?name=Rattus+rattus",
   },
   {
     pattern: /termite|טרמיט/i,
-    image: "/images/articles/termite-damage.svg",
+    image: "/api/pest-image?name=Termite",
   },
   {
     pattern: /spider|עכביש/i,
-    image: "/images/articles/brown-recluse-spider.svg",
+    image: "/api/pest-image?name=Loxosceles+rufescens",
   },
   {
     pattern: /technician|מדביר/i,
-    image: "/images/articles/pest-control-technician.svg",
+    image: "/api/pest-image?name=Pest+control",
   },
 ];
 

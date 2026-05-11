@@ -63,7 +63,7 @@ export default function ArticleLeadForm({ pestName }: ArticleLeadFormProps) {
       >
         <div className="text-4xl mb-3" aria-hidden="true">✅</div>
         <h3 className="text-xl font-bold text-gray-900 mb-1">
-          הפרטים נשלחו בהצלחה לצוות המדבירים! נחזור אליך בהקדם.
+          הפרטים נשלחו בהצלחה לחברות הדברה מורשות! נחזור אליך בהקדם.
         </h3>
       </div>
     );
