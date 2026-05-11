@@ -6,6 +6,7 @@ import AffiliateProductCard, {
 } from "@/components/AffiliateProductCard";
 
 const CATEGORIES = ["הכל", "הדברה לבית", "הדברה לגינה", "ציוד מקצועי"] as const;
+const SHOP_CATEGORIES = CATEGORIES.filter((category) => category !== "הכל");
 type Category = (typeof CATEGORIES)[number];
 
 const shopProducts: AffiliateProduct[] = [
@@ -87,9 +88,7 @@ export default function ShopClient() {
   const [activeCategory, setActiveCategory] = useState<Category>("הכל");
 
   const visibleCategories =
-    activeCategory === "הכל"
-      ? CATEGORIES.filter((category): category is Exclude<Category, "הכל"> => category !== "הכל")
-      : [activeCategory];
+    activeCategory === "הכל" ? SHOP_CATEGORIES : [activeCategory];
 
   const groupedProducts = visibleCategories.map((category) => ({
     category,
@@ -139,8 +138,8 @@ export default function ShopClient() {
           </p>
         )}
         <p className="text-xs text-gray-500 mt-10 text-center">
-          חלק מהקישורים בחנות הם קישורי שותפים (Affiliate). אתר איצ&apos;י עשוי
-          לקבל עמלה על רכישות שיבוצעו דרכם, ללא עלות נוספת עבורכם
+          חלק מהקישורים בחנות הם קישורי שותפים (Affiliate). אתר איצ׳י עשוי
+          לקבל עמלה על רכישות שיבוצעו דרכם, ללא עלות נוספת עבורכם.
         </p>
       </section>
     </>
