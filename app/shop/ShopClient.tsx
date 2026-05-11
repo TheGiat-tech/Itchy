@@ -5,11 +5,53 @@ import AffiliateProductCard, {
   type AffiliateProduct,
 } from "@/components/AffiliateProductCard";
 
-const CATEGORIES = ["הכל", "הדברה לבית", "הדברה לגינה", "ציוד מקצועי"] as const;
+const CATEGORIES = ["הכל", "נמלים ונמלת האש", "הדברה לבית", "הדברה לגינה", "ציוד מקצועי"] as const;
 const SHOP_CATEGORIES = CATEGORIES.filter((category) => category !== "הכל");
 type Category = (typeof CATEGORIES)[number];
 
 const shopProducts: AffiliateProduct[] = [
+  {
+    id: "ants-1",
+    title: "טופ ג'ל להדברת נמלים (15 גרם)",
+    price: 89,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/products/0583558a8e3e890a7f3a44d3f71bff75.jpg?v=1670852917&width=1206",
+    category: "נמלים ונמלת האש",
+    affiliateUrl: "https://affiracle.com/s/TwftTS",
+    description:
+      "פתרון מקצועי ללא ריח לכל סוגי הנמלים. מחסל את המלכה ומשמיד את הקן מהשורש.",
+    itchiTip:
+      "הפתרון הכי טוב למטבח ולבית – שמים טיפה בפינה והנמלים עושות את שאר העבודה.",
+    badge: "מאושר המשרד להגנת הסביבה",
+  },
+  {
+    id: "ants-2",
+    title: "גרנולר - פיתיון גרגירי (200 גרם)",
+    price: 89,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/products/b1bee52a0d21533a1931228b05b59a57.jpg?v=1670852952&width=1206",
+    category: "נמלים ונמלת האש",
+    affiliateUrl: "https://affiracle.com/s/sf7zrv",
+    description:
+      "פיתיון גרגירי עוצמתי המיועד במיוחד לנמלת האש ולשטחים פתוחים.",
+    itchiTip:
+      "המוצר המושלם לחצר ולגינה. פשוט לפזר סביב הבית והנמלים ייעלמו.",
+    badge: "מאושר המשרד להגנת הסביבה",
+  },
+  {
+    id: "ants-3",
+    title: 'תכשיר האמר (960 מ"ל)',
+    price: 59,
+    imageUrl:
+      "https://zurmarket.co.il/cdn/shop/files/WhatsAppImage2025-03-20at14.53.32_1.jpg?v=1742495513&width=1206",
+    category: "נמלים ונמלת האש",
+    affiliateUrl: "https://affiracle.com/s/rIb2dI",
+    description:
+      "תרסיס עוצמתי ללא ריח בבקבוק התזה ארגונומי, ממוקד לחיסול נמלת האש.",
+    itchiTip:
+      "מעולה לריסוס ישיר על קנים וליצירת מחסום סביב פתחי הכניסה לבית.",
+    badge: "מאושר המשרד להגנת הסביבה",
+  },
   {
     id: "home-1",
     title: "ג׳ל פיתיון נגד תיקנים ונמלים",

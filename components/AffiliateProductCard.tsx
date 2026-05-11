@@ -7,6 +7,9 @@ export interface AffiliateProduct {
   imageUrl: string;
   category: string;
   affiliateUrl: string;
+  description?: string;
+  itchiTip?: string;
+  badge?: string;
 }
 
 export default function AffiliateProductCard({
@@ -14,6 +17,9 @@ export default function AffiliateProductCard({
   price,
   imageUrl,
   affiliateUrl,
+  description,
+  itchiTip,
+  badge,
 }: AffiliateProduct) {
   return (
     <article className="group flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 overflow-hidden">
@@ -25,12 +31,29 @@ export default function AffiliateProductCard({
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-contain p-4 group-hover:scale-105 transition-transform duration-200"
         />
+        {badge && (
+          <span className="absolute top-2 right-2 bg-green-100 text-green-800 text-[10px] font-semibold px-2 py-1 rounded-full leading-tight text-center max-w-[120px]">
+            {badge}
+          </span>
+        )}
       </div>
 
       <div className="flex flex-col flex-1 p-4 gap-3">
         <h3 className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2">
           {title}
         </h3>
+
+        {description && (
+          <p className="text-xs text-gray-500 leading-relaxed line-clamp-3">
+            {description}
+          </p>
+        )}
+
+        {itchiTip && (
+          <p className="text-xs text-green-700 italic border-r-2 border-green-400 pr-2 leading-relaxed">
+            💡 {itchiTip}
+          </p>
+        )}
 
         <p className="text-2xl font-extrabold text-green-700 mt-auto">
           ₪{price.toLocaleString("he-IL")}
