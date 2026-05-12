@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import type { Pest } from "@/lib/mdx";
+import { getPestPreviewImage, getPestScientificName, type Pest } from "@/lib/mdx";
 
 interface Props {
   pests: Pest[];
@@ -21,7 +21,7 @@ export default function PestsList({ pests }: Props) {
     const matchesQuery =
       !q ||
       pest.frontmatter.title.toLowerCase().includes(q) ||
-      (pest.frontmatter.titleLatin?.toLowerCase().includes(q) ?? false);
+      (getPestScientificName(pest.frontmatter)?.toLowerCase().includes(q) ?? false);
     const matchesCategory =
       !category || pest.frontmatter.category === category;
     return matchesQuery && matchesCategory;
@@ -54,11 +54,8 @@ export default function PestsList({ pests }: Props) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filtered.map((pest) => {
-            const thumbSrc = pest.frontmatter.imageOverride
-              ? pest.frontmatter.imageOverride
-              : pest.frontmatter.titleLatin
-                ? `/api/pest-image?name=${encodeURIComponent(pest.frontmatter.titleLatin)}`
-                : null;
+            const thumbSrc = getPestPreviewImage(pest.frontmatter);
+            const scientificName = getPestScientificName(pest.frontmatter);
             return (
             <Link
               key={pest.slug}
@@ -78,11 +75,11 @@ export default function PestsList({ pests }: Props) {
                 <h2 className="font-bold text-gray-800 text-lg group-hover:text-green-700 transition-colors">
                   {pest.frontmatter.title}
                 </h2>
-                {pest.frontmatter.titleLatin && (
-                  <p className="text-sm text-gray-600 italic">
-                    {pest.frontmatter.titleLatin}
-                  </p>
-                )}
+                {scientificName && (
+                   <p className="text-sm text-gray-600 italic">
+                     {scientificName}
+                   </p>
+                 )}
                 {pest.frontmatter.habitat && (
                   <p className="text-xs text-gray-500 mt-2">
                     🏠 {pest.frontmatter.habitat}

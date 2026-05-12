@@ -8,6 +8,7 @@ const ARTICLES_DIR = path.join(process.cwd(), "content", "articles");
 export interface PestFrontmatter {
   title: string;
   titleLatin?: string;
+  scientificName?: string;
   lifecycle?: string;
   habitat?: string;
   identification?: string;
@@ -15,6 +16,25 @@ export interface PestFrontmatter {
   category?: string;
   image?: string;
   imageOverride?: string;
+}
+
+export function getPestScientificName(frontmatter: PestFrontmatter): string | undefined {
+  return frontmatter.titleLatin?.trim() || frontmatter.scientificName?.trim() || undefined;
+}
+
+export function getPestPreviewImage(frontmatter: PestFrontmatter): string | null {
+  const override = frontmatter.imageOverride?.trim();
+  if (override) return override;
+
+  const directImage = frontmatter.image?.trim();
+  if (directImage && (directImage.startsWith("https://") || directImage.startsWith("http://") || directImage.startsWith("/"))) {
+    return directImage;
+  }
+
+  const scientificName = getPestScientificName(frontmatter);
+  return scientificName
+    ? `/api/pest-image?name=${encodeURIComponent(scientificName)}`
+    : null;
 }
 
 export interface Pest {
