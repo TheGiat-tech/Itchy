@@ -13,7 +13,6 @@ export interface PestFrontmatter {
   identification?: string;
   description?: string;
   category?: string;
-  image?: string;
   imageOverride?: string;
 }
 
