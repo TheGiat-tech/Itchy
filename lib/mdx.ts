@@ -39,8 +39,15 @@ export function getPestBySlug(slug: string): Pest | null {
   const raw = fs.readFileSync(filePath, "utf8");
   const { data, content } = matter(raw);
   const frontmatter: PestFrontmatter = {
-    ...(data as PestFrontmatter),
+    title: typeof data.title === "string" ? data.title : "",
+    titleLatin: typeof data.titleLatin === "string" ? data.titleLatin : undefined,
+    lifecycle: typeof data.lifecycle === "string" ? data.lifecycle : undefined,
+    habitat: typeof data.habitat === "string" ? data.habitat : undefined,
+    identification: typeof data.identification === "string" ? data.identification : undefined,
+    description: typeof data.description === "string" ? data.description : undefined,
+    category: typeof data.category === "string" ? data.category : undefined,
     image: typeof data.image === "string" ? data.image : undefined,
+    imageOverride: typeof data.imageOverride === "string" ? data.imageOverride : undefined,
   };
   return { slug, frontmatter, content };
 }
