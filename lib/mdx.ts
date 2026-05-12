@@ -38,7 +38,11 @@ export function getPestBySlug(slug: string): Pest | null {
   if (!fs.existsSync(filePath)) return null;
   const raw = fs.readFileSync(filePath, "utf8");
   const { data, content } = matter(raw);
-  return { slug, frontmatter: data as PestFrontmatter, content };
+  const frontmatter: PestFrontmatter = {
+    ...(data as PestFrontmatter),
+    image: typeof data.image === "string" ? data.image : undefined,
+  };
+  return { slug, frontmatter, content };
 }
 
 export function getAllPests(): Pest[] {

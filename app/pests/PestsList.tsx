@@ -56,6 +56,8 @@ export default function PestsList({ pests }: Props) {
           {filtered.map((pest) => {
             const thumbSrc = pest.frontmatter.imageOverride
               ? pest.frontmatter.imageOverride
+              : pest.frontmatter.image
+                ? pest.frontmatter.image
               : pest.frontmatter.titleLatin
                 ? `/api/pest-image?name=${encodeURIComponent(pest.frontmatter.titleLatin)}`
                 : null;
