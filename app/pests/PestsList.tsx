@@ -3,34 +3,10 @@
 import { useId, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import type { Pest, PestFrontmatter } from "@/lib/mdx";
+import type { Pest } from "@/lib/mdx";
 
 interface Props {
   pests: Pest[];
-}
-
-function getPestScientificName(frontmatter: PestFrontmatter): string | undefined {
-  return frontmatter.titleLatin?.trim() || frontmatter.scientificName?.trim() || undefined;
-}
-
-function getPestPreviewImage(frontmatter: PestFrontmatter): string | null {
-  const override = frontmatter.imageOverride?.trim();
-  if (override) return override;
-
-  const directImage = frontmatter.image?.trim();
-  if (
-    directImage &&
-    (directImage.startsWith("https://") ||
-      directImage.startsWith("http://") ||
-      directImage.startsWith("/"))
-  ) {
-    return directImage;
-  }
-
-  const scientificName = getPestScientificName(frontmatter);
-  return scientificName
-    ? `/api/pest-image?name=${encodeURIComponent(scientificName)}`
-    : null;
 }
 
 export default function PestsList({ pests }: Props) {
@@ -45,7 +21,7 @@ export default function PestsList({ pests }: Props) {
     const matchesQuery =
       !q ||
       pest.frontmatter.title.toLowerCase().includes(q) ||
-      (getPestScientificName(pest.frontmatter)?.toLowerCase().includes(q) ?? false);
+      (pest.frontmatter.titleLatin?.toLowerCase().includes(q) ?? false);
     const matchesCategory =
       !category || pest.frontmatter.category === category;
     return matchesQuery && matchesCategory;
@@ -78,8 +54,11 @@ export default function PestsList({ pests }: Props) {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filtered.map((pest) => {
-            const thumbSrc = getPestPreviewImage(pest.frontmatter);
-            const scientificName = getPestScientificName(pest.frontmatter);
+            const thumbSrc = pest.frontmatter.imageOverride
+              ? pest.frontmatter.imageOverride
+              : pest.frontmatter.titleLatin
+                ? `/api/pest-image?name=${encodeURIComponent(pest.frontmatter.titleLatin)}`
+                : null;
             return (
             <Link
               key={pest.slug}
@@ -99,11 +78,11 @@ export default function PestsList({ pests }: Props) {
                 <h2 className="font-bold text-gray-800 text-lg group-hover:text-green-700 transition-colors">
                   {pest.frontmatter.title}
                 </h2>
-                {scientificName && (
-                   <p className="text-sm text-gray-600 italic">
-                     {scientificName}
-                   </p>
-                 )}
+                {pest.frontmatter.titleLatin && (
+                  <p className="text-sm text-gray-600 italic">
+                    {pest.frontmatter.titleLatin}
+                  </p>
+                )}
                 {pest.frontmatter.habitat && (
                   <p className="text-xs text-gray-500 mt-2">
                     🏠 {pest.frontmatter.habitat}

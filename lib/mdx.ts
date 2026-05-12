@@ -8,13 +8,11 @@ const ARTICLES_DIR = path.join(process.cwd(), "content", "articles");
 export interface PestFrontmatter {
   title: string;
   titleLatin?: string;
-  scientificName?: string;
   lifecycle?: string;
   habitat?: string;
   identification?: string;
   description?: string;
   category?: string;
-  image?: string;
   imageOverride?: string;
 }
 
