@@ -8,6 +8,7 @@ const ARTICLES_DIR = path.join(process.cwd(), "content", "articles");
 export interface PestFrontmatter {
   title: string;
   titleLatin?: string;
+  scientificName?: string;
   lifecycle?: string;
   habitat?: string;
   identification?: string;
@@ -38,7 +39,27 @@ export function getPestBySlug(slug: string): Pest | null {
   if (!fs.existsSync(filePath)) return null;
   const raw = fs.readFileSync(filePath, "utf8");
   const { data, content } = matter(raw);
-  return { slug, frontmatter: data as PestFrontmatter, content };
+  const parsed = data as PestFrontmatter & {
+    imageUrl?: string;
+    image_url?: string;
+  };
+
+  const titleLatin = parsed.titleLatin?.trim() || parsed.scientificName?.trim();
+  const image =
+    parsed.image?.trim() ||
+    parsed.imageUrl?.trim() ||
+    parsed.image_url?.trim() ||
+    undefined;
+
+  return {
+    slug,
+    frontmatter: {
+      ...parsed,
+      titleLatin,
+      image,
+    },
+    content,
+  };
 }
 
 export function getAllPests(): Pest[] {
