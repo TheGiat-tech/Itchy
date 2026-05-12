@@ -18,25 +18,6 @@ export interface PestFrontmatter {
   imageOverride?: string;
 }
 
-export function getPestScientificName(frontmatter: PestFrontmatter): string | undefined {
-  return frontmatter.titleLatin?.trim() || frontmatter.scientificName?.trim() || undefined;
-}
-
-export function getPestPreviewImage(frontmatter: PestFrontmatter): string | null {
-  const override = frontmatter.imageOverride?.trim();
-  if (override) return override;
-
-  const directImage = frontmatter.image?.trim();
-  if (directImage && (directImage.startsWith("https://") || directImage.startsWith("http://") || directImage.startsWith("/"))) {
-    return directImage;
-  }
-
-  const scientificName = getPestScientificName(frontmatter);
-  return scientificName
-    ? `/api/pest-image?name=${encodeURIComponent(scientificName)}`
-    : null;
-}
-
 export interface Pest {
   slug: string;
   frontmatter: PestFrontmatter;

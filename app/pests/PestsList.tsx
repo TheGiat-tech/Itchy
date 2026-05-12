@@ -3,10 +3,34 @@
 import { useId, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { getPestPreviewImage, getPestScientificName, type Pest } from "@/lib/mdx";
+import type { Pest, PestFrontmatter } from "@/lib/mdx";
 
 interface Props {
   pests: Pest[];
+}
+
+function getPestScientificName(frontmatter: PestFrontmatter): string | undefined {
+  return frontmatter.titleLatin?.trim() || frontmatter.scientificName?.trim() || undefined;
+}
+
+function getPestPreviewImage(frontmatter: PestFrontmatter): string | null {
+  const override = frontmatter.imageOverride?.trim();
+  if (override) return override;
+
+  const directImage = frontmatter.image?.trim();
+  if (
+    directImage &&
+    (directImage.startsWith("https://") ||
+      directImage.startsWith("http://") ||
+      directImage.startsWith("/"))
+  ) {
+    return directImage;
+  }
+
+  const scientificName = getPestScientificName(frontmatter);
+  return scientificName
+    ? `/api/pest-image?name=${encodeURIComponent(scientificName)}`
+    : null;
 }
 
 export default function PestsList({ pests }: Props) {
