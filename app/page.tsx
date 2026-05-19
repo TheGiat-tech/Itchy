@@ -21,12 +21,12 @@ export const revalidate = 60;
 const FIXED_SIDEBAR_POSTS = [
   {
     title: "יתוש האנופלס (Anopheles) – המדריך המלא",
-    slug: "anopheles",
+    slug: "anopheles-mosquito",
     img: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Anopheles_stephensi.jpeg/960px-Anopheles_stephensi.jpeg"
   },
   {
     title: "אורי כדורי (טחבית גלגולית) – האם הוא מזיק?",
-    slug: "pill-bug",
+    slug: "armadillidium-vulgare-pill-bug",
     img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Armadillidium_vulgare_male.jpg/960px-Armadillidium_vulgare_male.jpg"
   },
   {
@@ -36,7 +36,7 @@ const FIXED_SIDEBAR_POSTS = [
   },
   {
     title: "פשפש המיטה – זיהוי, מניעה ודרכי טיפול יעילות",
-    slug: "bed-bugs",
+    slug: "bed-bug",
     img: "https://upload.wikimedia.org/wikipedia/commons/3/35/Bed_bug%2C_Cimex_lectularius_%289627010587%29.jpg"
   }
 ];
@@ -119,7 +119,7 @@ export default async function HomePage() {
     subtitle: "טעויות של מאות שקלים שרוב הישראלים עושים בכל קיץ, ואיך אתם יכולים לפתור את רוב בעיות המזיקים בבית לגמרי בעצמכם, עם חומרים נכונים ובחצי מחיר.",
     category: "מדריך זיהוי",
     image: "/images/articles/dont-call-exterminator.jfif",
-    fixedUrl: "/articles/dont-call-exterminator-yet" // הכתובת המדויקת והתקינה
+    fixedUrl: "/articles/hero-article" // כתובת קיימת בפועל לפי קובץ התוכן
   };
   
   // מינים פולשים לרצועה התחתונה
