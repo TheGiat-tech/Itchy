@@ -242,7 +242,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* SECTION 3: רצועת מינים פולשים ומתפרצים - עם שם מזיק דינמי במקום המילה פולש */}
+        {/* SECTION 3: רצועת מינים פולשים ומתפרצים - תוקן והופרד לפי המוקאפ */}
         {invasivePests.length > 0 && (
           <section className="max-w-6xl mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
@@ -258,10 +258,11 @@ export default async function HomePage() {
                     style={{ backgroundImage: `url(${getValidImage(pest.image, idx + 5)})` }}
                   />
                   <div className="relative z-10">
-                    {/* כאן שינינו: במקום "פולש" קבוע, מציג את שם המזיק המדויק כתגית עליונה */}
+                    {/* תגית קבועה למעלה */}
                     <span className="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded">
-                      {pest.titleHebrew || pest.title}
+                      הפולשים והמתפרצים
                     </span>
+                    {/* כותרת גדולה שהיא שם המזיק בלבד */}
                     <Link href={`/pests/${pest.slug}`}>
                       <h3 className="font-bold text-base text-gray-900 hover:text-red-600 mt-2 transition-colors line-clamp-1">
                         {pest.titleHebrew || pest.title}
