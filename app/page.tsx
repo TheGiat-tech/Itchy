@@ -15,7 +15,6 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600; 
 
-// גלריית תמונות מאקרו ריאליסטיות ואמיתיות לחלוטין (מוויקיפדיה) לשימוש כרקעים שקופים ובקאפים
 const REALISTIC_FALLBACKS = [
   "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Acanthoscelides_obtectus_bl%C3%A2nchen.jpg/1200px-Acanthoscelides_obtectus_bl%C3%A2nchen.jpg", 
   "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Vespa_orientalis_P1.jpg/1200px-Vespa_orientalis_P1.jpg", 
@@ -23,35 +22,35 @@ const REALISTIC_FALLBACKS = [
   "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Kakerlake_macro.jpg/1200px-Kakerlake_macro.jpg" 
 ];
 
-// מוצרים אמיתיים משרתי תמונות פתוחים (CORS Allowed) כדי להבטיח טעינה מיידית ללא חסימות
+// הקישורים האמיתיים והמדויקים מה-CDN של החנות שעובדת לך
 const SHOP_PRODUCTS = [
   { 
     id: 1, 
-    title: "ג'ל פיתיון מקצועי לנמלים", 
+    title: "טופ ג'ל להדברת נמלים (15 גרם)", 
     price: "89 ₪", 
-    img: "https://images.unsplash.com/photo-1626544849479-de0462968595?auto=format&fit=crop&w=500&q=80", 
-    desc: "פיתיון ג'ל מתקדם להשמדת קני נמלים מהיסוד." 
+    img: "https://zurmarket.co.il/cdn/shop/files/WhatsAppImage2025-03-20at14.53.32_1.jpg?v=1742495513&width=1206", 
+    desc: "פיתיון מקצועי ללא ריח לכל סוגי הנמלים. מחסל את המלכה ומשמיד את הקן מהשורש." 
   },
   { 
     id: 2, 
-    title: "מלכודת חרקים מעופפים ביתית", 
-    price: "149 ₪", 
-    img: "https://images.unsplash.com/photo-1558611848-73f7eb4001a1?auto=format&fit=crop&w=500&q=80", 
-    desc: "פתרון ניטור שקט ויעיל ללכידת מעופפים בבית ובמרפסת." 
+    title: "גרנולר - פיתיון גרגירים (200 גרם)", 
+    price: "89 ₪", 
+    img: "https://zurmarket.co.il/cdn/shop/files/200_a309fef2-f470-4f51-b0f3-cb2099908cf4.jpg?v=1733315629&width=460", 
+    desc: "פיתיון גרגירים עוצמתי המיועד למחרת לנמלת האש ולשטחים פתוחים. פשוט לפזר סביב הבית והנמלים ייעלמו." 
   },
   { 
     id: 3, 
-    title: "תרסיס מניעה DIY למטבח", 
-    price: "120 ₪", 
-    img: "https://images.unsplash.com/photo-1585832770485-e68a5dbfad52?auto=format&fit=crop&w=500&q=80", 
-    desc: "ערכת ריסוס עצמי ממוקדת לטיפול בתיקנים וחרקי מחסן." 
+    title: "תכשיר האמר (960 מ\"ל)", 
+    price: "59 ₪", 
+    img: "https://zurmarket.co.il/cdn/shop/files/960.jpg?v=1733315582&width=460", 
+    desc: "תרסיס עוצמתי ללא ריח בבקבוק התזה אנטומי, ממוקד לחיסול נמלת האש. מעולה לריסוס ישיר על קינים." 
   },
   { 
     id: 4, 
-    title: "דוקרני נירוסטה מקצועיים ליונים", 
-    price: "45 ₪", 
-    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Pigeon_infestation_control.jpg/500px-Pigeon_infestation_control.jpg", 
-    desc: "בסיס פוליקרבונט עמיד עם קוצים להרחקת יונים מחלונות ומרפסות." 
+    title: "טורפדו ג'ל נגד תיקנים (15 גרם)", 
+    price: "89 ₪", 
+    img: "https://zurmarket.co.il/cdn/shop/files/_15.jpg?v=1733315754&width=460", 
+    desc: "פיתיון ג'ל מתקדם לקטילת תיקן גרמני ואמריקאי. ללא ריח, משמיד ומחסל אלפי ג'וקים בלי לרסס." 
   }
 ];
 
@@ -62,18 +61,15 @@ function getValidImage(imgUrl: string, index: number): string {
   return imgUrl;
 }
 
-// פונקציית חיתוך אגרסיבית המנקה את ה-Frontmatter והסימונים כדי לחלץ טקסט נקי אמיתי
 function getPostExcerpt(post: any, defaultText: string): string {
   let rawText = post.identification || post.subtitle || post.content || post.body || "";
   if (!rawText || rawText.length < 5) return defaultText;
 
-  // חיתוך ה-Frontmatter במידה והוא נשאב כחלק מהטקסט הראשי
   if (rawText.includes("---")) {
     const parts = rawText.split("---");
     rawText = parts[parts.length - 1]; 
   }
 
-  // ניקוי סימני קוד, תגיות HTML וכותרות Markdown
   const cleanText = rawText
     .replace(/<[^>]*>/g, "") 
     .replace(/[#*`_\[\]()\-]/g, "") 
@@ -87,11 +83,9 @@ function getPostExcerpt(post: any, defaultText: string): string {
 export default async function HomePage() {
   const allPests: any[] = getAllPests() || [];
 
-  // 1. כתבות ראשיות
   const heroPost = allPests[0] || null;
   const latestPosts = allPests.slice(1, 5);
 
-  // 2. פילטור מוגן עם מנגנון גיבוי כדי שהקטגוריות לא יישארו ריקות בשום מצב
   let invasivePests = allPests.filter(p => p.category === "מינים פולשים" || p.pestType === "פולש").slice(0, 4);
   if (invasivePests.length === 0 && allPests.length > 4) {
     invasivePests = allPests.slice(2, 6); 
@@ -127,7 +121,6 @@ export default async function HomePage() {
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* המאמר הראשי הגדול */}
               <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
                 <div className="relative h-64 sm:h-96 w-full bg-gray-100">
                   <Image 
@@ -157,7 +150,6 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              {/* טור המאמרים הקטנים שלצידו */}
               <div className="space-y-4">
                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">עדכונים אחרונים</h3>
                 {latestPosts.length === 0 ? (
@@ -186,13 +178,12 @@ export default async function HomePage() {
           <div className="text-center py-12 text-gray-400 italic text-sm">המערכת טוענת את אנציקלופדיית המזיקים...</div>
         )}
 
-        {/* קטגוריות המזיקים של איצ'י */}
         <section className="max-w-6xl mx-auto px-4 py-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">ניווט לפי קטגוריות מזיקים</h2>
           <CategoryGrid />
         </section>
 
-        {/* SECTION 2: חנות המוצרים של איצ'י - עוקף הגנות Hotlinking */}
+        {/* SECTION 2: חנות המוצרים - מושכת ישירות את הקישורים שעובדים לך */}
         <section className="max-w-6xl mx-auto px-4 py-12 bg-white rounded-xl border border-gray-100 my-8 shadow-sm">
           <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
             <div>
@@ -205,7 +196,7 @@ export default async function HomePage() {
             {SHOP_PRODUCTS.map((product) => (
               <div key={product.id} className="flex flex-col justify-between p-4 rounded-lg border border-gray-50 bg-gray-50/50 hover:bg-white hover:shadow-md transition-all">
                 <div>
-                  <div className="h-36 w-full bg-white rounded-md overflow-hidden mb-3 flex items-center justify-center">
+                  <div className="h-44 w-full bg-white rounded-md overflow-hidden mb-3 flex items-center justify-center">
                     <img 
                       src={product.img} 
                       alt={product.title} 
@@ -218,7 +209,7 @@ export default async function HomePage() {
                 <div className="flex items-center justify-between mt-4 border-t border-gray-100 pt-3">
                   <span className="text-base font-extrabold text-gray-950">{product.price}</span>
                   <Link href={`/shop`} className="text-xs font-bold bg-orange-600 hover:bg-orange-700 text-white px-3 py-1.5 rounded transition-colors">
-                    לרכישה מהירה
+                    קנייה בחנות 🡨
                   </Link>
                 </div>
               </div>
@@ -226,7 +217,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* SECTION 3: רצועת מינים פולשים ומתפרצים - עם רקע מזיק מוחלש שקוף קבוע */}
+        {/* SECTION 3: רצועת מינים פולשים ומתפרצים */}
         {invasivePests.length > 0 && (
           <section className="max-w-6xl mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
@@ -237,7 +228,6 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {invasivePests.map((pest, idx) => (
                 <div key={pest.slug} className="relative bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-all group p-4 flex flex-col justify-between h-48">
-                  {/* אפקט סימן מים - רקע מזיק אקראי שקוף במיוחד */}
                   <div 
                     className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity bg-cover bg-center pointer-events-none"
                     style={{ backgroundImage: `url(${getValidImage(pest.image, idx + 5)})` }}
@@ -262,7 +252,7 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* SECTION 4: רצועת טיפים ומניעה DIY - עם רקע מזיק מוחלש שקוף קבוע */}
+        {/* SECTION 4: רצועת טיפים ומניעה DIY */}
         {diyGuides.length > 0 && (
           <section className="max-w-6xl mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
@@ -273,9 +263,8 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {diyGuides.map((guide, idx) => (
                 <div key={guide.slug} className="relative bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between h-48">
-                  {/* אפקט סימן מים - רקע מזיק אקראי שקוף במיוחד */}
                   <div 
-                    className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity bg-cover bg-center pointer-events-none"
+                    className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity bg-cover bg-center pointer-events-none"
                     style={{ backgroundImage: `url(${getValidImage(guide.image, idx + 12)})` }}
                   />
                   <div className="relative z-10">
