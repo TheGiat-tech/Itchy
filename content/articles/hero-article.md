@@ -6,8 +6,7 @@ category: "מדריך זיהוי"
 pestType: "מדריך"
 slug: "dont-call-exterminator-yet"
 date: "2026-05-20"
-image: "https://images.unsplash.com/photo-1585832770485-e68a5dbfad52?auto=format&fit=crop&w=1200&q=80"
-
+image: "/images/articles/dont-call-exterminator.jfif"
 ---
 
 אתם קמים בבוקר, נכנסים למטבח כדי להכין קפה, ופתאום רואים אותו: ג'וק שמתרוצץ על השיש, או לחלופין, שיירת נמלים בלתי נגמרת שעושה את דרכה אל עבר צנצנת הדבש. האינסטינקט הראשון והטבעי ביותר של רובנו הוא להוציא את הטלפון, לחפש בגוגל "מדביר זול באזור שלי", ולהזמין מישהו שיבוא "לרסס את הכל".
