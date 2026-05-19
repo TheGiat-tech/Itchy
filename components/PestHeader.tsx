@@ -70,7 +70,7 @@ const containerClassName =
 export default async function PestHeader({ pest }: { pest: PestData }) {
   // 1. קודם כל בודק אם שמת לינק ידני
   let imageUrl = pest.imageOverride || null;
-  let source = pest.imageOverride ? "תמונה מותאמת אישית" : "Wikipedia";
+  let captionSource = "ויקיפדיה / Wikimedia Commons";
 
   // 2. אם אין ידני, מחפש בויקיפדיה (עדיפות עליונה)
   if (!imageUrl) {
@@ -82,12 +82,9 @@ export default async function PestHeader({ pest }: { pest: PestData }) {
     const inatImage = await getINaturalistImage(pest.titleLatin);
     if (inatImage) {
       imageUrl = inatImage;
-      source = "iNaturalist";
+      captionSource = "iNaturalist";
     }
   }
-
-  const captionSource =
-    source === "Wikipedia" ? "ויקיפדיה / Wikimedia Commons" : source;
 
   return (
     <div dir="rtl">
