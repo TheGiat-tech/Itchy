@@ -37,14 +37,14 @@ const SHOP_PRODUCTS = [
     title: "טורפדו ג'ל נגד תיקנים (15 גרם)", 
     price: "89 ₪", 
     img: "https://zurmarket.co.il/cdn/shop/products/67c1102072cd47f13ae46b88f117ebfb.jpg?v=1670853741&width=1206", 
-    desc: "פיתיון ג'ל מתקדם לקטילת תיקן גרמני ואמריקאי. ללא ריח, משמיד את המושבה מהשורש. 🌿הנשק הסודי נגד התיקן הגרמני הקטן במטבח." 
+    desc: "פיתיון ג'ל מתקדם לקטילת תיקן גרמני ואמריקאי. ללא ריח, משמיד את המושבה מהשורש. 🌿הנשק הסודי נגד התיקן הגרמני." 
   },
   { 
     id: 3, 
     title: "אנטיפליי רימי - תרסיס (750 מ״ל)", 
     price: "75 ₪", 
     img: "https://zurmarket.co.il/cdn/shop/files/50aad069ee299a4afcb5ad11ab996215_10252fe2-7987-46b0-89f8-1496c1256ada.jpg?v=1756026266&width=1206", 
-    desc: "תרסיס אנטיפליי מוכן לשימוש עם קטילה מידית לזבובים, יתושים, ברחשים, צרעות וזחלי עש. 🌿יעיל מאוד לעונה החמה – תוצאה מיידית בריסוס ישיר." 
+    desc: "תרסיס אנטיפליי מוכן לשימוש עם קטילה מידית לזבובים, יתושים, ברחשים, צרעות וזחלי עש. 🌿יעיל מאוד לעונה החמה." 
   },
   { 
     id: 4, 
@@ -63,22 +63,19 @@ function getValidImage(imgUrl: string, index: number): string {
 }
 
 function getPostExcerpt(post: any, defaultText: string): string {
-  let rawText = post.identification || post.subtitle || post.content || post.body || "";
+  let rawText = post.content || post.body || post.identification || post.subtitle || "";
+
   if (!rawText || rawText.length < 5) return defaultText;
 
-  if (rawText.includes("---")) {
-    const parts = rawText.split("---");
-    rawText = parts[parts.length - 1]; 
-  }
-
   const cleanText = rawText
-    .replace(/<[^>]*>/g, "") 
-    .replace(/[#*`_\[\]()\-]/g, "") 
-    .replace(/\s+/g, " ") 
+    .replace(/^---[\s\S]*?---/, "")
+    .replace(/<[^>]*>/g, "")
+    .replace(/[#*`_\[\]()\-]/g, "")
+    .replace(/\s+/g, " ")
     .trim();
 
-  if (cleanText.length < 15) return defaultText;
-  return cleanText.length > 115 ? cleanText.slice(0, 115) + "..." : cleanText;
+  if (cleanText.length < 10) return defaultText;
+  return cleanText.length > 100 ? cleanText.slice(0, 100) + "..." : cleanText;
 }
 
 function getRandomTips(count: number): string[] {
@@ -162,14 +159,14 @@ export default async function HomePage() {
                   </span>
                   <Link href={`/pests/${heroPost.slug}`}>
                     <h3 className="mt-2 text-2xl font-bold text-gray-950 hover:text-orange-600 transition-colors">
-                      {heroPost.titleHebrew || heroPost.title}
+                      {heroPost.titleHebrew || heroPost.title || "כתבה ללא כותרת"}
                     </h3>
                   </Link>
                   <p className="mt-3 text-gray-600 text-sm line-clamp-3 leading-relaxed">
                     {getPostExcerpt(heroPost, "כנסו לקריאת המדריך המלא לזיהוי, טיפול ומניעה של המזיק בישראל.")}
                   </p>
                   <div className="mt-4 flex items-center justify-between text-xs text-gray-400">
-                    <span>עודכן ב-{heroPost.date || heroPost.lastUpdated || "2026"}</span>
+                    <span>עודכן ב-{heroPost.date || heroPost.lastUpdated || ""}</span>
                     <span className="text-orange-600 font-semibold">לקריאת הכתבה המלאה ←</span>
                   </div>
                 </div>
@@ -183,15 +180,15 @@ export default async function HomePage() {
                   latestPosts.map((post, idx) => (
                     <div key={post.slug} className="flex gap-4 bg-white p-3 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
                       <div className="relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-gray-50">
-                        <Image src={getValidImage(post.image, idx + 1)} alt={post.titleHebrew || post.title} fill className="object-cover" />
+                        <Image src={getValidImage(post.image, idx + 1)} alt={post.titleHebrew || post.title || "כתבה ללא כותרת"} fill className="object-cover" />
                       </div>
                       <div className="flex flex-col justify-between py-1">
                         <Link href={`/pests/${post.slug}`}>
                           <h4 className="font-bold text-sm text-gray-900 hover:text-orange-600 line-clamp-2 transition-colors">
-                            {post.titleHebrew || post.title}
+                            {post.titleHebrew || post.title || "כתבה ללא כותרת"}
                           </h4>
                         </Link>
-                        <span className="text-[11px] text-gray-400">{post.date || post.lastUpdated || "2026"}</span>
+                        <span className="text-[11px] text-gray-400">{post.date || post.lastUpdated || ""}</span>
                       </div>
                     </div>
                   ))
@@ -252,7 +249,7 @@ export default async function HomePage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {invasivePests.map((pest, idx) => (
-                <div key={pest.slug} className="relative bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-all group p-4 flex flex-col justify-between h-48">
+                <div key={pest.slug} className="relative bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-all group p-4 flex flex-col justify-between">
                   <div 
                     className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity bg-cover bg-center pointer-events-none"
                     style={{ backgroundImage: `url(${getValidImage(pest.image, idx + 5)})` }}
@@ -265,7 +262,7 @@ export default async function HomePage() {
                     {/* כותרת גדולה שהיא שם המזיק בלבד */}
                     <Link href={`/pests/${pest.slug}`}>
                       <h3 className="font-bold text-base text-gray-900 hover:text-red-600 mt-2 transition-colors line-clamp-1">
-                        {pest.titleHebrew || pest.title}
+                        {pest.titleHebrew || pest.title || "כתבה ללא כותרת"}
                       </h3>
                     </Link>
                     <p className="text-xs text-gray-600 mt-2 line-clamp-3 leading-relaxed">
