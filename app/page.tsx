@@ -16,11 +16,8 @@ export const metadata: Metadata = {
 export const revalidate = 3600; // האתר יתרנדר מחדש ברקע כל שעה כדי להציג את המאמרים החדשים מהבוט
 
 export default async function HomePage() {
-  // שאיבת המאמרים ישירות מה-MDX עם הגדרת סוג מפורשת כדי למנוע שגיאות TypeScript בבילד
-  const allPests: any[] = await getAllPests().catch((error) => {
-    console.error("Failed to load pests from MDX:", error);
-    return []; // מחזיר מערך ריק במקרה של שגיאה
-  });
+  // מכיוון ש-getAllPests מחזירה ישירות מערך סינכרוני, פשוט נקרא לה כך:
+  const allPests: any[] = getAllPests() || [];
 
   // חלוקת הכתבות לרצועות התוכן השונות במגזין
   const heroPost = allPests[0] || null;
