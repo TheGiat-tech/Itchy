@@ -54,7 +54,7 @@ const containerClassName =
 export default async function PestImage({ scientificName, altText, imageOverride }: PestImageProps) {
   // Priority 1: use imageOverride if provided
   if (imageOverride) {
-    const captionSource = "תמונה מותאמת אישית";
+    const captionSource = "ויקיפדיה / Wikimedia Commons";
     return (
       <div className={containerClassName} dir="rtl">
         {/* eslint-disable-next-line @next/next/no-img-element */}

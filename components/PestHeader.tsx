@@ -70,7 +70,7 @@ const containerClassName =
 export default async function PestHeader({ pest }: { pest: PestData }) {
   // 1. קודם כל בודק אם שמת לינק ידני
   let imageUrl = pest.imageOverride || null;
-  let source = pest.imageOverride ? "תמונה מותאמת אישית" : "Wikipedia";
+  let source = "Wikipedia";
 
   // 2. אם אין ידני, מחפש בויקיפדיה (עדיפות עליונה)
   if (!imageUrl) {
