@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600; 
 
-// תמונות גיבוי ריאליסטיות לחלוטין (צילומי טבע אמיתיים מוויקיפדיה) כדי למנוע מוקאפים
+// גלריית תמונות מאקרו ריאליסטיות ואמיתיות לחלוטין (מוויקיפדיה) לשימוש כרקעים שקופים ובקאפים
 const REALISTIC_FALLBACKS = [
   "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Acanthoscelides_obtectus_bl%C3%A2nchen.jpg/1200px-Acanthoscelides_obtectus_bl%C3%A2nchen.jpg", 
   "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Vespa_orientalis_P1.jpg/1200px-Vespa_orientalis_P1.jpg", 
@@ -23,7 +23,7 @@ const REALISTIC_FALLBACKS = [
   "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Kakerlake_macro.jpg/1200px-Kakerlake_macro.jpg" 
 ];
 
-// מוצרים אמיתיים - החלף את כתובות ה-img לקישורי התמונות המדויקים שהעתקת מהאתר שלך
+// רשימת מוצרים קבועה - ודא שהדבקת כאן בשדה img את כתובות התמונות האמיתיות שלך
 const SHOP_PRODUCTS = [
   { 
     id: 1, 
@@ -55,7 +55,6 @@ const SHOP_PRODUCTS = [
   }
 ];
 
-// פונקציית עזר לוודא שאנחנו מקבלים רק תמונה אמיתית ומרימים פולבק אם יש נתיב זמני או מוקאפ קודם
 function getValidImage(imgUrl: string, index: number): string {
   if (!imgUrl || imgUrl.includes("pest-image") || imgUrl.includes("placeholder") || imgUrl === "") {
     return REALISTIC_FALLBACKS[index % REALISTIC_FALLBACKS.length];
@@ -63,14 +62,24 @@ function getValidImage(imgUrl: string, index: number): string {
   return imgUrl;
 }
 
-// פונקציית עזר לחיתוך דינמי של תוכן המאמר במידה ושדות התיאור הקיצרים ריקים
+// פונקציית חיתוך אגרסיבית לתוכן המאמר - מנקה קוד ו-Frontmatter ומחזירה רק טקסט אנושי טהור
 function getPostExcerpt(post: any, defaultText: string): string {
-  const textSource = post.identification || post.subtitle || post.content || post.body || "";
-  if (!textSource || textSource.length < 5) return defaultText;
-  
-  // ניקוי תגיות MDX/HTML פשוטות אם ישנן, וחיתוך ל-120 תווים
-  const cleanText = textSource.replace(/[#*`_]/g, "").trim();
-  return cleanText.length > 120 ? cleanText.slice(0, 120) + "..." : cleanText;
+  let rawText = post.identification || post.subtitle || post.content || post.body || "";
+  if (!rawText || rawText.length < 5) return defaultText;
+
+  if (rawText.includes("---")) {
+    const parts = rawText.split("---");
+    rawText = parts[parts.length - 1]; 
+  }
+
+  const cleanText = rawText
+    .replace(/<[^>]*>/g, "") 
+    .replace(/[#*`_\[\]()\-]/g, "") 
+    .replace(/\s+/g, " ") 
+    .trim();
+
+  if (cleanText.length < 10) return defaultText;
+  return cleanText.length > 110 ? cleanText.slice(0, 110) + "..." : cleanText;
 }
 
 export default async function HomePage() {
@@ -136,7 +145,7 @@ export default async function HomePage() {
                       {heroPost.titleHebrew || heroPost.title}
                     </h3>
                   </Link>
-                  <p className="mt-3 text-gray-600 text-sm line-clamp-3">
+                  <p className="mt-3 text-gray-600 text-sm line-clamp-3 leading-relaxed">
                     {getPostExcerpt(heroPost, "כנסו לקריאת המדריך המלא לזיהוי, טיפול ומניעה של המזיק בישראל.")}
                   </p>
                   <div className="mt-4 flex items-center justify-between text-xs text-gray-400">
@@ -181,7 +190,7 @@ export default async function HomePage() {
           <CategoryGrid />
         </section>
 
-        {/* SECTION 2: חנות המוצרים של איצ'י - שונה ל-<img> רגיל כדי לעקוף חסימות תמונות חיצוניות */}
+        {/* SECTION 2: חנות המוצרים של איצ'י - שימוש ב-<img> רגיל כדי להבטיח משיכה ישירה של מה שכתוב לו בקוד */}
         <section className="max-w-6xl mx-auto px-4 py-12 bg-white rounded-xl border border-gray-100 my-8 shadow-sm">
           <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
             <div>
@@ -194,8 +203,8 @@ export default async function HomePage() {
             {SHOP_PRODUCTS.map((product) => (
               <div key={product.id} className="flex flex-col justify-between p-4 rounded-lg border border-gray-50 bg-gray-50/50 hover:bg-white hover:shadow-md transition-all">
                 <div>
-                  <div className="relative h-36 w-full bg-white rounded-md overflow-hidden mb-3 flex items-center justify-center">
-                    {/* שימוש ב-img רגיל כדי להבטיח טעינת כתובת אינטרנט ישירה מהאתר שלך */}
+                  <div className="h-36 w-full bg-white rounded-md overflow-hidden mb-3 flex items-center justify-center">
+                    {/* תגית img פשוטה שלא מבצעת שום חסימה או אופטימיזציה ומציגה בדיוק את שדה ה-img */}
                     <img 
                       src={product.img} 
                       alt={product.title} 
@@ -226,19 +235,24 @@ export default async function HomePage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {invasivePests.map((pest, idx) => (
-                <div key={pest.slug} className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                  <div className="relative h-40 w-full bg-gray-50">
-                    <Image src={getValidImage(pest.image, idx + 3)} alt={pest.titleHebrew || pest.title} fill className="object-cover" />
-                  </div>
-                  <div className="p-4">
+                <div key={pest.slug} className="relative bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-all group p-4 flex flex-col justify-between h-48">
+                  <div 
+                    className="absolute inset-0 opacity-[0.04] group-hover:opacity-[0.07] transition-opacity bg-cover bg-center pointer-events-none"
+                    style={{ backgroundImage: `url(${getValidImage(pest.image, idx + 5)})` }}
+                  />
+                  <div className="relative z-10">
+                    <span className="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded">פולש</span>
                     <Link href={`/pests/${pest.slug}`}>
-                      <h3 className="font-bold text-sm text-gray-900 line-clamp-2 hover:text-red-600 transition-colors">
+                      <h3 className="font-bold text-base text-gray-900 hover:text-red-600 mt-2 transition-colors line-clamp-2">
                         {pest.titleHebrew || pest.title}
                       </h3>
                     </Link>
-                    <p className="text-xs text-gray-500 mt-2 line-clamp-2">
+                    <p className="text-xs text-gray-600 mt-2 line-clamp-3 leading-relaxed">
                       {getPostExcerpt(pest, "מדריך זיהוי וטיפול מקיף ומקצועי מטעם המערכת.")}
                     </p>
+                  </div>
+                  <div className="relative z-10 text-left text-[11px] font-bold text-red-600 group-hover:underline mt-2">
+                    <Link href={`/pests/${pest.slug}`}>למדריך המלא 🡠</Link>
                   </div>
                 </div>
               ))}
@@ -255,17 +269,26 @@ export default async function HomePage() {
               </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {diyGuides.map((guide) => (
-                <div key={guide.slug} className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                  <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">DIY</span>
-                  <Link href={`/pests/${guide.slug}`}>
-                    <h3 className="font-bold text-base text-gray-900 hover:text-green-600 mt-2 transition-colors">
-                      {guide.titleHebrew || guide.title}
-                    </h3>
-                  </Link>
-                  <p className="text-xs text-gray-500 mt-2 line-clamp-3 leading-relaxed">
-                    {getPostExcerpt(guide, "מדריך מעשי ושלבים פשוטים לביצוע מניעה עצמית יעילה בבית ובחצר.")}
-                  </p>
+              {diyGuides.map((guide, idx) => (
+                <div key={guide.slug} className="relative bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between h-48">
+                  <div 
+                    className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity bg-cover bg-center pointer-events-none"
+                    style={{ backgroundImage: `url(${getValidImage(guide.image, idx + 12)})` }}
+                  />
+                  <div className="relative z-10">
+                    <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">DIY</span>
+                    <Link href={`/pests/${guide.slug}`}>
+                      <h3 className="font-bold text-base text-gray-900 hover:text-green-600 mt-2 transition-colors line-clamp-2">
+                        {guide.titleHebrew || guide.title}
+                      </h3>
+                    </Link>
+                    <p className="text-xs text-gray-600 mt-2 line-clamp-3 leading-relaxed">
+                      {getPostExcerpt(guide, "מדריך מעשי ושלבים פשוטים לביצוע מניעה עצמית יעילה בבית ובחצר.")}
+                    </p>
+                  </div>
+                  <div className="relative z-10 text-left text-[11px] font-bold text-green-600 group-hover:underline mt-2">
+                    <Link href={`/pests/${guide.slug}`}>למדריך המלא 🡠</Link>
+                  </div>
                 </div>
               ))}
             </div>
