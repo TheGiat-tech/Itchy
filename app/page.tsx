@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import fs from "fs";
+import path from "path";
 import Footer from "@/components/Footer";
 import SearchBar from "@/components/SearchBar";
 import CategoryGrid from "@/components/CategoryGrid";
@@ -13,7 +15,8 @@ export const metadata: Metadata = {
     "זהה מזיקים, למד על מחזור החיים שלהם ומצא פתרונות. המדריך המקיף ביותר למזיקים בישראל.",
 };
 
-export const revalidate = 3600; 
+// הגדרנו revalidate קצר יחסית (למשל 60 שניות) או 0 אם אתה רוצה אקראיות מוחלטת בכל רענון
+export const revalidate = 60; 
 
 const REALISTIC_FALLBACKS = [
   "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Acanthoscelides_obtectus_bl%C3%A2nchen.jpg/1200px-Acanthoscelides_obtectus_bl%C3%A2nchen.jpg", 
@@ -22,7 +25,6 @@ const REALISTIC_FALLBACKS = [
   "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Kakerlake_macro.jpg/1200px-Kakerlake_macro.jpg" 
 ];
 
-// הקישורים האמיתיים והמדויקים מה-CDN של החנות שעובדת לך
 const SHOP_PRODUCTS = [
   { 
     id: 1, 
@@ -80,6 +82,37 @@ function getPostExcerpt(post: any, defaultText: string): string {
   return cleanText.length > 115 ? cleanText.slice(0, 115) + "..." : cleanText;
 }
 
+// פונקציית עזר לקריאה ופילטור אקראי של טיפים מתוך קובץ ה-1000
+function getRandomTips(count: number): string[] {
+  try {
+    const filePath = path.join(process.cwd(), "content", "1000_pest_control_prevention_tips_israel.md");
+    if (!fs.existsSync(filePath)) {
+      return Array(count).fill("מדריך מעשי ושלבים פשוטים לביצוע מניעה עצמית יעילה בבית ובחצר.");
+    }
+
+    const fileContent = fs.readFileSync(filePath, "utf-8");
+    // חלוקה לשורות וסינון רק של שורות שמכילות טיפים אמיתיים
+    const allLines = fileContent.split("\n");
+    const tips = allLines
+      .map(line => line.trim())
+      .filter(line => line.includes("לא מזיק לדעת:"));
+
+    if (tips.length === 0) {
+      return Array(count).fill("מדריך מעשי ושלבים פשוטים לביצוע מניעה עצמית יעילה בבית ובחצר.");
+    }
+
+    // בחירה אקראית של X טיפים מתוך הרשימה
+    const shuffled = [...tips].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count).map(tip => {
+      // ניקוי המספר הסידורי בהתחלה (למשל "1. לא מזיק לדעת:" -> "לא מזיק לדעת:")
+      return tip.replace(/^\d+\.\s*/, "");
+    });
+  } catch (error) {
+    console.error("Error reading prevention tips file:", error);
+    return Array(count).fill("מדריך מעשי ושלבים פשוטים לביצוע מניעה עצמית יעילה בבית ובחצר.");
+  }
+}
+
 export default async function HomePage() {
   const allPests: any[] = getAllPests() || [];
 
@@ -91,10 +124,8 @@ export default async function HomePage() {
     invasivePests = allPests.slice(2, 6); 
   }
 
-  let diyGuides = allPests.filter(p => p.category === "מזיקי גינה" || p.category === "מניעה").slice(0, 3);
-  if (diyGuides.length === 0 && allPests.length > 2) {
-    diyGuides = allPests.slice(1, 4); 
-  }
+  // שליפת 3 טיפים אקראיים ישירות מקובץ ה-1000
+  const randomPreventionTips = getRandomTips(3);
 
   return (
     <>
@@ -183,7 +214,7 @@ export default async function HomePage() {
           <CategoryGrid />
         </section>
 
-        {/* SECTION 2: חנות המוצרים - מושכת ישירות את הקישורים שעובדים לך */}
+        {/* SECTION 2: חנות המוצרים */}
         <section className="max-w-6xl mx-auto px-4 py-12 bg-white rounded-xl border border-gray-100 my-8 shadow-sm">
           <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
             <div>
@@ -252,40 +283,37 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* SECTION 4: רצועת טיפים ומניעה DIY */}
-        {diyGuides.length > 0 && (
-          <section className="max-w-6xl mx-auto px-4 py-8">
-            <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
-              <h2 className="text-2xl font-bold text-gray-950 border-b-2 border-green-600 pb-2 -mb-[9px]">
-                לא מזיק לדעת: מדריכי מניעה עצמית
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {diyGuides.map((guide, idx) => (
-                <div key={guide.slug} className="relative bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between h-48">
-                  <div 
-                    className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity bg-cover bg-center pointer-events-none"
-                    style={{ backgroundImage: `url(${getValidImage(guide.image, idx + 12)})` }}
-                  />
-                  <div className="relative z-10">
-                    <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">DIY</span>
-                    <Link href={`/pests/${guide.slug}`}>
-                      <h3 className="font-bold text-base text-gray-900 hover:text-green-600 mt-2 transition-colors line-clamp-2">
-                        {guide.titleHebrew || guide.title}
-                      </h3>
-                    </Link>
-                    <p className="text-xs text-gray-600 mt-2 line-clamp-3 leading-relaxed">
-                      {getPostExcerpt(guide, "מדריך מעשי ושלבים פשוטים לביצוע מניעה עצמית יעילה בבית ובחצר.")}
-                    </p>
-                  </div>
-                  <div className="relative z-10 text-left text-[11px] font-bold text-green-600 group-hover:underline mt-2">
-                    <Link href={`/pests/${guide.slug}`}>למדריך המלא 🡠</Link>
-                  </div>
+        {/* SECTION 4: רצועת טיפים ומניעה DIY - שואב אקראית מקובץ ה-1000 טיפים שלך */}
+        <section className="max-w-6xl mx-auto px-4 py-8">
+          <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
+            <h2 className="text-2xl font-bold text-gray-950 border-b-2 border-green-600 pb-2 -mb-[9px]">
+              לא מזיק לדעת: מדריכי מניעה עצמית
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {randomPreventionTips.map((tipContent, idx) => (
+              <div key={idx} className="relative bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between h-48">
+                {/* רקע מזיק מוחלש ושקוף במיוחד */}
+                <div 
+                  className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity bg-cover bg-center pointer-events-none"
+                  style={{ backgroundImage: `url(${REALISTIC_FALLBACKS[idx % REALISTIC_FALLBACKS.length]})` }}
+                />
+                <div className="relative z-10">
+                  <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">DIY</span>
+                  <h3 className="font-bold text-base text-gray-900 mt-2 line-clamp-1">
+                    טיפ מניעה עונתי
+                  </h3>
+                  <p className="text-sm font-medium text-gray-700 mt-3 line-clamp-4 leading-relaxed">
+                    {tipContent}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
+                <div className="relative z-10 text-left text-[11px] font-bold text-green-600 group-hover:underline mt-2">
+                  <Link href={`/shop`}>לפתרונות בחנות 🡠</Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* הסליידר המקורי */}
         <section className="max-w-6xl mx-auto px-4 py-8 pb-16">
