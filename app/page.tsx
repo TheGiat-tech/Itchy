@@ -17,13 +17,13 @@ export const revalidate = 3600;
 
 // תמונות גיבוי ריאליסטיות לחלוטין (צילומי טבע אמיתיים מוויקיפדיה) כדי למנוע מוקאפים
 const REALISTIC_FALLBACKS = [
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Acanthoscelides_obtectus_bl%C3%A2nchen.jpg/1200px-Acanthoscelides_obtectus_bl%C3%A2nchen.jpg", // חיפושית
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Vespa_orientalis_P1.jpg/1200px-Vespa_orientalis_P1.jpg", // צרעה
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Formica_rufa_clear.jpg/1200px-Formica_rufa_clear.jpg", // נמלה
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Kakerlake_macro.jpg/1200px-Kakerlake_macro.jpg" // תיקן
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Acanthoscelides_obtectus_bl%C3%A2nchen.jpg/1200px-Acanthoscelides_obtectus_bl%C3%A2nchen.jpg", 
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Vespa_orientalis_P1.jpg/1200px-Vespa_orientalis_P1.jpg", 
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Formica_rufa_clear.jpg/1200px-Formica_rufa_clear.jpg", 
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Kakerlake_macro.jpg/1200px-Kakerlake_macro.jpg" 
 ];
 
-// מוצרים אמיתיים עם צילומים נקיים (על רקע לבן/אמיתי) - ללא גרפיקות מוקאפ
+// מוצרים אמיתיים - החלף את כתובות ה-img לקישורי התמונות המדויקים שהעתקת מהאתר שלך
 const SHOP_PRODUCTS = [
   { 
     id: 1, 
@@ -61,6 +61,16 @@ function getValidImage(imgUrl: string, index: number): string {
     return REALISTIC_FALLBACKS[index % REALISTIC_FALLBACKS.length];
   }
   return imgUrl;
+}
+
+// פונקציית עזר לחיתוך דינמי של תוכן המאמר במידה ושדות התיאור הקיצרים ריקים
+function getPostExcerpt(post: any, defaultText: string): string {
+  const textSource = post.identification || post.subtitle || post.content || post.body || "";
+  if (!textSource || textSource.length < 5) return defaultText;
+  
+  // ניקוי תגיות MDX/HTML פשוטות אם ישנן, וחיתוך ל-120 תווים
+  const cleanText = textSource.replace(/[#*`_]/g, "").trim();
+  return cleanText.length > 120 ? cleanText.slice(0, 120) + "..." : cleanText;
 }
 
 export default async function HomePage() {
@@ -127,7 +137,7 @@ export default async function HomePage() {
                     </h3>
                   </Link>
                   <p className="mt-3 text-gray-600 text-sm line-clamp-3">
-                    {heroPost.identification || heroPost.subtitle || "מדריך מקיף ומקצועי לזיהוי, מניעה וטיפול במפגע."}
+                    {getPostExcerpt(heroPost, "כנסו לקריאת המדריך המלא לזיהוי, טיפול ומניעה של המזיק בישראל.")}
                   </p>
                   <div className="mt-4 flex items-center justify-between text-xs text-gray-400">
                     <span>עודכן ב-{heroPost.date || heroPost.lastUpdated || "2026"}</span>
@@ -171,7 +181,7 @@ export default async function HomePage() {
           <CategoryGrid />
         </section>
 
-        {/* SECTION 2: חנות המוצרים של איצ'י */}
+        {/* SECTION 2: חנות המוצרים של איצ'י - שונה ל-<img> רגיל כדי לעקוף חסימות תמונות חיצוניות */}
         <section className="max-w-6xl mx-auto px-4 py-12 bg-white rounded-xl border border-gray-100 my-8 shadow-sm">
           <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
             <div>
@@ -184,8 +194,13 @@ export default async function HomePage() {
             {SHOP_PRODUCTS.map((product) => (
               <div key={product.id} className="flex flex-col justify-between p-4 rounded-lg border border-gray-50 bg-gray-50/50 hover:bg-white hover:shadow-md transition-all">
                 <div>
-                  <div className="relative h-36 w-full bg-white rounded-md overflow-hidden mb-3">
-                    <Image src={product.img} alt={product.title} fill className="object-cover" />
+                  <div className="relative h-36 w-full bg-white rounded-md overflow-hidden mb-3 flex items-center justify-center">
+                    {/* שימוש ב-img רגיל כדי להבטיח טעינת כתובת אינטרנט ישירה מהאתר שלך */}
+                    <img 
+                      src={product.img} 
+                      alt={product.title} 
+                      className="max-h-full max-w-full object-contain p-2" 
+                    />
                   </div>
                   <h3 className="font-bold text-sm text-gray-900 line-clamp-1">{product.title}</h3>
                   <p className="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">{product.desc}</p>
@@ -221,7 +236,9 @@ export default async function HomePage() {
                         {pest.titleHebrew || pest.title}
                       </h3>
                     </Link>
-                    <p className="text-xs text-gray-500 mt-2 line-clamp-2">{pest.identification || pest.subtitle || "מדריך זיהוי וטיפול מקיף"}</p>
+                    <p className="text-xs text-gray-500 mt-2 line-clamp-2">
+                      {getPostExcerpt(pest, "מדריך זיהוי וטיפול מקיף ומקצועי מטעם המערכת.")}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -229,7 +246,7 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* SECTION 4: רצועת טיפים ומניעה DIY - תוקן משדה identification */}
+        {/* SECTION 4: רצועת טיפים ומניעה DIY */}
         {diyGuides.length > 0 && (
           <section className="max-w-6xl mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
@@ -247,7 +264,7 @@ export default async function HomePage() {
                     </h3>
                   </Link>
                   <p className="text-xs text-gray-500 mt-2 line-clamp-3 leading-relaxed">
-                    {guide.identification || guide.habitat || "מדריך מעשי ושלבים פשוטים לביצוע מניעה עצמית יעילה בבית ובחצר."}
+                    {getPostExcerpt(guide, "מדריך מעשי ושלבים פשוטים לביצוע מניעה עצמית יעילה בבית ובחצר.")}
                   </p>
                 </div>
               ))}
