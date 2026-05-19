@@ -17,12 +17,28 @@ export const metadata: Metadata = {
 
 export const revalidate = 60; 
 
-// תמונות החרקים המדויקות ששלחת - לפי הסדר עבור הכתבות בצד
-const FIXED_SIDEBAR_IMAGES = [
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Anopheles_stephensi.jpeg/960px-Anopheles_stephensi.jpeg",
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Armadillidium_vulgare_male.jpg/960px-Armadillidium_vulgare_male.jpg",
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/CDC-Gathany-Aedes-albopictus-1.jpg/960px-CDC-Gathany-Aedes-albopictus-1.jpg",
-  "https://upload.wikimedia.org/wikipedia/commons/3/35/Bed_bug%2C_Cimex_lectularius_%289627010587%29.jpg"
+// 4 הכתבות בצד - עם המלל, התמונות והקישורים הנכונים לפי הסדר שביקשת
+const FIXED_SIDEBAR_POSTS = [
+  {
+    title: "יתוש האנופלס (Anopheles) – המדריך המלא",
+    slug: "anopheles",
+    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Anopheles_stephensi.jpeg/960px-Anopheles_stephensi.jpeg"
+  },
+  {
+    title: "אורי כדורי (טחבית גלגולית) – האם הוא מזיק?",
+    slug: "pill-bug",
+    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Armadillidium_vulgare_male.jpg/960px-Armadillidium_vulgare_male.jpg"
+  },
+  {
+    title: "יתוש הנמר האסיאתי – איך להתמודד עם המטרד",
+    slug: "asian-tiger-mosquito",
+    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/CDC-Gathany-Aedes-albopictus-1.jpg/960px-CDC-Gathany-Aedes-albopictus-1.jpg"
+  },
+  {
+    title: "פשפש המיטה – זיהוי, מניעה ודרכי טיפול יעילות",
+    slug: "bed-bugs",
+    img: "https://upload.wikimedia.org/wikipedia/commons/3/35/Bed_bug%2C_Cimex_lectularius_%289627010587%29.jpg"
+  }
 ];
 
 // 4 המוצרים הנבחרים מחנות Shopify/Zurmarket
@@ -57,7 +73,6 @@ const SHOP_PRODUCTS = [
   }
 ];
 
-// פונקציית חילוץ תקציר משופרת שמנקה את ה-MDX לחלוטין ומביאה טקסט נקי
 function getPostExcerpt(post: any, defaultText: string): string {
   let rawText = post.subtitle || post.content || post.body || post.identification || "";
   if (!rawText || rawText.length < 5) return defaultText;
@@ -65,11 +80,6 @@ function getPostExcerpt(post: any, defaultText: string): string {
   if (rawText.includes("---")) {
     const parts = rawText.split("---");
     rawText = parts[parts.length - 1]; 
-  }
-
-  const pestTitle = post.titleHebrew || post.title || "";
-  if (pestTitle && rawText.startsWith(pestTitle)) {
-    rawText = rawText.substring(pestTitle.length).trim();
   }
 
   const cleanText = rawText
@@ -103,17 +113,13 @@ function getRandomTips(count: number): string[] {
 export default async function HomePage() {
   const allPests: any[] = getAllPests() || [];
 
-  // מוצאים את הכתבה של המדביר לפי ה-slug שלה כדי לקבע אותה ככתבה הראשית הגדולה
+  // קיבוע הכתבה הראשית של המדביר
   const heroPost = allPests.find(p => p.slug === "dont-call-exterminator-yet") || allPests[0] || null;
   
-  // שאר הכתבות ברשימה בצד (מסננים את הכתבה הראשית כדי שלא תופיע פעמיים)
-  const remainingPosts = allPests.filter(p => p.slug !== (heroPost?.slug || ""));
-  const sidebarPosts = remainingPosts.slice(0, 4);
-
   // מינים פולשים לרצועה התחתונה
   let invasivePests = allPests.filter(p => p.category === "מינים פולשים" || p.pestType === "פולש").slice(0, 4);
-  if (invasivePests.length === 0 && remainingPosts.length > 4) {
-    invasivePests = remainingPosts.slice(4, 8); 
+  if (invasivePests.length === 0 && allPests.length > 4) {
+    invasivePests = allPests.slice(1, 5); 
   }
 
   const randomPreventionTips = getRandomTips(3);
@@ -170,42 +176,34 @@ export default async function HomePage() {
                     {heroPost.subtitle || getPostExcerpt(heroPost, "כנסו לקריאת המדריך המלא לזיהוי, טיפול ומניעה של המזיק בישראל.")}
                   </p>
                   <div className="mt-6 flex items-center justify-between text-xs text-gray-400 border-t border-gray-50 pt-4">
-                    <span>{heroPost.date ? `עודכן ב-${heroPost.date}` : ""}</span>
+                    <span>עודכן לאחרונה</span>
                     <span className="text-orange-600 font-bold text-sm">לקריאת הכתבה המלאה ←</span>
                   </div>
                 </div>
               </div>
 
-              {/* הכתבות בצד עם התמונות המדויקות לפי הסדר ששלחת */}
+              {/* הכתבות בצד - עכשיו הן מלאות ומיוצבות ישירות מהמערך! */}
               <div className="space-y-4">
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">עדכונים אחרונים</h3>
-                {sidebarPosts.length === 0 ? (
-                  <p className="text-sm text-gray-400 italic">המאמרים הבאים יעלו בקרוב...</p>
-                ) : (
-                  sidebarPosts.map((post, idx) => {
-                    // הצבת תמונה מהמערך ששלחת לפי האינדקס (0 עד 3)
-                    const sidebarImg = FIXED_SIDEBAR_IMAGES[idx] || post.image;
-                    return (
-                      <div key={post.slug} className="flex gap-4 bg-white p-3 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-gray-50 border border-gray-100">
-                          <img 
-                            src={sidebarImg} 
-                            alt={post.titleHebrew || post.title} 
-                            className="w-full h-full object-cover" 
-                          />
-                        </div>
-                        <div className="flex flex-col justify-between py-1 flex-1">
-                          <Link href={`/pests/${post.slug}`}>
-                            <h4 className="font-bold text-sm text-gray-900 hover:text-orange-600 line-clamp-2 transition-colors leading-snug">
-                              {post.titleHebrew || post.title}
-                            </h4>
-                          </Link>
-                          <span className="text-[11px] text-gray-400">{post.date || ""}</span>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
+                {FIXED_SIDEBAR_POSTS.map((post, idx) => (
+                  <div key={idx} className="flex gap-4 bg-white p-3 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-gray-50 border border-gray-100">
+                      <img 
+                        src={post.img} 
+                        alt={post.title} 
+                        className="w-full h-full object-cover" 
+                      />
+                    </div>
+                    <div className="flex flex-col justify-between py-1 flex-1">
+                      <Link href={`/pests/${post.slug}`}>
+                        <h4 className="font-bold text-sm text-gray-900 hover:text-orange-600 line-clamp-2 transition-colors leading-snug">
+                          {post.title}
+                        </h4>
+                      </Link>
+                      <span className="text-[11px] text-gray-400">עודכן לאחרונה</span>
+                    </div>
+                  </div>
+                ))}
               </div>
 
             </div>
@@ -283,7 +281,7 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* טיפים DIY עונתיים מהקובץ המרכזי */}
+        {/* מדריכי מניעה עצמית */}
         <section className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
             <h2 className="text-2xl font-bold text-gray-950 border-b-2 border-green-600 pb-2 -mb-[9px]">
@@ -309,7 +307,7 @@ export default async function HomePage() {
         </section>
 
         {/* סליידר מקורי */}
-        <section className="max-w-6xl mx-auto px-4 py-8 desert-slider pb-16">
+        <section className="max-w-6xl mx-auto px-4 py-8 pb-16">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">מזיקים עונתיים ופופולריים</h2>
           <SeasonalPestsSlider />
         </section>
