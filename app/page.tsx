@@ -15,7 +15,6 @@ export const metadata: Metadata = {
     "זהה מזיקים, למד על מחזור החיים שלהם ומצא פתרונות. המדריך המקיף ביותר למזיקים בישראל.",
 };
 
-// הגדרנו revalidate קצר יחסית (למשל 60 שניות) או 0 אם אתה רוצה אקראיות מוחלטת בכל רענון
 export const revalidate = 60; 
 
 const REALISTIC_FALLBACKS = [
@@ -28,31 +27,31 @@ const REALISTIC_FALLBACKS = [
 const SHOP_PRODUCTS = [
   { 
     id: 1, 
-    title: "טופ ג'ל להדברת נמלים (15 גרם)", 
+    title: "גרנולר - פיתיון גרגירי (200 גרם)", 
     price: "89 ₪", 
-    img: "https://zurmarket.co.il/cdn/shop/files/WhatsAppImage2025-03-20at14.53.32_1.jpg?v=1742495513&width=1206", 
-    desc: "פיתיון מקצועי ללא ריח לכל סוגי הנמלים. מחסל את המלכה ומשמיד את הקן מהשורש." 
+    img: "https://zurmarket.co.il/cdn/shop/products/b1bee52a0d21533a1931228b05b59a57.jpg?v=1670852952&width=1206", 
+    desc: "פיתיון גרגירי עוצמתי המיועד במיוחד לנמלת האש ולשטחים פתוחים." 
   },
   { 
     id: 2, 
-    title: "גרנולר - פיתיון גרגירים (200 גרם)", 
+    title: "טורפדו ג'ל נגד תיקנים (15 גרם)", 
     price: "89 ₪", 
-    img: "https://zurmarket.co.il/cdn/shop/files/200_a309fef2-f470-4f51-b0f3-cb2099908cf4.jpg?v=1733315629&width=460", 
-    desc: "פיתיון גרגירים עוצמתי המיועד למחרת לנמלת האש ולשטחים פתוחים. פשוט לפזר סביב הבית והנמלים ייעלמו." 
+    img: "https://zurmarket.co.il/cdn/shop/products/67c1102072cd47f13ae46b88f117ebfb.jpg?v=1670853741&width=1206", 
+    desc: "פיתיון ג'ל מתקדם לקטילת תיקן גרמני ואמריקאי. ללא ריח, משמיד את המושבה מהשורש. 🌿הנשק הסודי נגד התיקן הגרמני הקטן במטבח." 
   },
   { 
     id: 3, 
-    title: "תכשיר האמר (960 מ\"ל)", 
-    price: "59 ₪", 
-    img: "https://zurmarket.co.il/cdn/shop/files/960.jpg?v=1733315582&width=460", 
-    desc: "תרסיס עוצמתי ללא ריח בבקבוק התזה אנטומי, ממוקד לחיסול נמלת האש. מעולה לריסוס ישיר על קינים." 
+    title: "אנטיפליי רימי - תרסיס (750 מ״ל)", 
+    price: "75 ₪", 
+    img: "https://zurmarket.co.il/cdn/shop/files/50aad069ee299a4afcb5ad11ab996215_10252fe2-7987-46b0-89f8-1496c1256ada.jpg?v=1756026266&width=1206", 
+    desc: "תרסיס אנטיפליי מוכן לשימוש עם קטילה מידית לזבובים, יתושים, ברחשים, צרעות וזחלי עש. 🌿יעיל מאוד לעונה החמה – תוצאה מיידית בריסוס ישיר." 
   },
   { 
     id: 4, 
-    title: "טורפדו ג'ל נגד תיקנים (15 גרם)", 
-    price: "89 ₪", 
-    img: "https://zurmarket.co.il/cdn/shop/files/_15.jpg?v=1733315754&width=460", 
-    desc: "פיתיון ג'ל מתקדם לקטילת תיקן גרמני ואמריקאי. ללא ריח, משמיד ומחסל אלפי ג'וקים בלי לרסס." 
+    title: "קטלן סופה ליתושים ומעופפים (7W)", 
+    price: "169 ₪", 
+    img: "https://zurmarket.co.il/cdn/shop/products/63d629c50d62933786448beec7af0a31.jpg?v=1670853476&width=1206", 
+    desc: "קטלן UV עם מפוח שואב, יניקה שקטה וחזקה ומגירת איסוף נשלפת לניקוי מהיר. 🌿השיטה השקטה והחזקה ביותר." 
   }
 ];
 
@@ -82,7 +81,6 @@ function getPostExcerpt(post: any, defaultText: string): string {
   return cleanText.length > 115 ? cleanText.slice(0, 115) + "..." : cleanText;
 }
 
-// פונקציית עזר לקריאה ופילטור אקראי של טיפים מתוך קובץ ה-1000
 function getRandomTips(count: number): string[] {
   try {
     const filePath = path.join(process.cwd(), "content", "1000_pest_control_prevention_tips_israel.md");
@@ -91,7 +89,6 @@ function getRandomTips(count: number): string[] {
     }
 
     const fileContent = fs.readFileSync(filePath, "utf-8");
-    // חלוקה לשורות וסינון רק של שורות שמכילות טיפים אמיתיים
     const allLines = fileContent.split("\n");
     const tips = allLines
       .map(line => line.trim())
@@ -101,10 +98,8 @@ function getRandomTips(count: number): string[] {
       return Array(count).fill("מדריך מעשי ושלבים פשוטים לביצוע מניעה עצמית יעילה בבית ובחצר.");
     }
 
-    // בחירה אקראית של X טיפים מתוך הרשימה
     const shuffled = [...tips].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count).map(tip => {
-      // ניקוי המספר הסידורי בהתחלה (למשל "1. לא מזיק לדעת:" -> "לא מזיק לדעת:")
       return tip.replace(/^\d+\.\s*/, "");
     });
   } catch (error) {
@@ -124,7 +119,6 @@ export default async function HomePage() {
     invasivePests = allPests.slice(2, 6); 
   }
 
-  // שליפת 3 טיפים אקראיים ישירות מקובץ ה-1000
   const randomPreventionTips = getRandomTips(3);
 
   return (
@@ -214,7 +208,7 @@ export default async function HomePage() {
           <CategoryGrid />
         </section>
 
-        {/* SECTION 2: חנות המוצרים */}
+        {/* SECTION 2: שורת חנות 4 המוצרים */}
         <section className="max-w-6xl mx-auto px-4 py-12 bg-white rounded-xl border border-gray-100 my-8 shadow-sm">
           <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
             <div>
@@ -240,7 +234,7 @@ export default async function HomePage() {
                 <div className="flex items-center justify-between mt-4 border-t border-gray-100 pt-3">
                   <span className="text-base font-extrabold text-gray-950">{product.price}</span>
                   <Link href={`/shop`} className="text-xs font-bold bg-orange-600 hover:bg-orange-700 text-white px-3 py-1.5 rounded transition-colors">
-                    קנייה בחנות 🡨
+                    קנייה בחנות 🡠
                   </Link>
                 </div>
               </div>
@@ -248,7 +242,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* SECTION 3: רצועת מינים פולשים ומתפרצים */}
+        {/* SECTION 3: רצועת מינים פולשים ומתפרצים - עם שם מזיק דינמי במקום המילה פולש */}
         {invasivePests.length > 0 && (
           <section className="max-w-6xl mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
@@ -264,9 +258,12 @@ export default async function HomePage() {
                     style={{ backgroundImage: `url(${getValidImage(pest.image, idx + 5)})` }}
                   />
                   <div className="relative z-10">
-                    <span className="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded">פולש</span>
+                    {/* כאן שינינו: במקום "פולש" קבוע, מציג את שם המזיק המדויק כתגית עליונה */}
+                    <span className="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded">
+                      {pest.titleHebrew || pest.title}
+                    </span>
                     <Link href={`/pests/${pest.slug}`}>
-                      <h3 className="font-bold text-base text-gray-900 hover:text-red-600 mt-2 transition-colors line-clamp-2">
+                      <h3 className="font-bold text-base text-gray-900 hover:text-red-600 mt-2 transition-colors line-clamp-1">
                         {pest.titleHebrew || pest.title}
                       </h3>
                     </Link>
@@ -283,7 +280,7 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* SECTION 4: רצועת טיפים ומניעה DIY - שואב אקראית מקובץ ה-1000 טיפים שלך */}
+        {/* SECTION 4: רצועת טיפים ומניעה DIY */}
         <section className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
             <h2 className="text-2xl font-bold text-gray-950 border-b-2 border-green-600 pb-2 -mb-[9px]">
@@ -293,7 +290,6 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {randomPreventionTips.map((tipContent, idx) => (
               <div key={idx} className="relative bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between h-48">
-                {/* רקע מזיק מוחלש ושקוף במיוחד */}
                 <div 
                   className="absolute inset-0 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity bg-cover bg-center pointer-events-none"
                   style={{ backgroundImage: `url(${REALISTIC_FALLBACKS[idx % REALISTIC_FALLBACKS.length]})` }}
