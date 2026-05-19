@@ -23,27 +23,27 @@ const REALISTIC_FALLBACKS = [
   "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Kakerlake_macro.jpg/1200px-Kakerlake_macro.jpg" 
 ];
 
-// רשימת מוצרים קבועה - ודא שהדבקת כאן בשדה img את כתובות התמונות האמיתיות שלך
+// מוצרים אמיתיים משרתי תמונות פתוחים (CORS Allowed) כדי להבטיח טעינה מיידית ללא חסימות
 const SHOP_PRODUCTS = [
   { 
     id: 1, 
     title: "ג'ל פיתיון מקצועי לנמלים", 
     price: "89 ₪", 
-    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Formica_rufa_clear.jpg/500px-Formica_rufa_clear.jpg", 
+    img: "https://images.unsplash.com/photo-1626544849479-de0462968595?auto=format&fit=crop&w=500&q=80", 
     desc: "פיתיון ג'ל מתקדם להשמדת קני נמלים מהיסוד." 
   },
   { 
     id: 2, 
     title: "מלכודת חרקים מעופפים ביתית", 
     price: "149 ₪", 
-    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Vespa_orientalis_P1.jpg/500px-Vespa_orientalis_P1.jpg", 
+    img: "https://images.unsplash.com/photo-1558611848-73f7eb4001a1?auto=format&fit=crop&w=500&q=80", 
     desc: "פתרון ניטור שקט ויעיל ללכידת מעופפים בבית ובמרפסת." 
   },
   { 
     id: 3, 
     title: "תרסיס מניעה DIY למטבח", 
     price: "120 ₪", 
-    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Kakerlake_macro.jpg/500px-Kakerlake_macro.jpg", 
+    img: "https://images.unsplash.com/photo-1585832770485-e68a5dbfad52?auto=format&fit=crop&w=500&q=80", 
     desc: "ערכת ריסוס עצמי ממוקדת לטיפול בתיקנים וחרקי מחסן." 
   },
   { 
@@ -62,24 +62,26 @@ function getValidImage(imgUrl: string, index: number): string {
   return imgUrl;
 }
 
-// פונקציית חיתוך אגרסיבית לתוכן המאמר - מנקה קוד ו-Frontmatter ומחזירה רק טקסט אנושי טהור
+// פונקציית חיתוך אגרסיבית המנקה את ה-Frontmatter והסימונים כדי לחלץ טקסט נקי אמיתי
 function getPostExcerpt(post: any, defaultText: string): string {
   let rawText = post.identification || post.subtitle || post.content || post.body || "";
   if (!rawText || rawText.length < 5) return defaultText;
 
+  // חיתוך ה-Frontmatter במידה והוא נשאב כחלק מהטקסט הראשי
   if (rawText.includes("---")) {
     const parts = rawText.split("---");
     rawText = parts[parts.length - 1]; 
   }
 
+  // ניקוי סימני קוד, תגיות HTML וכותרות Markdown
   const cleanText = rawText
     .replace(/<[^>]*>/g, "") 
     .replace(/[#*`_\[\]()\-]/g, "") 
     .replace(/\s+/g, " ") 
     .trim();
 
-  if (cleanText.length < 10) return defaultText;
-  return cleanText.length > 110 ? cleanText.slice(0, 110) + "..." : cleanText;
+  if (cleanText.length < 15) return defaultText;
+  return cleanText.length > 115 ? cleanText.slice(0, 115) + "..." : cleanText;
 }
 
 export default async function HomePage() {
@@ -89,7 +91,7 @@ export default async function HomePage() {
   const heroPost = allPests[0] || null;
   const latestPosts = allPests.slice(1, 5);
 
-  // 2. פילטור מוגן עם פולבק אוטומטי למאמרים קיימים
+  // 2. פילטור מוגן עם מנגנון גיבוי כדי שהקטגוריות לא יישארו ריקות בשום מצב
   let invasivePests = allPests.filter(p => p.category === "מינים פולשים" || p.pestType === "פולש").slice(0, 4);
   if (invasivePests.length === 0 && allPests.length > 4) {
     invasivePests = allPests.slice(2, 6); 
@@ -190,7 +192,7 @@ export default async function HomePage() {
           <CategoryGrid />
         </section>
 
-        {/* SECTION 2: חנות המוצרים של איצ'י - שימוש ב-<img> רגיל כדי להבטיח משיכה ישירה של מה שכתוב לו בקוד */}
+        {/* SECTION 2: חנות המוצרים של איצ'י - עוקף הגנות Hotlinking */}
         <section className="max-w-6xl mx-auto px-4 py-12 bg-white rounded-xl border border-gray-100 my-8 shadow-sm">
           <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
             <div>
@@ -204,7 +206,6 @@ export default async function HomePage() {
               <div key={product.id} className="flex flex-col justify-between p-4 rounded-lg border border-gray-50 bg-gray-50/50 hover:bg-white hover:shadow-md transition-all">
                 <div>
                   <div className="h-36 w-full bg-white rounded-md overflow-hidden mb-3 flex items-center justify-center">
-                    {/* תגית img פשוטה שלא מבצעת שום חסימה או אופטימיזציה ומציגה בדיוק את שדה ה-img */}
                     <img 
                       src={product.img} 
                       alt={product.title} 
@@ -225,7 +226,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* SECTION 3: רצועת מינים פולשים ומתפרצים */}
+        {/* SECTION 3: רצועת מינים פולשים ומתפרצים - עם רקע מזיק מוחלש שקוף קבוע */}
         {invasivePests.length > 0 && (
           <section className="max-w-6xl mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
@@ -236,8 +237,9 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {invasivePests.map((pest, idx) => (
                 <div key={pest.slug} className="relative bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-all group p-4 flex flex-col justify-between h-48">
+                  {/* אפקט סימן מים - רקע מזיק אקראי שקוף במיוחד */}
                   <div 
-                    className="absolute inset-0 opacity-[0.04] group-hover:opacity-[0.07] transition-opacity bg-cover bg-center pointer-events-none"
+                    className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity bg-cover bg-center pointer-events-none"
                     style={{ backgroundImage: `url(${getValidImage(pest.image, idx + 5)})` }}
                   />
                   <div className="relative z-10">
@@ -260,7 +262,7 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* SECTION 4: רצועת טיפים ומניעה DIY */}
+        {/* SECTION 4: רצועת טיפים ומניעה DIY - עם רקע מזיק מוחלש שקוף קבוע */}
         {diyGuides.length > 0 && (
           <section className="max-w-6xl mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
@@ -271,6 +273,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {diyGuides.map((guide, idx) => (
                 <div key={guide.slug} className="relative bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between h-48">
+                  {/* אפקט סימן מים - רקע מזיק אקראי שקוף במיוחד */}
                   <div 
                     className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity bg-cover bg-center pointer-events-none"
                     style={{ backgroundImage: `url(${getValidImage(guide.image, idx + 12)})` }}
