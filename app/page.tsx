@@ -16,12 +16,11 @@ export const metadata: Metadata = {
 export const revalidate = 3600; // האתר יתרנדר מחדש ברקע כל שעה כדי להציג את המאמרים החדשים מהבוט
 
 export default async function HomePage() {
-// שאיבת המאמרים ישירות מה-MDX עם הסקת סוגים אוטומטית של TypeScript
-  const allPests = await getAllPests().catch((error) => {
+  // שאיבת המאמרים ישירות מה-MDX עם הגדרת סוג מפורשת כדי למנוע שגיאות TypeScript בבילד
+  const allPests: any[] = await getAllPests().catch((error) => {
     console.error("Failed to load pests from MDX:", error);
     return []; // מחזיר מערך ריק במקרה של שגיאה
   });
-  }
 
   // חלוקת הכתבות לרצועות התוכן השונות במגזין
   const heroPost = allPests[0] || null;
