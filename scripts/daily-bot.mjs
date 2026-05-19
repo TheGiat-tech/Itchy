@@ -2,7 +2,8 @@
 /**
  * scripts/daily-bot.mjs
  *
- * Daily bot that generates one Hebrew MDX article and commits it to content/articles/.
+ * Daily bot that generates one Hebrew MDX article sequentially from a local list
+ * and commits it to content/articles/.
  */
 
 import fs from "fs";
@@ -13,6 +14,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, "..");
 const ARTICLES_DIR = path.join(REPO_ROOT, "content", "articles");
+const TOPICS_FILE = path.join(REPO_ROOT, "content", "1000_pest_control_topics_israel.md");
+const POINTER_FILE = path.join(__dirname, "pointer.json");
 
 const CTA = "<a href=\"/quote\">📍 קבלו הצעת מחיר ממדביר מוסמך - ללא עלות וללא התחייבות</a>";
 
@@ -43,13 +46,46 @@ function pickLocalImage(hint) {
 }
 
 // ---------------------------------------------------------------------------
+// Sequential Topic Extraction
+// ---------------------------------------------------------------------------
+function getNextTopic() {
+  if (!fs.existsSync(TOPICS_FILE)) {
+    throw new Error(`Topics file not found at ${TOPICS_FILE}. Please ensure 1000_pest_control_topics_israel.md is in the content/ folder.`);
+  }
+
+  // Parse pointer.json
+  let nextTopicIndex = 0;
+  if (fs.existsSync(POINTER_FILE)) {
+    try {
+      const ptrData = JSON.parse(fs.readFileSync(POINTER_FILE, "utf-8"));
+      nextTopicIndex = ptrData.nextTopicIndex || 0;
+    } catch (err) {
+      console.warn("⚠️ Could not parse pointer.json. Starting from index 0.");
+    }
+  }
+
+  // Read and filter topics
+  const fileContent = fs.readFileSync(TOPICS_FILE, "utf-8");
+  const validTopics = fileContent
+    .split("\n")
+    .map(line => line.trim())
+    // Keep only lines that start with numbers followed by a dot (e.g., "1. נמלים בבית...")
+    .filter(line => /^\d+\.\s+/.test(line));
+
+  if (validTopics.length === 0) {
+    throw new Error("No valid topics found in the topics file.");
+  }
+
+  if (nextTopicIndex >= validTopics.length) {
+    throw new Error(`All topics have been generated! Index ${nextTopicIndex} exceeds the list of ${validTopics.length} topics. Reset pointer.json to start over.`);
+  }
+
+  return { topic: validTopics[nextTopicIndex], nextTopicIndex };
+}
+
+// ---------------------------------------------------------------------------
 // Emoji cleanup
 // ---------------------------------------------------------------------------
-
-/**
- * Strips all emoji characters from a string using Unicode property escapes.
- * Also removes variation selectors, ZWJ, and skin-tone modifiers.
- */
 function stripEmojis(text) {
   if (!text) return text;
   return text
@@ -60,14 +96,7 @@ function stripEmojis(text) {
     .trim();
 }
 
-/**
- * Strips emojis from the article content:
- *   - frontmatter fields: titleHebrew and subtitle
- *   - all markdown headings (lines starting with #)
- *   - all body text lines that are not HTML tags (preserves the CTA anchor)
- */
 function cleanupArticleContent(content) {
-  // Clean specific frontmatter fields
   content = content.replace(
     /(^titleHebrew:\s*)(["']?)(.+?)\2(\s*)$/m,
     (_, key, q, val, tail) => `${key}${q}${stripEmojis(val)}${q}${tail}`
@@ -77,17 +106,15 @@ function cleanupArticleContent(content) {
     (_, key, q, val, tail) => `${key}${q}${stripEmojis(val)}${q}${tail}`
   );
 
-  // Split off body (after closing ---) to clean headings and paragraph text
   const fmEnd = content.indexOf("\n---\n");
   if (fmEnd === -1) return content;
 
-  const frontmatter = content.slice(0, fmEnd + 5); // up to and including "\n---\n"
+  const frontmatter = content.slice(0, fmEnd + 5);
   const body = content.slice(fmEnd + 5);
 
   const cleanedBody = body
     .split("\n")
     .map((line) => {
-      // Preserve HTML lines (e.g., the CTA <a href="/contact">...)
       if (/^\s*</.test(line)) return line;
       return stripEmojis(line);
     })
@@ -97,9 +124,8 @@ function cleanupArticleContent(content) {
 }
 
 // ---------------------------------------------------------------------------
-// Image fetching — Pexels → Pixabay → local fallback
+// Image fetching
 // ---------------------------------------------------------------------------
-
 async function fetchPexelsImage(query) {
   const apiKey = process.env.PEXELS_API_KEY;
   if (!apiKey) return null;
@@ -146,11 +172,6 @@ async function fetchPixabayImage(query) {
   };
 }
 
-/**
- * Attempts to find a stock image for the article using Pexels first, then
-  * Pixabay. Falls back to a photorealistic API URL if both APIs fail or return no result.
- * Never throws — the article must always be saved even if the image API fails.
- */
 async function findArticleImage(query) {
   const hint = query || "";
 
@@ -165,8 +186,6 @@ async function findArticleImage(query) {
     } catch (err) {
       console.warn(`⚠️  Pexels failed: ${err.message}`);
     }
-  } else {
-    console.log("ℹ️  PEXELS_API_KEY not set, skipping Pexels.");
   }
 
   if (process.env.PIXABAY_API_KEY) {
@@ -180,8 +199,6 @@ async function findArticleImage(query) {
     } catch (err) {
       console.warn(`⚠️  Pixabay failed: ${err.message}`);
     }
-  } else {
-    console.log("ℹ️  PIXABAY_API_KEY not set, skipping Pixabay.");
   }
 
   const local = pickLocalImage(hint);
@@ -198,11 +215,6 @@ async function findArticleImage(query) {
 // ---------------------------------------------------------------------------
 // Frontmatter image injection
 // ---------------------------------------------------------------------------
-
-/**
- * Parses the generated MDX content and injects/replaces image-related fields
- * in the frontmatter block using the provided imageData object.
- */
 function injectImageFields(content, imageData) {
   const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!fmMatch) return content;
@@ -230,7 +242,6 @@ function injectImageFields(content, imageData) {
 // ---------------------------------------------------------------------------
 // Utilities
 // ---------------------------------------------------------------------------
-
 function today() {
   return new Date().toISOString().split("T")[0];
 }
@@ -277,7 +288,6 @@ function validateArticle(content) {
       errors.push("Emoji found in subtitle after cleanup");
     }
 
-    // image must be a URL path, not just the keyword text
     const imageVal = fm.match(/^image:\s*["']?(.+?)["']?\s*$/m)?.[1] ?? "";
     if (imageVal && !imageVal.startsWith("/") && !imageVal.startsWith("http")) {
       errors.push(`image field is not a valid URL: "${imageVal}"`);
@@ -292,14 +302,12 @@ function validateArticle(content) {
     }
   }
 
-  // No emojis in markdown headings
   const headings = content.match(/^#{1,6} .+$/gm) ?? [];
   const headingWithEmoji = headings.find((h) => /\p{Extended_Pictographic}/u.test(h));
   if (headingWithEmoji) {
     errors.push(`Emoji found in heading after cleanup: "${headingWithEmoji.slice(0, 50)}"`);
   }
 
-  // No forbidden branding
   if (/גיאת הדברות|גבעת הדברות|גיאט הדברות/i.test(content)) {
     errors.push("Forbidden branding detected in article");
   }
@@ -310,7 +318,6 @@ function validateArticle(content) {
 // ---------------------------------------------------------------------------
 // Gemini model priority list
 // ---------------------------------------------------------------------------
-
 const MODEL_PRIORITY = [
   "gemini-3.1-flash-lite",
   "gemini-2.5-flash-lite",
@@ -346,13 +353,12 @@ function is404(err) {
   );
 }
 
-/** Build a deduplicated model list: env model first, then defaults. */
 function buildModelList(envModel) {
   const candidates = envModel ? [envModel, ...MODEL_PRIORITY] : [...MODEL_PRIORITY];
   return [...new Set(candidates)];
 }
 
-async function generateWithRetry(apiKey, envModel) {
+async function generateWithRetry(apiKey, envModel, topic) {
   const modelsToTry = buildModelList(envModel);
   console.log(`🗒️  Model priority list: ${modelsToTry.join(", ")}`);
 
@@ -364,7 +370,7 @@ async function generateWithRetry(apiKey, envModel) {
 
     while (retryCount < MAX_503_RETRIES) {
       try {
-        return await generateArticle(apiKey, modelName);
+        return await generateArticle(apiKey, modelName, topic);
       } catch (err) {
         lastError = err;
 
@@ -394,7 +400,7 @@ async function generateWithRetry(apiKey, envModel) {
   throw lastError ?? new Error("All Gemini models failed. Check model availability or quota.");
 }
 
-async function generateArticle(apiKey, modelName) {
+async function generateArticle(apiKey, modelName, topic) {
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: modelName });
 
@@ -402,12 +408,14 @@ async function generateArticle(apiKey, modelName) {
 אתה כותב תוכן מקצועי המתמחה ב-SEO לאתר הדברה ישראלי.
 
 המשימה:
-כתוב מאמר בעברית בלבד (500-700 מילים) בנושא אחד מהבאים: הדברה, מזיקים, חרקים, נחשים, מכרסמים, מניעה ביתית, או טבע בישראל.
+The topic for this article MUST be exactly: '${topic}'. Ensure the titleHebrew and content directly reflect this topic.
+
+כתוב מאמר בעברית בלבד (500-700 מילים) בדיוק על הנושא המבוקש.
 
 הפלט חייב להיות MDX נקי ללא תגיות קוד, עם frontmatter בדיוק בפורמט:
 
 ---
-titleHebrew: "כותרת חזקה ומקצועית בעברית"
+titleHebrew: "כותרת חזקה ומקצועית בעברית התואמת לנושא"
 subtitle: "כותרת משנה מושכת שמסבירה את ערך המאמר"
 date: "${today()}"
 imageKeyword: "two or three English words describing the pest and treatment"
@@ -429,7 +437,7 @@ pestType: "סוג המזיק בעברית"
 7. **מתי לפנות לאיש מקצוע**: כתוב פסקה קצרה ובהירה שמסבירה מתי הטיפול העצמי לא מספיק.
 8. **CTA**: בסוף המאמר הוסף בדיוק את השורה הבאה, ואל תשנה אותה:
 
-<a href="/quote">📍 קבלו הצעת מחיר ממדביר מוסמך - ללא עלות וללא התחייבות</a>
+${CTA}
 
 הנחיות סגנון:
 
@@ -459,7 +467,6 @@ pestType: "סוג המזיק בעברית"
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
-
 async function main() {
   const apiKey = process.env.GEMINI_API_KEY;
   console.log(`🔑 GEMINI_API_KEY present: ${Boolean(apiKey)}`);
@@ -471,18 +478,20 @@ async function main() {
 
   const envModel = process.env.GEMINI_MODEL || "";
   console.log(`🧠 GEMINI_MODEL env: ${envModel || "(not set, using priority list)"}`);
-  console.log(`🖼️  PEXELS_API_KEY present: ${Boolean(process.env.PEXELS_API_KEY)}`);
-  console.log(`🖼️  PIXABAY_API_KEY present: ${Boolean(process.env.PIXABAY_API_KEY)}`);
-
+  
   if (!fs.existsSync(ARTICLES_DIR)) {
     fs.mkdirSync(ARTICLES_DIR, { recursive: true });
   }
+
+  // 1. Get the next topic from the file
+  const { topic, nextTopicIndex } = getNextTopic();
+  console.log(`🎯 Target Topic [Index ${nextTopicIndex}]: ${topic}`);
 
   console.log("🤖 Generating article...");
 
   let mdxContent;
   try {
-    mdxContent = await generateWithRetry(apiKey, envModel || null);
+    mdxContent = await generateWithRetry(apiKey, envModel || null, topic);
   } catch (err) {
     console.error(`❌ ${err.message}`);
     process.exit(1);
@@ -511,9 +520,14 @@ async function main() {
   const filename = `article-${today()}-${suffix}.mdx`;
   const filePath = path.join(ARTICLES_DIR, filename);
 
+  // 2. Write the file
   fs.writeFileSync(filePath, mdxContent, "utf8");
   console.log(`📄 Output file: content/articles/${filename}`);
   console.log("✅ Article generated and saved successfully.");
+
+  // 3. Increment the counter only after successful save
+  fs.writeFileSync(POINTER_FILE, JSON.stringify({ nextTopicIndex: nextTopicIndex + 1 }, null, 2), "utf-8");
+  console.log(`➡️  Updated pointer.json to index ${nextTopicIndex + 1} for the next run.`);
 }
 
 main();
