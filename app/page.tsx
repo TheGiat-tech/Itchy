@@ -113,13 +113,19 @@ function getRandomTips(count: number): string[] {
 export default async function HomePage() {
   const allPests: any[] = getAllPests() || [];
 
-  // קיבוע הכתבה הראשית של המדביר
-  const heroPost = allPests.find(p => p.slug === "dont-call-exterminator-yet") || allPests[0] || null;
+  // קיבוע הנתונים של הכתבה הראשית באופן ישיר כדי למנוע בעיות שליפה מה-MDX
+  const heroPost = {
+    titleHebrew: "אל תקראו למדביר לפני שתקראו את זה!",
+    subtitle: "טעויות של מאות שקלים שרוב הישראלים עושים בכל קיץ, ואיך אתם יכולים לפתור את רוב בעיות המזיקים בבית לגמרי בעצמכם, עם חומרים נכונים ובחצי מחיר.",
+    category: "מדריך זיהוי",
+    image: "/images/articles/dont-call-exterminator.jfif",
+    fixedUrl: "/articles/dont-call-exterminator-yet" // הכתובת המדויקת והתקינה
+  };
   
   // מינים פולשים לרצועה התחתונה
   let invasivePests = allPests.filter(p => p.category === "מינים פולשים" || p.pestType === "פולש").slice(0, 4);
   if (invasivePests.length === 0 && allPests.length > 4) {
-    invasivePests = allPests.slice(1, 5); 
+    invasivePests = allPests.slice(0, 4); 
   }
 
   const randomPreventionTips = getRandomTips(3);
@@ -140,78 +146,75 @@ export default async function HomePage() {
         </section>
 
         {/* SECTION 1: הבלוק המגזיני הראשי */}
-        {heroPost ? (
-          <section className="max-w-6xl mx-auto px-4 py-12">
-            <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
-              <h2 className="text-2xl font-bold text-gray-950 border-b-2 border-orange-600 pb-2 -mb-[9px]">
-                כתבות ומדריכים אחרונים במערכת
-              </h2>
-            </div>
+        <section className="max-w-6xl mx-auto px-4 py-12">
+          <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
+            <h2 className="text-2xl font-bold text-gray-950 border-b-2 border-orange-600 pb-2 -mb-[9px]">
+              כתבות ומדריכים אחרונים במערכת
+            </h2>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              
-              {/* הכתבה הגדולה קבועה בדף הבית */}
-              <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-                <div className="relative h-64 sm:h-[420px] w-full bg-gray-100">
-                  <Image 
-                    src={heroPost.image || "/images/articles/dont-call-exterminator.jfif"} 
-                    alt={heroPost.titleHebrew || heroPost.title} 
-                    fill 
-                    className="object-cover"
-                    priority
-                  />
+            {/* הכתבה הגדולה קבועה בדף הבית - מתוקנת ומקושרת ישירות בצורה קשיחה */}
+            <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+              <div className="relative h-64 sm:h-[420px] w-full bg-gray-100">
+                <Image 
+                  src={heroPost.image} 
+                  alt={heroPost.titleHebrew} 
+                  fill 
+                  className="object-cover"
+                  priority
+                />
+              </div>
+              <div className="p-6">
+                <div className="mb-2">
+                  <span className="text-xs font-bold uppercase tracking-wide text-orange-600 bg-orange-50 px-2.5 py-1 rounded">
+                    {heroPost.category}
+                  </span>
                 </div>
-                <div className="p-6">
-                  <div className="mb-2">
-                    <span className="text-xs font-bold uppercase tracking-wide text-orange-600 bg-orange-50 px-2.5 py-1 rounded">
-                      {heroPost.category || "מדריך מיוחד"}
-                    </span>
-                  </div>
-                  {/* תיקון נתיב הקישור לכתבה הראשי: articles במקום pests */}
-                  <Link href={`/articles/${heroPost.slug}`}>
-                    <h3 className="mt-2 text-2xl md:text-3xl font-extrabold text-gray-950 hover:text-orange-600 transition-colors leading-tight cursor-pointer">
-                      {heroPost.titleHebrew || heroPost.title}
-                    </h3>
+                <Link href={heroPost.fixedUrl}>
+                  <h3 className="mt-2 text-2xl md:text-3xl font-extrabold text-gray-950 hover:text-orange-600 transition-colors leading-tight cursor-pointer">
+                    {heroPost.titleHebrew}
+                  </h3>
+                </Link>
+                <p className="mt-3 text-gray-600 text-sm md:text-base line-clamp-3 leading-relaxed">
+                  {heroPost.subtitle}
+                </p>
+                <div className="mt-6 flex items-center justify-between text-xs text-gray-400 border-t border-gray-50 pt-4">
+                  <span>עודכן לאחרונה</span>
+                  <Link href={heroPost.fixedUrl} className="text-orange-600 font-bold text-sm hover:underline">
+                    לקריאת הכתבה המלאה ←
                   </Link>
-                  <p className="mt-3 text-gray-600 text-sm md:text-base line-clamp-3 leading-relaxed">
-                    {heroPost.subtitle || getPostExcerpt(heroPost, "כנסו לקריאת המדריך המלא לזיהוי, טיפול ומניעה של המזיק בישראל.")}
-                  </p>
-                  <div className="mt-6 flex items-center justify-between text-xs text-gray-400 border-t border-gray-50 pt-4">
-                    <span>עודכן לאחרונה</span>
-                    <Link href={`/articles/${heroPost.slug}`} className="text-orange-600 font-bold text-sm hover:underline">
-                      לקריאת הכתבה המלאה ←
-                    </Link>
-                  </div>
                 </div>
               </div>
-
-              {/* הכתבות בצד - מקושרות לנתיב pests המקורי */}
-              <div className="space-y-4">
-                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">עדכונים אחרונים</h3>
-                {FIXED_SIDEBAR_POSTS.map((post, idx) => (
-                  <div key={idx} className="flex gap-4 bg-white p-3 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-gray-50 border border-gray-100">
-                      <img 
-                        src={post.img} 
-                        alt={post.title} 
-                        className="w-full h-full object-cover" 
-                      />
-                    </div>
-                    <div className="flex flex-col justify-between py-1 flex-1">
-                      <Link href={`/pests/${post.slug}`}>
-                        <h4 className="font-bold text-sm text-gray-900 hover:text-orange-600 line-clamp-2 transition-colors leading-snug cursor-pointer">
-                          {post.title}
-                        </h4>
-                      </Link>
-                      <span className="text-[11px] text-gray-400">עודכן לאחרונה</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
             </div>
-          </section>
-        ) : null}
+
+            {/* הכתבות בצד */}
+            <div className="space-y-4">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">עדכונים אחרונים</h3>
+              {FIXED_SIDEBAR_POSTS.map((post, idx) => (
+                <div key={idx} className="flex gap-4 bg-white p-3 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-gray-50 border border-gray-100">
+                    <img 
+                      src={post.img} 
+                      alt={post.title} 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                  <div className="flex flex-col justify-between py-1 flex-1">
+                    <Link href={`/pests/${post.slug}`}>
+                      <h4 className="font-bold text-sm text-gray-900 hover:text-orange-600 line-clamp-2 transition-colors leading-snug cursor-pointer">
+                        {post.title}
+                      </h4>
+                    </Link>
+                    <span className="text-[11px] text-gray-400">עודכן לאחרונה</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </section>
 
         {/* קטגוריות */}
         <section className="max-w-6xl mx-auto px-4 py-8">
