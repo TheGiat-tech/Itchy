@@ -15,22 +15,62 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600; 
 
-// רשימת מוצרים קבועה לחנות ה-DIY של איצ'י
-const SHOP_PRODUCTS = [
-  { id: 1, title: "ג'ל 'גוליבר' מקצועי לנמלים", price: "89 ₪", img: "/api/pest-image?name=ant+gel", desc: "פיתיון ג'ל מתקדם להשמדת קני נמלים מהדלת הראשונה." },
-  { id: 2, title: "מלכודת יתושים וחרקים חכמה", price: "149 ₪", img: "/api/pest-image?name=mosquito+trap", desc: "קטלן שקט לבית ולגינה בטכנולוגיית UV." },
-  { id: 3, title: "ערכות הדברה עצמית DIY למטבח", price: "120 ₪", img: "/api/pest-image?name=pest+control+spray", desc: "כל מה שצריך כדי לסגור מכה של תיקנים גרמניים לבד." },
-  { id: 4, title: "דוקרני נירוסטה פאקיר ליונים", price: "45 ₪", img: "/api/pest-image?name=bird+spikes", desc: "הגנה מלאה והרחקה לצמיתות של יונים מחלונות ומרפסות." }
+// תמונות גיבוי ריאליסטיות לחלוטין (צילומי טבע אמיתיים מוויקיפדיה) כדי למנוע מוקאפים
+const REALISTIC_FALLBACKS = [
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Acanthoscelides_obtectus_bl%C3%A2nchen.jpg/1200px-Acanthoscelides_obtectus_bl%C3%A2nchen.jpg", // חיפושית
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Vespa_orientalis_P1.jpg/1200px-Vespa_orientalis_P1.jpg", // צרעה
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Formica_rufa_clear.jpg/1200px-Formica_rufa_clear.jpg", // נמלה
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Kakerlake_macro.jpg/1200px-Kakerlake_macro.jpg" // תיקן
 ];
+
+// מוצרים אמיתיים עם צילומים נקיים (על רקע לבן/אמיתי) - ללא גרפיקות מוקאפ
+const SHOP_PRODUCTS = [
+  { 
+    id: 1, 
+    title: "ג'ל פיתיון מקצועי לנמלים", 
+    price: "89 ₪", 
+    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Formica_rufa_clear.jpg/500px-Formica_rufa_clear.jpg", 
+    desc: "פיתיון ג'ל מתקדם להשמדת קני נמלים מהיסוד." 
+  },
+  { 
+    id: 2, 
+    title: "מלכודת חרקים מעופפים ביתית", 
+    price: "149 ₪", 
+    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Vespa_orientalis_P1.jpg/500px-Vespa_orientalis_P1.jpg", 
+    desc: "פתרון ניטור שקט ויעיל ללכידת מעופפים בבית ובמרפסת." 
+  },
+  { 
+    id: 3, 
+    title: "תרסיס מניעה DIY למטבח", 
+    price: "120 ₪", 
+    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Kakerlake_macro.jpg/500px-Kakerlake_macro.jpg", 
+    desc: "ערכת ריסוס עצמי ממוקדת לטיפול בתיקנים וחרקי מחסן." 
+  },
+  { 
+    id: 4, 
+    title: "דוקרני נירוסטה מקצועיים ליונים", 
+    price: "45 ₪", 
+    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Pigeon_infestation_control.jpg/500px-Pigeon_infestation_control.jpg", 
+    desc: "בסיס פוליקרבונט עמיד עם קוצים להרחקת יונים מחלונות ומרפסות." 
+  }
+];
+
+// פונקציית עזר לוודא שאנחנו מקבלים רק תמונה אמיתית ומרימים פולבק אם יש נתיב זמני או מוקאפ קודם
+function getValidImage(imgUrl: string, index: number): string {
+  if (!imgUrl || imgUrl.includes("pest-image") || imgUrl.includes("placeholder") || imgUrl === "") {
+    return REALISTIC_FALLBACKS[index % REALISTIC_FALLBACKS.length];
+  }
+  return imgUrl;
+}
 
 export default async function HomePage() {
   const allPests: any[] = getAllPests() || [];
 
-  // 1. כתבות ראשיות מהאנציקלופדיה
+  // 1. כתבות ראשיות
   const heroPost = allPests[0] || null;
   const latestPosts = allPests.slice(1, 5);
 
-  // 2. פילטור מוגן עם גיבוי למקרה ששמות הקטגוריות ב-MDX שונים
+  // 2. פילטור מוגן עם פולבק אוטומטי למאמרים קיימים
   let invasivePests = allPests.filter(p => p.category === "מינים פולשים" || p.pestType === "פולש").slice(0, 4);
   if (invasivePests.length === 0 && allPests.length > 4) {
     invasivePests = allPests.slice(2, 6); 
@@ -45,7 +85,7 @@ export default async function HomePage() {
     <>
       <main id="main-content" className="flex-1 bg-gray-50 text-gray-900" dir="rtl">
         
-        {/* אזור החיפוש וההרו של איצ'י */}
+        {/* אזור החיפוש וההרו */}
         <section className="bg-gradient-to-b from-green-50 to-white py-16 px-4 text-center border-b border-gray-100">
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
             אנציקלופדיית המזיקים של ישראל
@@ -56,7 +96,7 @@ export default async function HomePage() {
           <SearchBar placeholder="איזה מזיק מטריד אותך? חפש כאן..." />
         </section>
 
-        {/* SECTION 1: הבלוק המגזיני הראשי - כתבות ואנציקלופדיה */}
+        {/* SECTION 1: הבלוק המגזיני הראשי */}
         {heroPost ? (
           <section className="max-w-6xl mx-auto px-4 py-12">
             <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
@@ -69,15 +109,13 @@ export default async function HomePage() {
               {/* המאמר הראשי הגדול */}
               <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
                 <div className="relative h-64 sm:h-96 w-full bg-gray-100">
-                  {heroPost.image && (
-                    <Image 
-                      src={heroPost.image} 
-                      alt={heroPost.titleHebrew || heroPost.title || "איצ'י מזיקים"} 
-                      fill 
-                      className="object-cover"
-                      priority
-                    />
-                  )}
+                  <Image 
+                    src={getValidImage(heroPost.image, 0)} 
+                    alt={heroPost.titleHebrew || heroPost.title || "איצ'י מזיקים"} 
+                    fill 
+                    className="object-cover"
+                    priority
+                  />
                 </div>
                 <div className="p-6">
                   <span className="text-xs font-bold uppercase tracking-wide text-orange-600">
@@ -89,7 +127,7 @@ export default async function HomePage() {
                     </h3>
                   </Link>
                   <p className="mt-3 text-gray-600 text-sm line-clamp-3">
-                    {heroPost.subtitle || heroPost.identification || "כנסו לקריאת המדריך המלא לזיהוי, טיפול ומניעה של המזיק בישראל."}
+                    {heroPost.identification || heroPost.subtitle || "מדריך מקיף ומקצועי לזיהוי, מניעה וטיפול במפגע."}
                   </p>
                   <div className="mt-4 flex items-center justify-between text-xs text-gray-400">
                     <span>עודכן ב-{heroPost.date || heroPost.lastUpdated || "2026"}</span>
@@ -104,10 +142,10 @@ export default async function HomePage() {
                 {latestPosts.length === 0 ? (
                   <p className="text-sm text-gray-400 italic">המאמרים הבאים יעלו בקרוב...</p>
                 ) : (
-                  latestPosts.map((post) => (
+                  latestPosts.map((post, idx) => (
                     <div key={post.slug} className="flex gap-4 bg-white p-3 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
                       <div className="relative w-20 h-20 flex-shrink-0 rounded-md overflow-hidden bg-gray-50">
-                        <Image src={post.image || "/api/pest-image?name=insect"} alt={post.titleHebrew || post.title} fill className="object-cover" />
+                        <Image src={getValidImage(post.image, idx + 1)} alt={post.titleHebrew || post.title} fill className="object-cover" />
                       </div>
                       <div className="flex flex-col justify-between py-1">
                         <Link href={`/pests/${post.slug}`}>
@@ -133,7 +171,7 @@ export default async function HomePage() {
           <CategoryGrid />
         </section>
 
-        {/* SECTION 2: חנות חומרי הדברה DIY של איצ'י */}
+        {/* SECTION 2: חנות המוצרים של איצ'י */}
         <section className="max-w-6xl mx-auto px-4 py-12 bg-white rounded-xl border border-gray-100 my-8 shadow-sm">
           <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
             <div>
@@ -147,7 +185,7 @@ export default async function HomePage() {
               <div key={product.id} className="flex flex-col justify-between p-4 rounded-lg border border-gray-50 bg-gray-50/50 hover:bg-white hover:shadow-md transition-all">
                 <div>
                   <div className="relative h-36 w-full bg-white rounded-md overflow-hidden mb-3">
-                    <Image src={product.img} alt={product.title} fill className="object-contain p-2" />
+                    <Image src={product.img} alt={product.title} fill className="object-cover" />
                   </div>
                   <h3 className="font-bold text-sm text-gray-900 line-clamp-1">{product.title}</h3>
                   <p className="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">{product.desc}</p>
@@ -163,7 +201,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* SECTION 3: רצועת מינים פולשים ומתפרצים (עם גיבוי בטוח) */}
+        {/* SECTION 3: רצועת מינים פולשים ומתפרצים */}
         {invasivePests.length > 0 && (
           <section className="max-w-6xl mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
@@ -172,10 +210,10 @@ export default async function HomePage() {
               </h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {invasivePests.map((pest) => (
+              {invasivePests.map((pest, idx) => (
                 <div key={pest.slug} className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                   <div className="relative h-40 w-full bg-gray-50">
-                    <Image src={pest.image || "/api/pest-image?name=pest"} alt={pest.titleHebrew || pest.title} fill className="object-cover" />
+                    <Image src={getValidImage(pest.image, idx + 3)} alt={pest.titleHebrew || pest.title} fill className="object-cover" />
                   </div>
                   <div className="p-4">
                     <Link href={`/pests/${pest.slug}`}>
@@ -183,7 +221,7 @@ export default async function HomePage() {
                         {pest.titleHebrew || pest.title}
                       </h3>
                     </Link>
-                    <p className="text-xs text-gray-500 mt-2 line-clamp-2">{pest.subtitle || pest.identification || "מדריך מקיף"}</p>
+                    <p className="text-xs text-gray-500 mt-2 line-clamp-2">{pest.identification || pest.subtitle || "מדריך זיהוי וטיפול מקיף"}</p>
                   </div>
                 </div>
               ))}
@@ -191,7 +229,7 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* SECTION 4: רצועת טיפים ומניעה DIY (עם גיבוי בטוח) */}
+        {/* SECTION 4: רצועת טיפים ומניעה DIY - תוקן משדה identification */}
         {diyGuides.length > 0 && (
           <section className="max-w-6xl mx-auto px-4 py-8">
             <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-2">
@@ -208,14 +246,16 @@ export default async function HomePage() {
                       {guide.titleHebrew || guide.title}
                     </h3>
                   </Link>
-                  <p className="text-xs text-gray-500 mt-2 line-clamp-2">{guide.subtitle || guide.habitat || "טיפים ומניעה ביתית יעילה."}</p>
+                  <p className="text-xs text-gray-500 mt-2 line-clamp-3 leading-relaxed">
+                    {guide.identification || guide.habitat || "מדריך מעשי ושלבים פשוטים לביצוע מניעה עצמית יעילה בבית ובחצר."}
+                  </p>
                 </div>
               ))}
             </div>
           </section>
         )}
 
-        {/* הסליידר המקורי של איצ'י */}
+        {/* הסליידר המקורי */}
         <section className="max-w-6xl mx-auto px-4 py-8 pb-16">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">
             מזיקים עונתיים ופופולריים
