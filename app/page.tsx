@@ -167,8 +167,9 @@ export default async function HomePage() {
                       {heroPost.category || "מדריך מיוחד"}
                     </span>
                   </div>
-                  <Link href={`/pests/${heroPost.slug}`}>
-                    <h3 className="mt-2 text-2xl md:text-3xl font-extrabold text-gray-950 hover:text-orange-600 transition-colors leading-tight">
+                  {/* תיקון נתיב הקישור לכתבה הראשי: articles במקום pests */}
+                  <Link href={`/articles/${heroPost.slug}`}>
+                    <h3 className="mt-2 text-2xl md:text-3xl font-extrabold text-gray-950 hover:text-orange-600 transition-colors leading-tight cursor-pointer">
                       {heroPost.titleHebrew || heroPost.title}
                     </h3>
                   </Link>
@@ -177,12 +178,14 @@ export default async function HomePage() {
                   </p>
                   <div className="mt-6 flex items-center justify-between text-xs text-gray-400 border-t border-gray-50 pt-4">
                     <span>עודכן לאחרונה</span>
-                    <span className="text-orange-600 font-bold text-sm">לקריאת הכתבה המלאה ←</span>
+                    <Link href={`/articles/${heroPost.slug}`} className="text-orange-600 font-bold text-sm hover:underline">
+                      לקריאת הכתבה המלאה ←
+                    </Link>
                   </div>
                 </div>
               </div>
 
-              {/* הכתבות בצד - עכשיו הן מלאות ומיוצבות ישירות מהמערך! */}
+              {/* הכתבות בצד - מקושרות לנתיב pests המקורי */}
               <div className="space-y-4">
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">עדכונים אחרונים</h3>
                 {FIXED_SIDEBAR_POSTS.map((post, idx) => (
@@ -196,7 +199,7 @@ export default async function HomePage() {
                     </div>
                     <div className="flex flex-col justify-between py-1 flex-1">
                       <Link href={`/pests/${post.slug}`}>
-                        <h4 className="font-bold text-sm text-gray-900 hover:text-orange-600 line-clamp-2 transition-colors leading-snug">
+                        <h4 className="font-bold text-sm text-gray-900 hover:text-orange-600 line-clamp-2 transition-colors leading-snug cursor-pointer">
                           {post.title}
                         </h4>
                       </Link>
