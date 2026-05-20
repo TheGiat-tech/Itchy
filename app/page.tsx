@@ -143,6 +143,18 @@ export default async function HomePage() {
             זהה כל מזיק, הבן את מחזור החיים שלו, ומצא את הפתרון הנכון.
           </p>
           <SearchBar placeholder="איזה מזיק מטריד אותך? חפש כאן..." />
+          <div className="mt-6 mx-auto max-w-2xl rounded-2xl border border-orange-200 bg-gradient-to-l from-orange-50 to-amber-50 p-4 sm:p-5 shadow-sm">
+            <p className="text-sm sm:text-base font-bold text-gray-900">
+              נעקצתם ואתם לא יודעים במה מדובר, בואו לגלות בשאלון מה עקץ אותי.
+            </p>
+            <Link
+              href="/what-bit-me"
+              aria-label="התחילו את השאלון עכשיו — שאלון מה עקץ אותי"
+              className="mt-3 inline-flex items-center justify-center rounded-full bg-orange-600 px-5 py-2.5 text-sm font-extrabold text-white hover:bg-orange-700 transition-colors"
+            >
+              התחילו את השאלון עכשיו
+            </Link>
+          </div>
         </section>
 
         {/* SECTION 1: הבלוק המגזיני הראשי */}
