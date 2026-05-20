@@ -19,7 +19,7 @@ export default function StickyLeadBar() {
         </span>
         <Link
           href="/what-bit-me"
-          aria-label="מעבר לשאלון מה עקץ אותי"
+          aria-label="נעקצתם ולא יודעים ממה? גלו עכשיו"
           className="mr-3 inline-block bg-fuchsia-700 text-white font-bold px-4 py-1 rounded-full text-sm hover:bg-fuchsia-800 transition-colors whitespace-nowrap"
         >
           נעקצתם ולא יודעים ממה? גלו עכשיו »
