@@ -22,7 +22,7 @@ export default function StickyLeadBar() {
           aria-label="נעקצתם ולא יודעים ממה? גלו עכשיו — מעבר לשאלון מה עקץ אותי"
           className="mr-3 inline-block bg-fuchsia-700 text-white font-bold px-4 py-1 rounded-full text-sm hover:bg-fuchsia-800 transition-colors whitespace-nowrap"
         >
-          נעקצתם ולא יודעים ממה? גלו עכשיו »
+          נעקצתם ולא יודעים ממה? גלו עכשיו ←
         </Link>
         <button
           onClick={() => setIsModalOpen(true)}
