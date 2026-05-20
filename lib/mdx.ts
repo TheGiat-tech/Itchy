@@ -14,12 +14,44 @@ export interface PestFrontmatter {
   description?: string;
   category?: string;
   imageOverride?: string;
+  image?: string;
 }
 
 export interface Pest {
   slug: string;
   frontmatter: PestFrontmatter;
   content: string;
+}
+
+const PEST_CATEGORY_ALIASES: Record<string, string> = {
+  cockroaches: "cockroaches",
+  תיקנים: "cockroaches",
+  "flying-insects": "flying-insects",
+  "חרקים מעופפים": "flying-insects",
+  זבובים: "flying-insects",
+  "biting-bloodsucking": "biting-bloodsucking",
+  "עוקצים ומוצצי דם": "biting-bloodsucking",
+  ants: "ants",
+  נמלים: "ants",
+  rodents: "rodents",
+  מכרסמים: "rodents",
+  "pantry-pests": "pantry-pests",
+  "מזיקי מזווה ורכוש": "pantry-pests",
+  "מזיקי מזון": "pantry-pests",
+  arachnids: "arachnids",
+  "עכבישים ועקרבים": "arachnids",
+  עכבישים: "arachnids",
+  wasps: "wasps",
+  "צרעות ודבורי בר": "wasps",
+  צרעות: "wasps",
+  "garden-pests": "garden-pests",
+  "מזיקי גינה": "garden-pests",
+};
+
+function normalizePestCategory(category?: string): string | undefined {
+  const value = category?.trim();
+  if (!value) return undefined;
+  return PEST_CATEGORY_ALIASES[value.toLowerCase()] ?? value;
 }
 
 export function getAllPestSlugs(): string[] {
@@ -37,7 +69,20 @@ export function getPestBySlug(slug: string): Pest | null {
   if (!fs.existsSync(filePath)) return null;
   const raw = fs.readFileSync(filePath, "utf8");
   const { data, content } = matter(raw);
-  return { slug, frontmatter: data as PestFrontmatter, content };
+  const frontmatter = data as PestFrontmatter;
+  const normalizedCategory = normalizePestCategory(frontmatter.category);
+  const imageOverride =
+    frontmatter.imageOverride?.trim() || frontmatter.image?.trim();
+
+  return {
+    slug,
+    frontmatter: {
+      ...frontmatter,
+      category: normalizedCategory,
+      imageOverride: imageOverride || undefined,
+    },
+    content,
+  };
 }
 
 export function getAllPests(): Pest[] {
