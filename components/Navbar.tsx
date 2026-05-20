@@ -63,7 +63,6 @@ export default function Navbar() {
           ))}
           <Link
             href="/what-bit-me"
-            aria-label="מה עקץ אותי?"
             className="flex items-center gap-1 bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-bold hover:bg-orange-700 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
           >
             מה עקץ אותי?
@@ -133,7 +132,6 @@ export default function Navbar() {
             ))}
             <Link
               href="/what-bit-me"
-              aria-label="מה עקץ אותי?"
               className="mt-2 flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors"
               onClick={() => setMenuOpen(false)}
             >
