@@ -132,14 +132,14 @@ export default function Navbar() {
             ))}
             <Link
               href="/what-bit-me"
-              className="mt-2 flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2.5 rounded-xl font-bold transition-colors"
+              className="mt-2 flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors"
               onClick={() => setMenuOpen(false)}
             >
               מה עקץ אותי?
             </Link>
             <Link
               href="/shop"
-              className="mt-2 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl font-bold transition-colors"
+              className="mt-2 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors"
               onClick={() => setMenuOpen(false)}
             >
               חנות

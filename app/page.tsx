@@ -145,7 +145,7 @@ export default async function HomePage() {
           <SearchBar placeholder="איזה מזיק מטריד אותך? חפש כאן..." />
           <div className="mt-6 mx-auto max-w-2xl rounded-2xl border border-orange-200 bg-gradient-to-l from-orange-50 to-amber-50 p-4 sm:p-5 shadow-sm">
             <p className="text-sm sm:text-base font-bold text-gray-900">
-              נעקצתם ואתם לא יודעים במה מדובר? בואו לגלות בשאלון &quot;מה עקץ אותי?&quot;
+              נעקצתם ואתם לא יודעים במה מדובר? בואו לגלות בשאלון "מה עקץ אותי?"
             </p>
             <Link
               href="/what-bit-me"
