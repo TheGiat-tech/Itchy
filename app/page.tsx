@@ -149,6 +149,7 @@ export default async function HomePage() {
             </p>
             <Link
               href="/what-bit-me"
+              aria-label="מעבר לשאלון מה עקץ אותי"
               className="mt-3 inline-flex items-center justify-center rounded-full bg-orange-600 px-5 py-2.5 text-sm font-extrabold text-white hover:bg-orange-700 transition-colors"
             >
               התחילו את השאלון עכשיו
