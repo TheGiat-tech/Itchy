@@ -20,7 +20,7 @@ function formatDate(dateStr?: string): string {
 }
 
 function getArticleBrowseKey(article: ReturnType<typeof getAllArticles>[number]): string {
-  return (article.frontmatter.pestType || article.frontmatter.category || article.slug)
+  return (article.frontmatter.pestType || article.frontmatter.category || article.slug || "")
     .trim()
     .toLowerCase();
 }

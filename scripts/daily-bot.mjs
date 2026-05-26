@@ -42,6 +42,10 @@ function normalizeTopicLabel(value) {
   return (value ?? "").replace(/^\s*\d+\.\s*/, "").replace(/\s+/g, " ").trim();
 }
 
+function clampIndex(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
 function pickLocalImage(hint) {
   for (const { pattern, image, alt } of TOPIC_IMAGE_RULES) {
     if (pattern.test(hint)) return { image, alt };
@@ -92,6 +96,10 @@ function getNextTopic() {
     }
   }
 
+  if (sections.length === 0) {
+    throw new Error("No topic sections were found in the topics file.");
+  }
+
   const maxSectionLength = Math.max(...sections.map((section) => section.length), 0);
   const validTopics = [];
   for (let index = 0; index < maxSectionLength; index++) {
@@ -123,7 +131,7 @@ function getNextTopic() {
       : []
   );
 
-  const startIndex = Math.min(Math.max(nextTopicIndex, 0), Math.max(validTopics.length - 1, 0));
+  const startIndex = clampIndex(nextTopicIndex, 0, Math.max(validTopics.length - 1, 0));
   const candidateIndexes = validTopics.map((_, offset) => (startIndex + offset) % validTopics.length);
   const nextAvailableIndex =
     candidateIndexes.find(
