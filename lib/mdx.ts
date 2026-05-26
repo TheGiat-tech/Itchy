@@ -4,6 +4,7 @@ import matter from "gray-matter";
 
 const PESTS_DIR = path.join(process.cwd(), "content", "pests");
 const ARTICLES_DIR = path.join(process.cwd(), "content", "articles");
+const TOPIC_NUMBER_PREFIX = /^\s*\d+\.\s*/;
 
 export interface PestFrontmatter {
   title: string;
@@ -238,6 +239,14 @@ export interface Article {
   slug: string;
   frontmatter: ArticleFrontmatter;
   content: string;
+}
+
+export function normalizeTopicLabel(value?: string): string {
+  return (value ?? "").replace(TOPIC_NUMBER_PREFIX, "").replace(/\s+/g, " ").trim();
+}
+
+export function getArticleDisplayTitle(frontmatter: ArticleFrontmatter): string {
+  return normalizeTopicLabel(frontmatter.titleHebrew || frontmatter.title || "");
 }
 
 export function getAllArticleSlugs(): string[] {

@@ -38,6 +38,10 @@ const TOPIC_IMAGE_RULES = [
 const DEFAULT_IMAGE = "/api/pest-image?name=Pest+control";
 const DEFAULT_ALT = "pest control";
 
+function normalizeTopicLabel(value) {
+  return (value ?? "").replace(/^\s*\d+\.\s*/, "").replace(/\s+/g, " ").trim();
+}
+
 function pickLocalImage(hint) {
   for (const { pattern, image, alt } of TOPIC_IMAGE_RULES) {
     if (pattern.test(hint)) return { image, alt };
@@ -66,21 +70,71 @@ function getNextTopic() {
 
   // Read and filter topics
   const fileContent = fs.readFileSync(TOPICS_FILE, "utf-8");
-  const validTopics = fileContent
-    .split("\n")
-    .map(line => line.trim())
-    // Keep only lines that start with numbers followed by a dot (e.g., "1. נמלים בבית...")
-    .filter(line => /^\d+\.\s+/.test(line));
+  const sections = [];
+  let currentSection = null;
+
+  for (const rawLine of fileContent.split("\n")) {
+    const line = rawLine.trim();
+    if (!line) continue;
+
+    if (/^##\s+/.test(line)) {
+      currentSection = [];
+      sections.push(currentSection);
+      continue;
+    }
+
+    if (/^\d+\.\s+/.test(line)) {
+      if (!currentSection) {
+        currentSection = [];
+        sections.push(currentSection);
+      }
+      currentSection.push(normalizeTopicLabel(line));
+    }
+  }
+
+  const maxSectionLength = Math.max(...sections.map((section) => section.length), 0);
+  const validTopics = [];
+  for (let index = 0; index < maxSectionLength; index++) {
+    for (const section of sections) {
+      if (section[index]) validTopics.push(section[index]);
+    }
+  }
 
   if (validTopics.length === 0) {
     throw new Error("No valid topics found in the topics file.");
   }
 
-  if (nextTopicIndex >= validTopics.length) {
-    throw new Error(`All topics have been generated! Index ${nextTopicIndex} exceeds the list of ${validTopics.length} topics. Reset pointer.json to start over.`);
+  const usedTopics = new Set(
+    fs.existsSync(ARTICLES_DIR)
+      ? fs
+          .readdirSync(ARTICLES_DIR)
+          .filter((file) => file.endsWith(".mdx") || file.endsWith(".md"))
+          .map((file) => fs.readFileSync(path.join(ARTICLES_DIR, file), "utf-8"))
+          .map((content) => {
+            const frontmatter = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+            if (!frontmatter) return "";
+            const title =
+              frontmatter[1].match(/^titleHebrew:\s*["']?(.+?)["']?\s*$/m)?.[1] ??
+              frontmatter[1].match(/^title:\s*["']?(.+?)["']?\s*$/m)?.[1] ??
+              "";
+            return normalizeTopicLabel(title).toLowerCase();
+          })
+          .filter(Boolean)
+      : []
+  );
+
+  const startIndex = Math.min(Math.max(nextTopicIndex, 0), Math.max(validTopics.length - 1, 0));
+  const candidateIndexes = validTopics.map((_, offset) => (startIndex + offset) % validTopics.length);
+  const nextAvailableIndex =
+    candidateIndexes.find(
+      (index) => !usedTopics.has(normalizeTopicLabel(validTopics[index]).toLowerCase())
+    ) ?? -1;
+
+  if (nextAvailableIndex === -1) {
+    throw new Error(`All topics have been generated! Checked ${validTopics.length} diversified topics.`);
   }
 
-  return { topic: validTopics[nextTopicIndex], nextTopicIndex };
+  return { topic: validTopics[nextAvailableIndex], nextTopicIndex: nextAvailableIndex };
 }
 
 // ---------------------------------------------------------------------------
@@ -99,7 +153,7 @@ function stripEmojis(text) {
 function cleanupArticleContent(content) {
   content = content.replace(
     /(^titleHebrew:\s*)(["']?)(.+?)\2(\s*)$/m,
-    (_, key, q, val, tail) => `${key}${q}${stripEmojis(val)}${q}${tail}`
+    (_, key, q, val, tail) => `${key}${q}${normalizeTopicLabel(stripEmojis(val))}${q}${tail}`
   );
   content = content.replace(
     /(^subtitle:\s*)(["']?)(.+?)\2(\s*)$/m,
@@ -116,6 +170,10 @@ function cleanupArticleContent(content) {
     .split("\n")
     .map((line) => {
       if (/^\s*</.test(line)) return line;
+      if (/^#\s+/.test(line)) {
+        const headingText = line.replace(/^#\s+/, "");
+        return `# ${normalizeTopicLabel(stripEmojis(headingText))}`;
+      }
       return stripEmojis(line);
     })
     .join("\n");
