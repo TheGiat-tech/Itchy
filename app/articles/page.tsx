@@ -19,7 +19,7 @@ function formatDate(dateStr?: string): string {
   });
 }
 
-function getArticleBrowseKey(article: ReturnType<typeof getAllArticles>[number]): string {
+function getArticleGroupKey(article: ReturnType<typeof getAllArticles>[number]): string {
   return (article.frontmatter.pestType || article.frontmatter.category || article.slug || "")
     .trim()
     .toLowerCase();
@@ -31,7 +31,7 @@ function arrangeArticlesForBrowse(articles: ReturnType<typeof getAllArticles>) {
   const usedKeys = new Set<string>();
 
   while (remaining.length > 0) {
-    let selectedIndex = remaining.findIndex((article) => !usedKeys.has(getArticleBrowseKey(article)));
+    let selectedIndex = remaining.findIndex((article) => !usedKeys.has(getArticleGroupKey(article)));
 
     if (selectedIndex === -1) {
       usedKeys.clear();
@@ -39,7 +39,7 @@ function arrangeArticlesForBrowse(articles: ReturnType<typeof getAllArticles>) {
     }
 
     const [selectedArticle] = remaining.splice(selectedIndex, 1);
-    usedKeys.add(getArticleBrowseKey(selectedArticle));
+    usedKeys.add(getArticleGroupKey(selectedArticle));
     ordered.push(selectedArticle);
   }
 
