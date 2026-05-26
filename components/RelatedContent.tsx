@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllArticles } from "@/lib/mdx";
+import { getAllArticles, getArticleDisplayTitle } from "@/lib/mdx";
 
 interface Props {
   currentSlug: string;
@@ -146,7 +146,7 @@ export default function RelatedContent({ currentSlug, category, pestType, title 
           aria-label="רשימת מאמרים קשורים"
         >
           {related.map((article) => {
-            const articleTitle = article.frontmatter.titleHebrew || article.frontmatter.title || "";
+            const articleTitle = getArticleDisplayTitle(article.frontmatter);
             const articleExcerpt = article.frontmatter.excerpt || article.frontmatter.subtitle || article.frontmatter.description;
             return (
               <Link

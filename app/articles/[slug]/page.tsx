@@ -7,7 +7,7 @@ import ArticleFooterCTA from "@/components/ArticleFooterCTA";
 import RelatedContent from "@/components/RelatedContent";
 import SchemaMarkup, { type SchemaFaqItem } from "@/components/SchemaMarkup";
 import LegalDisclaimer from "@/components/LegalDisclaimer";
-import { getArticleBySlug, getAllArticleSlugs, getPostImage } from "@/lib/mdx";
+import { getArticleBySlug, getAllArticleSlugs, getArticleDisplayTitle, getPostImage } from "@/lib/mdx";
 
 const DEFAULT_AUTHOR = "מערכת איצ'י";
 
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = getArticleBySlug(slug);
   if (!article) return {};
   const { frontmatter } = article;
-  const metaTitle = frontmatter.titleHebrew || frontmatter.title || "";
+  const metaTitle = getArticleDisplayTitle(frontmatter);
   const rawDescription = frontmatter.excerpt || frontmatter.description || frontmatter.subtitle || "";
   const metaDescription = rawDescription.slice(0, 160);
   const metaImage = getPostImage(frontmatter, slug);
@@ -118,7 +118,7 @@ export default async function ArticlePage({ params }: Props) {
 
   // TypeScript narrowing: article is guaranteed non-null after notFound()
   const { frontmatter, content } = article;
-  const displayTitle = frontmatter.titleHebrew || frontmatter.title || "";
+  const displayTitle = getArticleDisplayTitle(frontmatter);
   const displayExcerpt = frontmatter.excerpt || frontmatter.subtitle || frontmatter.description;
   const displayImage = getPostImage(frontmatter, slug);
   const datePublished = frontmatter.date;
