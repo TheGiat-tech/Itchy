@@ -132,7 +132,10 @@ function getNextTopic() {
   );
 
   const startIndex = clampIndex(nextTopicIndex, 0, validTopics.length - 1);
-  const candidateIndexes = validTopics.map((_, offset) => (startIndex + offset) % validTopics.length);
+  const candidateIndexes = Array.from(
+    { length: validTopics.length },
+    (_, offset) => (startIndex + offset) % validTopics.length
+  );
   const nextAvailableIndex =
     candidateIndexes.find(
       (index) => !usedTopics.has(normalizeTopicLabel(validTopics[index]).toLowerCase())

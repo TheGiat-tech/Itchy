@@ -68,7 +68,7 @@ export default function ArticlesPage() {
               const cardTitle = getArticleDisplayTitle(article.frontmatter);
               const cardExcerpt = article.frontmatter.excerpt || article.frontmatter.subtitle || article.frontmatter.description;
               const cardImage = getPostImage(article.frontmatter, article.slug);
-              const cardLabel = article.frontmatter.category || article.frontmatter.pestType;
+              const cardCategory = article.frontmatter.category || article.frontmatter.pestType;
               return (
                 <Link
                   key={article.slug}
@@ -92,9 +92,9 @@ export default function ArticlesPage() {
 
                   {/* Text */}
                   <div className="flex flex-col justify-center p-5 gap-2 flex-1">
-                    {cardLabel && (
+                    {cardCategory && (
                       <span className="text-xs font-semibold text-green-700 uppercase tracking-wide">
-                        {cardLabel}
+                        {cardCategory}
                       </span>
                     )}
                     <h2 className="text-xl font-bold text-gray-900 group-hover:text-green-700 transition-colors leading-snug">
