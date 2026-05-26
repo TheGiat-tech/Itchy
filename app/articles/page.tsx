@@ -19,35 +19,8 @@ function formatDate(dateStr?: string): string {
   });
 }
 
-function getArticleGroupKey(article: ReturnType<typeof getAllArticles>[number]): string {
-  return (article.frontmatter.pestType || article.frontmatter.category || article.slug || "")
-    .trim()
-    .toLowerCase();
-}
-
-function arrangeArticlesForBrowse(articles: ReturnType<typeof getAllArticles>) {
-  const remaining = [...articles];
-  const ordered: typeof articles = [];
-  const usedKeys = new Set<string>();
-
-  while (remaining.length > 0) {
-    let selectedIndex = remaining.findIndex((article) => !usedKeys.has(getArticleGroupKey(article)));
-
-    if (selectedIndex === -1) {
-      usedKeys.clear();
-      selectedIndex = 0;
-    }
-
-    const [selectedArticle] = remaining.splice(selectedIndex, 1);
-    usedKeys.add(getArticleGroupKey(selectedArticle));
-    ordered.push(selectedArticle);
-  }
-
-  return ordered;
-}
-
 export default function ArticlesPage() {
-  const articles = arrangeArticlesForBrowse(getAllArticles());
+  const articles = getAllArticles();
 
   return (
     <>
