@@ -67,7 +67,7 @@ function getNextTopic() {
     try {
       const ptrData = JSON.parse(fs.readFileSync(POINTER_FILE, "utf-8"));
       nextTopicIndex = ptrData.nextTopicIndex || 0;
-    } catch (err) {
+    } catch {
       console.warn("⚠️ Could not parse pointer.json. Starting from index 0.");
     }
   }
