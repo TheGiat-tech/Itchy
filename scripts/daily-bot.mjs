@@ -100,7 +100,7 @@ function getNextTopic() {
     throw new Error("No topic sections were found in the topics file.");
   }
 
-  const maxSectionLength = Math.max(...sections.map((section) => section.length), 0);
+  const maxSectionLength = Math.max(...sections.map((section) => section.length));
   const validTopics = [];
   for (let index = 0; index < maxSectionLength; index++) {
     for (const section of sections) {
@@ -131,7 +131,7 @@ function getNextTopic() {
       : []
   );
 
-  const startIndex = clampIndex(nextTopicIndex, 0, Math.max(validTopics.length - 1, 0));
+  const startIndex = clampIndex(nextTopicIndex, 0, validTopics.length - 1);
   const candidateIndexes = validTopics.map((_, offset) => (startIndex + offset) % validTopics.length);
   const nextAvailableIndex =
     candidateIndexes.find(

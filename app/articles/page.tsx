@@ -28,13 +28,13 @@ function getArticleBrowseKey(article: ReturnType<typeof getAllArticles>[number])
 function arrangeArticlesForBrowse(articles: ReturnType<typeof getAllArticles>) {
   const remaining = [...articles];
   const ordered: typeof articles = [];
-  let usedKeys = new Set<string>();
+  const usedKeys = new Set<string>();
 
   while (remaining.length > 0) {
     let selectedIndex = remaining.findIndex((article) => !usedKeys.has(getArticleBrowseKey(article)));
 
     if (selectedIndex === -1) {
-      usedKeys = new Set<string>();
+      usedKeys.clear();
       selectedIndex = 0;
     }
 
@@ -54,8 +54,7 @@ export default function ArticlesPage() {
       <main id="main-content" className="flex-1 max-w-5xl mx-auto px-4 py-12 w-full" dir="rtl">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-2">מאמרים</h1>
         <p className="text-gray-500 mb-10">
-          מדריכים, טיפים ומידע מקצועי על הדברה ומניעת מזיקים. התצוגה משלבת נושאים שונים כדי שלא
-          תראו שוב ושוב את אותו סוג מזיק ברצף.
+          מדריכים, טיפים ומידע מקצועי על הדברה ומניעת מזיקים, עם מבחר רחב של נושאים עדכניים.
         </p>
 
         {articles.length === 0 ? (
