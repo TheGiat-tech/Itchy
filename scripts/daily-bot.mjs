@@ -195,90 +195,33 @@ function cleanupArticleContent(content) {
 // ---------------------------------------------------------------------------
 // Image fetching
 // ---------------------------------------------------------------------------
-async function fetchPexelsImage(query) {
-  const apiKey = process.env.PEXELS_API_KEY;
-  if (!apiKey) return null;
-
-  const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&orientation=landscape&per_page=5`;
-  const response = await fetch(url, { headers: { Authorization: apiKey } });
-  if (!response.ok) {
-    throw new Error(`Pexels API error: ${response.status} ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  const photo = data?.photos?.[0];
-  if (!photo) return null;
-
-  return {
-    image: photo.src.large2x || photo.src.large || photo.src.landscape,
-    imageAlt: photo.alt || query,
-    imageCredit: photo.photographer,
-    imageCreditUrl: photo.photographer_url,
-    imageProvider: "Pexels",
-  };
-}
-
-async function fetchPixabayImage(query) {
-  const apiKey = process.env.PIXABAY_API_KEY;
-  if (!apiKey) return null;
-
-  const url = `https://pixabay.com/api/?key=${encodeURIComponent(apiKey)}&q=${encodeURIComponent(query)}&image_type=photo&orientation=horizontal&safesearch=true&per_page=5`;
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Pixabay API error: ${response.status} ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  const hit = data?.hits?.[0];
-  if (!hit) return null;
-
-  return {
-    image: hit.largeImageURL || hit.webformatURL,
-    imageAlt: hit.tags || query,
-    imageCredit: hit.user,
-    imageCreditUrl: hit.pageURL,
-    imageProvider: "Pixabay",
-  };
-}
-
 async function findArticleImage(query) {
   const hint = query || "";
+  try {
+    const prompt = `A professional, photorealistic photo representing ${hint}, bright lighting, modern clean style, no text, no watermarks`;
+    const encodedPrompt = encodeURIComponent(prompt);
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1200&height=630&nologo=true`;
 
-  if (process.env.PEXELS_API_KEY) {
-    try {
-      const result = await fetchPexelsImage(hint);
-      if (result?.image) {
-        console.log(`✅ Image provider: Pexels — ${result.image}`);
-        return result;
-      }
-      console.warn("⚠️  Pexels returned no images for query:", hint);
-    } catch (err) {
-      console.warn(`⚠️  Pexels failed: ${err.message}`);
-    }
+    console.log(`✅ Image provider: Pollinations.ai — ${imageUrl}`);
+    return {
+      image: imageUrl,
+      imageAlt: hint,
+      imageCredit: null,
+      imageCreditUrl: null,
+      imageProvider: "Pollinations.ai (Generative AI)",
+    };
+  } catch (err) {
+    console.warn(`⚠️  Pollinations URL generation failed: ${err.message}`);
+    const local = pickLocalImage(hint);
+    console.log(`⚠️  Using local fallback: ${local.image}`);
+    return {
+      image: local.image,
+      imageAlt: local.alt,
+      imageCredit: null,
+      imageCreditUrl: null,
+      imageProvider: "Local",
+    };
   }
-
-  if (process.env.PIXABAY_API_KEY) {
-    try {
-      const result = await fetchPixabayImage(hint);
-      if (result?.image) {
-        console.log(`✅ Image provider: Pixabay — ${result.image}`);
-        return result;
-      }
-      console.warn("⚠️  Pixabay returned no images for query:", hint);
-    } catch (err) {
-      console.warn(`⚠️  Pixabay failed: ${err.message}`);
-    }
-  }
-
-  const local = pickLocalImage(hint);
-  console.log(`⚠️  Both APIs failed or unavailable. Using local fallback: ${local.image}`);
-  return {
-    image: local.image,
-    imageAlt: local.alt,
-    imageCredit: null,
-    imageCreditUrl: null,
-    imageProvider: "Local",
-  };
 }
 
 // ---------------------------------------------------------------------------
