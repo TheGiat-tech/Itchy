@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "image.pollinations.ai",
+      },
     ],
   },
 };
