@@ -193,7 +193,7 @@ function cleanupArticleContent(content) {
 }
 
 // ---------------------------------------------------------------------------
-// Image fetching
+// Image fetching (Updated & Fixed)
 // ---------------------------------------------------------------------------
 async function findArticleImage(query) {
   const hint = query || "";
@@ -202,7 +202,15 @@ async function findArticleImage(query) {
     const encodedPrompt = encodeURIComponent(prompt);
     const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1200&height=630&nologo=true`;
 
-    console.log(`✅ Image provider: Pollinations.ai — ${imageUrl}`);
+    console.log(`⏳ Triggering AI to generate and cache the image (this takes ~10-15s)...`);
+    
+    // הבוט ניגש בפועל לקישור כדי לאלץ את השרת לייצר את התמונה עכשיו!
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+        throw new Error(`Pollinations API returned status ${response.status}`);
+    }
+
+    console.log(`✅ Image generated and cached successfully! Provider: Pollinations.ai`);
     return {
       image: imageUrl,
       imageAlt: hint,
