@@ -24,39 +24,7 @@ export async function POST(req: NextRequest) {
         `;
       } catch (dbErr) {
         console.error("[api/contact] DB insert failed:", dbErr);
-        // Non-fatal: still attempt Web3Forms notification
       }
-    }
-
-    // --- Web3Forms notification ---
-    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
-    if (accessKey) {
-      try {
-        const payload: Record<string, string> = {
-          access_key: accessKey,
-          subject: "פנייה חדשה מאתר איצ׳י",
-          from_name: "אתר איצ'י",
-          phone,
-        };
-        if (name) payload["name"] = name;
-        if (pestType) payload["pest_type"] = pestType;
-        if (message) payload["message"] = message;
-
-        const web3Res = await fetch("https://api.web3forms.com/submit", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        const web3Json = await web3Res.json();
-        if (!web3Res.ok || !web3Json.success) {
-          console.error("[api/contact] Web3Forms error:", web3Res.status, web3Json);
-        }
-      } catch (w3Err) {
-        console.error("[api/contact] Web3Forms fetch error:", w3Err);
-      }
-    } else {
-      console.warn("[api/contact] NEXT_PUBLIC_WEB3FORMS_KEY is not set – skipping email notification");
     }
 
     return NextResponse.json({ success: true });

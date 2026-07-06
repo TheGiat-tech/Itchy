@@ -19,12 +19,31 @@ export default function QuotePage() {
       const formData = new FormData(form);
       const result = await submitQuoteRequest(formData);
 
-      if (result.success) {
-        setSubmitted(true);
-        form.reset();
-      } else {
+      if (!result.success) {
         setError(result.error ?? "אירעה שגיאה בשליחת הטופס");
+        return;
       }
+
+      // Send email notification directly from the client (same as ContactForm)
+      const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
+      if (accessKey && result.data) {
+        const { pestType, rooms, city, name, phone, message } = result.data;
+        fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            access_key: accessKey,
+            subject: "בקשת הצעת מחיר חדשה - איצ׳י",
+            from_name: "אתר איצ'י",
+            name,
+            phone,
+            message: `סוג מזיק: ${pestType}\nגודל הנכס: ${rooms}\nעיר: ${city}${message ? `\n${message}` : ""}`,
+          }),
+        }).catch((err) => console.error("[quote] Web3Forms error:", err));
+      }
+
+      setSubmitted(true);
+      form.reset();
     } catch {
       setError("אירעה שגיאה בשליחת הטופס");
     } finally {
