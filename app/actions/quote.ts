@@ -2,7 +2,16 @@
 
 import { sql } from "@vercel/postgres";
 
-type QuoteResponse = { success: boolean; error?: string };
+interface QuoteData {
+  pestType: string;
+  rooms: string;
+  city: string;
+  name: string;
+  phone: string;
+  message: string;
+}
+
+type QuoteResponse = { success: boolean; error?: string; data?: QuoteData };
 
 export async function submitQuoteRequest(formData: FormData): Promise<QuoteResponse> {
   const pestType = (formData.get("pestType") as string | null)?.trim() ?? "";
@@ -16,11 +25,6 @@ export async function submitQuoteRequest(formData: FormData): Promise<QuoteRespo
     return { success: false, error: "נא למלא את כל שדות החובה" };
   }
 
-  const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
-  if (!accessKey) {
-    return { success: false, error: "שגיאת שרת: מפתח Web3Forms חסר" };
-  }
-
   try {
     await sql`
       INSERT INTO quotes (pest_type, rooms, city, name, phone, message, created_at)
@@ -31,34 +35,5 @@ export async function submitQuoteRequest(formData: FormData): Promise<QuoteRespo
     return { success: false, error: "שגיאה בשמירת הפרטים" };
   }
 
-  try {
-    const response = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        access_key: accessKey,
-        subject: "בקשת הצעת מחיר חדשה - איצ׳י",
-        pestType,
-        rooms,
-        city,
-        name,
-        phone,
-        message,
-      }),
-    });
-
-    if (!response.ok) {
-      return { success: false, error: "הפנייה נשמרה, אך שליחת ההתראה נכשלה" };
-    }
-
-    const result = (await response.json()) as { success?: boolean };
-    if (!result.success) {
-      return { success: false, error: "הפנייה נשמרה, אך שליחת ההתראה נכשלה" };
-    }
-  } catch (error) {
-    console.error("[quote] Failed to send Web3Forms notification:", error);
-    return { success: false, error: "הפנייה נשמרה, אך שליחת ההתראה נכשלה" };
-  }
-
-  return { success: true };
+  return { success: true, data: { pestType, rooms, city, name, phone, message } };
 }

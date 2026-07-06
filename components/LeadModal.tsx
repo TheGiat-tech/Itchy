@@ -102,6 +102,24 @@ export default function LeadModal({ isOpen, onClose }: LeadModalProps) {
         }
         throw new Error(errorMsg);
       }
+
+      // Send email notification directly from the client
+      const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
+      if (accessKey) {
+        fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            access_key: accessKey,
+            subject: "פנייה חדשה מאתר איצ׳י",
+            from_name: "אתר איצ'י",
+            phone,
+            pest_type: pestType,
+            message: `עיר: ${city}`,
+          }),
+        }).catch((err) => console.error("[LeadModal] Web3Forms error:", err));
+      }
+
       setSubmitted(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "שגיאה בשליחה, נסה שנית");
