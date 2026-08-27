@@ -108,7 +108,7 @@ const shopProducts: AffiliateProduct[] = [
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/63d629c50d62933786448beec7af0a31.jpg?v=1670853476&width=1206",
     category: "יתושים ומעופפים",
-    affiliateUrl: "https://affiracle.com/s/BFhVQ9",
+    affiliateUrl: "https://track.affiracle.com/s/QE9uQM",
     description:
       "קטלן UV עם מפוח שואב, יניקה שקטה וחזקה ומגירת איסוף נשלפת לניקוי מהיר.",
     itchiTip:
@@ -116,29 +116,29 @@ const shopProducts: AffiliateProduct[] = [
   },
   {
     id: "flying-2",
-    title: "קטלן STOPPER LED (14W)",
-    price: 189,
+    title: "קטלן יתושים תעשייתי LED דגם EL-1034 - אלקטרו חנן",
+    price: 289,
     imageUrl:
-      "https://zurmarket.co.il/cdn/shop/files/7291044110210.webp?v=1773829662&width=1206",
+      "https://d3m9l0v76dty0.cloudfront.net/system/photos/16548593/large/aed10d332a25aaea2dfbab6a64bd689b.jpg",
     category: "יתושים ומעופפים",
-    affiliateUrl: "https://affiracle.com/s/7WxuSr",
+    affiliateUrl: "https://track.affiracle.com/s/qbXg6x",
     description:
-      "קטלן STOPPER LED עם תאורת UV, מגש מתפרק ושרשרת תלייה לחללים גדולים ועמוסים.",
+      "קטלן יתושים תעשייתי LED הפועל בהספק 13W בלבד, מידות: אורך 27 ס\"מ | רוחב 10.50 ס\"מ | גובה 50 ס\"מ. מספק הגנה שקטה ויעילה מפני מזיקים מעופפים.",
     itchiTip:
-      "אידיאלי למסעדות, חצרות ובתים גדולים. עוצמתי ועמיד מאוד.",
+      "פתרון יעיל וידידותי לסביבה לקטילת יתושים ומעופפים בבית – הספק נמוך ותוצאות מרשימות.",
   },
   {
     id: "flying-3",
-    title: "קוטל יתושים נייד USB",
-    price: 59,
+    title: "קטלן יתושים וזבובים שואב - DeBUG",
+    price: 199,
     imageUrl:
-      "https://zurmarket.co.il/cdn/shop/products/f4ced7270f583ebff5264a82e98d0f4b.jpg?v=1670859054&width=1206",
+      "https://d3m9l0v76dty0.cloudfront.net/system/photos/16584805/large/ef0c02eca0a99232f1ad5439232bf6bf.jpg",
     category: "יתושים ומעופפים",
-    affiliateUrl: "https://affiracle.com/s/9KvjDf",
+    affiliateUrl: "https://track.affiracle.com/s/1UIPXR",
     description:
-      "קוטל יתושים נייד 5W עם טעינת USB וסוללה ל-6–8 שעות, מתאים לבית, טיולים וחופשות.",
+      "קטלן שואב המשתמש באור אולטרה סגול למשיכת יתושים וזבובים, ושואב אותם בשקט לתוך כלי ייעודי. ידידותי לסביבה, שקט ומתאים לשימוש בכל מקום, עם הפעלה קלה באמצעות כפתורי מגע.",
     itchiTip:
-      "החבר הכי טוב שלכם במילואים, בקמפינג או בחדר הילדים.",
+      "לשיפור נוסף של משיכת היתושים, מומלץ להוסיף קפסולה למשיכת יתושים של DeBUG.",
   },
   {
     id: "flying-4",
@@ -147,7 +147,7 @@ const shopProducts: AffiliateProduct[] = [
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/files/50aad069ee299a4afcb5ad11ab996215_10252fe2-7987-46b0-89f8-1496c1256ada.jpg?v=1756026266&width=1206",
     category: "יתושים ומעופפים",
-    affiliateUrl: "https://affiracle.com/s/6QIUiw",
+    affiliateUrl: "https://track.affiracle.com/s/KWjnLU",
     description:
       "תרסיס אנטיפליי מוכן לשימוש עם קטילה מידית לזבובים, יתושים, ברחשים, צרעות וזחלי עש.",
     itchiTip:
