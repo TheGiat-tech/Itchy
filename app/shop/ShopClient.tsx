@@ -22,7 +22,7 @@ const shopProducts: AffiliateProduct[] = [
   {
     id: "ants-1",
     title: "טופ ג'ל להדברת נמלים (15 גרם)",
-    price: 89,
+    price: 79.9,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/0583558a8e3e890a7f3a44d3f71bff75.jpg?v=1670852917&width=1206",
     category: "נמלים ונמלת האש",
@@ -36,7 +36,7 @@ const shopProducts: AffiliateProduct[] = [
   {
     id: "ants-2",
     title: "גרנולר - פיתיון גרגירי (200 גרם)",
-    price: 89,
+    price: 85.9,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/b1bee52a0d21533a1931228b05b59a57.jpg?v=1670852952&width=1206",
     category: "נמלים ונמלת האש",
@@ -50,7 +50,7 @@ const shopProducts: AffiliateProduct[] = [
   {
     id: "ants-3",
     title: 'תכשיר האמר (750 מ"ל)',
-    price: 59,
+    price: 59.9,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/files/WhatsAppImage2025-03-20at14.53.32_1.jpg?v=1742495513&width=1206",
     category: "נמלים ונמלת האש",
@@ -64,7 +64,7 @@ const shopProducts: AffiliateProduct[] = [
   {
     id: "cockroaches-1",
     title: "טורפדו ג'ל נגד תיקנים (15 גרם)",
-    price: 89,
+    price: 81,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/67c1102072cd47f13ae46b88f117ebfb.jpg?v=1670853741&width=1206",
     category: "תיקנים (ג'וקים)",
@@ -78,7 +78,7 @@ const shopProducts: AffiliateProduct[] = [
   {
     id: "cockroaches-2",
     title: 'תרסיס קילר (750 סמ"ק)',
-    price: 49,
+    price: 39.9,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/files/b18bbcc8cff9b0479b5ad2ba1162cf2a.jpg?v=1756117262&width=1206",
     category: "תיקנים (ג'וקים)",
@@ -104,7 +104,7 @@ const shopProducts: AffiliateProduct[] = [
   {
     id: "flying-1",
     title: "קטלן סופה ליתושים ומעופפים (7W)",
-    price: 249,
+    price: 199,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/63d629c50d62933786448beec7af0a31.jpg?v=1670853476&width=1206",
     category: "יתושים ומעופפים",
@@ -143,7 +143,7 @@ const shopProducts: AffiliateProduct[] = [
   {
     id: "flying-4",
     title: 'אנטיפליי רימי - תרסיס (750 מ״ל)',
-    price: 69,
+    price: 59,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/files/50aad069ee299a4afcb5ad11ab996215_10252fe2-7987-46b0-89f8-1496c1256ada.jpg?v=1756026266&width=1206",
     category: "יתושים ומעופפים",
@@ -224,7 +224,7 @@ const shopProducts: AffiliateProduct[] = [
   {
     id: "special-1",
     title: 'מרסס ידני מקצועי (5 ליטר)',
-    price: 79,
+    price: 75,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/ab788b5616d1f3182b6eca317e2de430.jpg?v=1671028410&width=1206",
     category: "ציוד מקצועי ותרסיסים מיוחדים",
@@ -237,7 +237,7 @@ const shopProducts: AffiliateProduct[] = [
   {
     id: "special-4",
     title: "מרסס הדברה לצמחים (1.5 ליטר)",
-    price: 29,
+    price: 29.9,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/2dc37d69f74bf116238677b069139ded.png?v=1670859114&width=1206",
     category: "ציוד מקצועי ותרסיסים מיוחדים",
