@@ -184,42 +184,42 @@ const shopProducts: AffiliateProduct[] = [
   },
   {
     id: "rodents-1",
-    title: "מלכודת SUPER CAT לעכברים וחולדות",
-    price: 39,
+    title: "נוקאאוט RAT – מלכודת מלתעות לחולדות",
+    price: 19.9,
     imageUrl:
-      "https://zurmarket.co.il/cdn/shop/products/31d529d93acb07aa525875e605110917.jpg?v=1713451682&width=1206",
+      "https://d3m9l0v76dty0.cloudfront.net/system/photos/12917735/large/2d04256a1615d6bdff95f71a16e3a1db.jpg",
     category: "מכרסמים (עכברים וחולדות)",
-    affiliateUrl: "https://affiracle.com/s/OijgVt",
+    affiliateUrl: "https://track.affiracle.com/s/8GQmd5",
     description:
-      "מלכודת קפיץ שוויצרית איכותית עם פיתיון מובנה. עמידה, רב-פעמית ומאפשרת פינוי היגייני ללא מגע.",
+      "מלכודת מלתעות לחולדות (מלכודת קפיץ) בעלת מנגנון תפיסה יעיל ובטיחותי למשתמש. פטנט להכנסה בטיחותית של הפיתיון לפני דריכת המלכודת. ניתנת לשימוש רב פעמי.",
     itchiTip:
-      "איכות שוויצרית שעושה את העבודה. היא חזקה, ניתנת לשטיפה ושימוש חוזר, והכי חשוב – לא עושה שימוש ברעלים.",
+      "קל לשימוש: פשוט מניחים במיקום הרצוי ונותנים למלכודת לעשות את העבודה. מתאים לבתים, חצרות, מחסנים, מטבחים ומפעלים.",
   },
   {
     id: "rodents-2",
-    title: 'מזרק פיתיון מקצועי (60 מ"ל)',
-    price: 79,
+    title: "מאסטר Bait - מזרק פיתיון למלכודות מכרסמים - 55 גרם",
+    price: 16.9,
     imageUrl:
-      "https://zurmarket.co.il/cdn/shop/products/52ae54226306d8b373f52d34b569aa61.jpg?v=1670858683&width=1206",
+      "https://d3m9l0v76dty0.cloudfront.net/system/photos/13863467/large/1b3fb05c1adba4cb59182176539d8fdd.jpg",
     category: "מכרסמים (עכברים וחולדות)",
-    affiliateUrl: "https://affiracle.com/s/UidCMp",
+    affiliateUrl: "https://track.affiracle.com/s/d1aB1D",
     description:
-      "פיתיון עוצמתי מבוסס חמאת בוטנים להגברת יעילות הלכידה במלכודות. ללא רעלים ובטוח לשימוש.",
+      "מזרק פיתיון מלא בחמאת בוטנים בלתי ניתנת לעמידה, שנועדה לפתות את כל סוגי המכרסמים. מאפשר חלוקה שיטתית בין מלכודות רבות במינימום מאמץ וללא מגע אנושי עם הפיתיון.",
     itchiTip:
-      "טיפ של מקצוענים: אם העכבר חכם ולא מתקרב, הריח של המזרק הזה ימשוך אותו למלכודת תוך דקות.",
+      "אפס מגע ידיים עם הפיתיון – הריח נשמר פתיה לחלוטין עבור המכרסמים. 55 גרם לשימושים רבים.",
   },
   {
     id: "rodents-3",
-    title: "סט 3 מכשירי 'מרגמה' אולטרסוניים",
-    price: 212,
+    title: "תיבת האכלה לחולדות ועכברים עם מלכודת קפיץ נוקאאוט",
+    price: 39.9,
     imageUrl:
-      "https://zurmarket.co.il/cdn/shop/files/679d03f4a19840f59f8eeb52ee382300_19e6b954-447c-430b-9094-1f232a961b45.jpg?v=1700387517&width=1206",
+      "https://d3m9l0v76dty0.cloudfront.net/system/photos/13752858/large/2de742d690c1634f8421f6cfdbd332dd.jpg",
     category: "מכרסמים (עכברים וחולדות)",
-    affiliateUrl: "https://affiracle.com/s/WCU7Dx",
+    affiliateUrl: "https://track.affiracle.com/s/BaQ6qY",
     description:
-      "מארז שלושה מכשירי הרחקה הפועלים על סוללות. אידיאלי לארונות חשמל, מגירות וחללים ללא שקע.",
+      "תיבת האכלה למניעת מגע של הרעל עם בני אדם וחיות מחמד. מגיעה עם מלכודות קפיץ נוקאאוט RAT ומפתח לנעילה. יש לקבע את התיבה לעמוד או לקיר.",
     itchiTip:
-      "הפתרון המושלם למגירות מטבח וארונות חשמל. טכנולוגיית סאונד שמרחיקה מכרסמים בלי ללכלך ובלי רעלים.",
+      "פתרון בטוח לבתים עם ילדים וחיות מחמד – התיבה מונעת גישה בלתי מורשית ומאפשרת לכידה קלה ובטוחה.",
   },
   {
     id: "special-1",
@@ -228,7 +228,7 @@ const shopProducts: AffiliateProduct[] = [
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/ab788b5616d1f3182b6eca317e2de430.jpg?v=1671028410&width=1206",
     category: "ציוד מקצועי ותרסיסים מיוחדים",
-    affiliateUrl: "https://affiracle.com/s/H5sUf7",
+    affiliateUrl: "https://track.affiracle.com/s/WMk3f5",
     description:
       "מרסס EVIKA 5 ליטר מפלסטיק מחוזק, צינור 1.2 מטר, דיזה מתכווננת ולחץ עבודה 2.5 בר.",
     itchiTip:
@@ -241,7 +241,7 @@ const shopProducts: AffiliateProduct[] = [
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/2dc37d69f74bf116238677b069139ded.png?v=1670859114&width=1206",
     category: "ציוד מקצועי ותרסיסים מיוחדים",
-    affiliateUrl: "https://affiracle.com/s/qaJrIA",
+    affiliateUrl: "https://track.affiracle.com/s/xO6BfQ",
     description:
       "מרסס פלסטיק PP קשיח בקיבולת 1.5 ליטר, קל לנשיאה ולשימוש לטיפול בצמחים, מזיקים ועשבייה.",
     itchiTip:
@@ -249,16 +249,16 @@ const shopProducts: AffiliateProduct[] = [
   },
   {
     id: "special-2",
-    title: 'דזיטול לקרדית האבק (300 מ״ל)',
-    price: 39,
+    title: "סולאר שילד - מכשיר סולארי להרחקת יונים",
+    price: 99.9,
     imageUrl:
-      "https://zurmarket.co.il/cdn/shop/files/7290109923932_S1_15-1.png?v=1756734374&width=1206",
+      "https://d3m9l0v76dty0.cloudfront.net/system/photos/29931129/large/d28201c9808ab4ceb4aaf40ae78474d3.jpg",
     category: "ציוד מקצועי ותרסיסים מיוחדים",
-    affiliateUrl: "https://affiracle.com/s/suNGTv",
+    affiliateUrl: "https://track.affiracle.com/s/ThYoCs",
     description:
-      "ספריי דזיטול ייעודי לקרדית האבק ופשפשים עם חדירה לעומק סיבי הבד במזרנים ושטיחים.",
+      "מכשיר סולארי מתקדם להרחקת יונים ממרפסות, גגות, חצרות ומסתורי כביסה. משתמש בגלי קול אולטראסוניים ותאורת LED מהבהבת. טעינה סולארית ואפשרות לטעינת USB.",
     itchiTip:
-      "חובה לכל מי שסובל מאלרגיות – מחסל את הקרדית במזרנים ושטיחים.",
+      "קומפקטי, קל להתקנה, מתאים לשימוש חיצוני. פעולה ללא צורך בחיבור קבוע לחשמל – פתרון פשוט וחסכוני.",
   },
   {
     id: "special-3",
