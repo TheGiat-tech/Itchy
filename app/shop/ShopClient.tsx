@@ -40,7 +40,7 @@ const shopProducts: AffiliateProduct[] = [
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/b1bee52a0d21533a1931228b05b59a57.jpg?v=1670852952&width=1206",
     category: "נמלים ונמלת האש",
-    affiliateUrl: "https://track.affiracle.com/s/C4TKDz",
+    affiliateUrl: "https://www.owlmarket.co.il/items/6781618-%D7%92%D7%A8%D7%A0%D7%95%D7%9C%D7%A8-%D7%9C%D7%94%D7%93%D7%91%D7%A8%D7%AA-%D7%A0%D7%9E%D7%9C%D7%99%D7%9D-%D7%95%D7%9C%D7%A0%D7%9E%D7%9C%D7%AA-%D7%94%D7%90%D7%A9-%D7%94%D7%A7%D7%98%D7%A0%D7%94-200-%D7%92%D7%A8%D7%9D?aff_camp_id=43&aff_id=2707",
     description:
       "פיתיון גרגירי עוצמתי המיועד במיוחד לנמלת האש ולשטחים פתוחים.",
     itchiTip:
@@ -54,7 +54,7 @@ const shopProducts: AffiliateProduct[] = [
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/files/WhatsAppImage2025-03-20at14.53.32_1.jpg?v=1742495513&width=1206",
     category: "נמלים ונמלת האש",
-    affiliateUrl: "https://track.affiracle.com/s/g03Fx4",
+    affiliateUrl: "https://www.owlmarket.co.il/items/7885818?aff_camp_id=43&aff_id=2707",
     description:
       "תרסיס עוצמתי ללא ריח בבקבוק התזה ארגונומי, ממוקד לחיסול נמלת האש.",
     itchiTip:
