@@ -90,16 +90,16 @@ const shopProducts: AffiliateProduct[] = [
   },
   {
     id: "green-1",
-    title: "מרחיק מזיקים אלקטרוני SAKAL",
-    price: 89,
+    title: "דוחה יתושים אלקטרוני",
+    price: 12.9,
     imageUrl:
-      "https://zurmarket.co.il/cdn/shop/products/6f56a13d102714f39ea5e16bb8f2e197.jpg?v=1670853086&width=1206",
+      "https://d3m9l0v76dty0.cloudfront.net/system/photos/14290596/large/4652dd8d7363116b55c8d63910926e2b.jpg",
     category: "פתרונות ידידותיים ואלקטרוניים",
-    affiliateUrl: "https://affiracle.com/s/LfwF4V",
+    affiliateUrl: "https://track.affiracle.com/s/tljZf1",
     description:
-      "הדברה אלקטרונית בטכנולוגיית גלים אולטרסוניים. מכסה עד 100 מ״ר ללא שימוש בכימיקלים.",
+      "דוחה יתושים אולטרה-סוני ידידותי לסביבה המתחבר לשקע החשמל ופולט גלי קול בתדר גבוה להרתעת יתושים.",
     itchiTip:
-      "פתרון מושלם לחדרי ילדים ומשרדים. פשוט מחברים לשקע ויוצרים מעטפת הגנה שקטה ממזיקים.",
+      "מתאים לחדרי מגורים וילדים עד 20 מ״ר, צריכת חשמל נמוכה וללא חומרים כימיים – בטוח גם ליד ילדים וחיות מחמד.",
   },
   {
     id: "flying-1",
@@ -155,30 +155,32 @@ const shopProducts: AffiliateProduct[] = [
   },
   {
     id: "moths-1",
-    title: "3 מארזים מלכודות עש המזון (18 יח')",
-    price: 59,
+    title:
+      "מלכודת עש המזון – מלכודת מקצועית ללכידת עש המזון - 3 חבילות = 18 מלכודות",
+    price: 185,
     imageUrl:
-      "https://zurmarket.co.il/cdn/shop/files/d51a6c4d23526a7d5eaeb07e326dd941.png?v=1733153264&width=1206",
+      "https://d3m9l0v76dty0.cloudfront.net/system/photos/12900125/large/f88f4760d87f82ae7dd33b0691e7226b.jpg",
     category: "עש ומזיקי בד",
-    affiliateUrl: "https://affiracle.com/s/5QjmkS",
+    affiliateUrl: "https://track.affiracle.com/s/TSYTj5",
     description:
-      "מארז 18 מלכודות דבק עם פרומון ייעודי לעש המזון, ללא רעלים ולשימוש בטוח במטבח ובמזווה.",
+      "פתרון מקצועי ללכידת עש המזון במזווה, בארונות ובבתי עסק. כל מארז כולל 6 מלכודות גדולות עטופות אלומיניום לשמירת הטריות, ובחבילה 3 מארזים (18 מלכודות).",
     itchiTip:
-      "מלכודות ירוקות וללא רעלים עם יעילות ממושכת של כ-45 ימים לכל מלכודת.",
-    badges: ["Best Seller", "ללא רעלים"],
+      "הפרומון הייחודי מיושם על כל שטח המלכודת למקסום הלכידה של העשים המעופפים לאורך זמן.",
+    badges: ["Best Seller", "מארז חסכוני"],
   },
   {
     id: "moths-2",
-    title: "4 מארזים מלכודות עש הבגדים (8 יח')",
-    price: 101,
+    title:
+      "מלכודת עש הבגדים – מלכודת מקצועית ללכידת עש הבגדים - 3 חבילות = 6 מלכודות",
+    price: 79,
     imageUrl:
-      "https://zurmarket.co.il/cdn/shop/files/2_84f83fb1-7ca1-41f3-af80-fd1f6f30f9bf.png?v=1753697972&width=1206",
+      "https://d3m9l0v76dty0.cloudfront.net/system/photos/29191702/large/71dc5b848f49ee073cd5762b492a7a95.jpg",
     category: "עש ומזיקי בד",
-    affiliateUrl: "https://affiracle.com/s/nc0od0",
+    affiliateUrl: "https://track.affiracle.com/s/Sb6RVd",
     description:
-      "מלכודות דבק פרומון לעש הבגדים במארז 8 יחידות, מתקפלות למשולש וללא רעלים לשימוש ביתי.",
+      "פתרון מקצועי ללכידת עש הבגדים בארונות, חדרי ארונות וחנויות. כולל וו תלייה נוח ופרומון ייעודי המיושם על כל שטח המלכודת ללכידה יעילה.",
     itchiTip:
-      "פתרון נקי לארונות וטקסטיל – מחליפים כל כ-3 חודשים או כשמתמלא.",
+      "בכל חבילה 2 מלכודות גדולות עטופות אלומיניום לשמירת הטריות, ובמארז זה מקבלים 3 חבילות (6 מלכודות).",
   },
   {
     id: "rodents-1",
