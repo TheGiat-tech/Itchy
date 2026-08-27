@@ -82,13 +82,25 @@ export default function AffiliateProductCard({
           ₪{price.toLocaleString("he-IL")}
         </p>
 
+        <div className="text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 leading-relaxed">
+          <p className="font-semibold text-gray-700 mb-1.5">
+            במוצר זה, אלו המשלוחים הניתנים לבחירה 🙂
+          </p>
+          <ul className="space-y-0.5">
+            <li>משלוח לנקודת איסוף PickUP UPS (מהיר): <strong>19 ₪</strong></li>
+            <li>משלוח לנקודת איסוף צ&#39;יטה: <strong>20 ₪</strong></li>
+            <li>שליח עד הבית או המשרד: <strong>29 ₪</strong></li>
+          </ul>
+          <p className="mt-1.5 text-gray-500">זמן אספקה: 6 ימי עסקים, קיימת אפשרות לאיסוף עצמי</p>
+        </div>
+
         <a
           href={affiliateUrl}
           target="_blank"
           rel="noopener noreferrer sponsored"
           className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white text-sm font-bold py-2.5 px-4 rounded-xl transition-colors duration-150"
         >
-          קנייה בצור מרקט
+          קנייה בינשוף מרקט
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
