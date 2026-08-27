@@ -26,7 +26,7 @@ const shopProducts: AffiliateProduct[] = [
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/0583558a8e3e890a7f3a44d3f71bff75.jpg?v=1670852917&width=1206",
     category: "נמלים ונמלת האש",
-    affiliateUrl: "https://affiracle.com/s/TwftTS",
+    affiliateUrl: "https://track.affiracle.com/s/AFdrPn",
     description:
       "פתרון מקצועי ללא ריח לכל סוגי הנמלים. מחסל את המלכה ומשמיד את הקן מהשורש.",
     itchiTip:
@@ -40,7 +40,7 @@ const shopProducts: AffiliateProduct[] = [
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/b1bee52a0d21533a1931228b05b59a57.jpg?v=1670852952&width=1206",
     category: "נמלים ונמלת האש",
-    affiliateUrl: "https://affiracle.com/s/sf7zrv",
+    affiliateUrl: "https://track.affiracle.com/s/C4TKDz",
     description:
       "פיתיון גרגירי עוצמתי המיועד במיוחד לנמלת האש ולשטחים פתוחים.",
     itchiTip:
@@ -49,12 +49,12 @@ const shopProducts: AffiliateProduct[] = [
   },
   {
     id: "ants-3",
-    title: 'תכשיר האמר (960 מ"ל)',
+    title: 'תכשיר האמר (750 מ"ל)',
     price: 59,
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/files/WhatsAppImage2025-03-20at14.53.32_1.jpg?v=1742495513&width=1206",
     category: "נמלים ונמלת האש",
-    affiliateUrl: "https://affiracle.com/s/rIb2dI",
+    affiliateUrl: "https://track.affiracle.com/s/g03Fx4",
     description:
       "תרסיס עוצמתי ללא ריח בבקבוק התזה ארגונומי, ממוקד לחיסול נמלת האש.",
     itchiTip:
