@@ -68,7 +68,7 @@ const shopProducts: AffiliateProduct[] = [
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/products/67c1102072cd47f13ae46b88f117ebfb.jpg?v=1670853741&width=1206",
     category: "תיקנים (ג'וקים)",
-    affiliateUrl: "https://affiracle.com/s/Vgd9Xz",
+    affiliateUrl: "https://track.affiracle.com/s/y0dkkK",
     description:
       "פיתיון ג'ל מתקדם לקטילת תיקן גרמני ואמריקאי. ללא ריח, משמיד את המושבה מהשורש.",
     itchiTip:
@@ -82,7 +82,7 @@ const shopProducts: AffiliateProduct[] = [
     imageUrl:
       "https://zurmarket.co.il/cdn/shop/files/b18bbcc8cff9b0479b5ad2ba1162cf2a.jpg?v=1756117262&width=1206",
     category: "תיקנים (ג'וקים)",
-    affiliateUrl: "https://affiracle.com/s/qac48J",
+    affiliateUrl: "https://track.affiracle.com/s/Jzng5Z",
     description:
       "תרסיס הדברה עוצמתי לשימוש ביתי ומסחרי. תוצאות מיידיות נגד תיקנים, נמלים ומזיקים נפוצים.",
     itchiTip:
@@ -260,16 +260,17 @@ const shopProducts: AffiliateProduct[] = [
   },
   {
     id: "special-3",
-    title: "מלכודות דבק לתיקנים (10 יח' + פיתיון)",
-    price: 49,
+    title:
+      "טורפדו תחנות האכלה - פיתיון להדברה וקטילת תיקנים כולל תיקן גרמני - 2 יחידות",
+    price: 59.9,
     imageUrl:
-      "https://zurmarket.co.il/cdn/shop/files/16_5e1524f1-3dd0-4770-80d6-d7b178f23cde.png?v=1755540301&width=1206",
+      "https://d3m9l0v76dty0.cloudfront.net/system/photos/12248383/large/7545ab8be6414681d00968909d697cf8.jpg",
     category: "תיקנים (ג'וקים)",
-    affiliateUrl: "https://affiracle.com/s/QoKHI2",
+    affiliateUrl: "https://track.affiracle.com/s/tU7G2V",
     description:
-      "מלכודות דבק חזקות לתיקן אמריקאי/גרמני עם פיתיון מוכן לשימוש, ללא רעלים ובטוח לבית.",
+      "תחנת האכלה מוכנה לשימוש עם פיתיון טורפדו לקטילת תיקנים. בטוחה לבתים עם ילדים וחיות מחמד ומספקת טיפול ממושך גם כמניעה.",
     itchiTip:
-      "מתקפל לצורת בית קטן ללכידה היגיינית ומהירה בלי ריסוס ובלי מגע ישיר.",
+      "מומלץ למקם בארונות מתחת לכיור, מאחורי מדיח או מכונת כביסה — התיקן אוכל את הפיתיון, חוזר למסתור ומרעיל את הלהקה.",
   },
 ];
 
